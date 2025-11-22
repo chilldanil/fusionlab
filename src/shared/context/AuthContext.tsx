@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, type ReactNode, useEffect } from 'react';
+import { supabase } from '../config/supabase';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
-interface User {
+interface UserProfile {
     id: string;
     email: string;
     fullName: string;
@@ -10,73 +12,126 @@ interface User {
 }
 
 interface AuthContextType {
-    user: User | null;
+    user: UserProfile | null;
     isAuthenticated: boolean;
     isLoading: boolean;
     login: (email: string, password: string) => Promise<void>;
     register: (email: string, password: string, fullName: string) => Promise<void>;
-    logout: () => void;
-    updateProfile: (data: Partial<User>) => void;
+    logout: () => Promise<void>;
+    updateProfile: (data: Partial<UserProfile>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<UserProfile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Simulate checking session on mount
     useEffect(() => {
-        const storedUser = localStorage.getItem('mock_user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-        setIsLoading(false);
+        // Check active session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session?.user) {
+                fetchProfile(session.user);
+            } else {
+                setIsLoading(false);
+            }
+        });
+
+        // Listen for auth changes
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange((_event, session) => {
+            if (session?.user) {
+                fetchProfile(session.user);
+            } else {
+                setUser(null);
+                setIsLoading(false);
+            }
+        });
+
+        return () => subscription.unsubscribe();
     }, []);
 
-    const login = async (email: string) => {
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+    const fetchProfile = async (authUser: SupabaseUser) => {
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', authUser.id)
+                .single();
 
-        const mockUser: User = {
-            id: '1',
-            email,
-            fullName: 'Test Engineer',
-            role: 'user',
-            bio: 'Full Stack Developer passionate about clean code and architecture.',
-            skills: ['React', 'TypeScript', 'Node.js']
-        };
-
-        setUser(mockUser);
-        localStorage.setItem('mock_user', JSON.stringify(mockUser));
+            if (error) {
+                console.error('Error fetching profile:', error);
+                // Fallback if profile doesn't exist yet (race condition with trigger)
+                setUser({
+                    id: authUser.id,
+                    email: authUser.email!,
+                    fullName: authUser.user_metadata.full_name || 'User',
+                    role: 'user',
+                });
+            } else if (data) {
+                setUser({
+                    id: data.id,
+                    email: authUser.email!,
+                    fullName: data.full_name,
+                    role: data.role || 'user',
+                    bio: data.bio,
+                    skills: data.skills,
+                });
+            }
+        } catch (error) {
+            console.error('Unexpected error fetching profile:', error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const register = async (email: string, _password: string, fullName: string) => {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        const mockUser: User = {
-            id: '1',
+    const login = async (email: string, password: string) => {
+        const { error } = await supabase.auth.signInWithPassword({
             email,
-            fullName,
-            role: 'user',
-            bio: 'New Member',
-            skills: []
-        };
-
-        setUser(mockUser);
-        localStorage.setItem('mock_user', JSON.stringify(mockUser));
+            password,
+        });
+        if (error) throw error;
     };
 
-    const logout = () => {
+    const register = async (email: string, password: string, fullName: string) => {
+        const { error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
+                    full_name: fullName,
+                },
+            },
+        });
+        if (error) throw error;
+    };
+
+    const logout = async () => {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
         setUser(null);
-        localStorage.removeItem('mock_user');
     };
 
-    const updateProfile = (data: Partial<User>) => {
+    const updateProfile = async (data: Partial<UserProfile>) => {
         if (!user) return;
-        const updatedUser = { ...user, ...data };
-        setUser(updatedUser);
-        localStorage.setItem('mock_user', JSON.stringify(updatedUser));
+
+        const updates = {
+            full_name: data.fullName,
+            bio: data.bio,
+            skills: data.skills,
+            updated_at: new Date().toISOString(),
+        };
+
+        const { error } = await supabase
+            .from('profiles')
+            .update(updates)
+            .eq('id', user.id);
+
+        if (error) throw error;
+
+        // Optimistic update
+        setUser({ ...user, ...data });
     };
 
     return (

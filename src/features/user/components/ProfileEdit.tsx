@@ -1,10 +1,11 @@
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '../../../shared/context/AuthContext';
 import { Button } from '../../../shared/ui/Button';
 import { useState } from 'react';
 import { X } from 'lucide-react';
+import { SchematicAvatar } from '../../../shared/ui/SchematicAvatar';
 
 const ProfileSchema = z.object({
     fullName: z.string().min(2, 'Full name is required'),
@@ -23,12 +24,18 @@ export const ProfileEdit = ({ onCancel, onSave }: ProfileEditProps) => {
     const [skills, setSkills] = useState<string[]>(user?.skills || []);
     const [newSkill, setNewSkill] = useState('');
 
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ProfileFormData>({
+    const { register, handleSubmit, control, formState: { errors, isSubmitting } } = useForm<ProfileFormData>({
         resolver: zodResolver(ProfileSchema),
         defaultValues: {
             fullName: user?.fullName || '',
             bio: user?.bio || '',
         }
+    });
+
+    const watchedFullName = useWatch({
+        control,
+        name: 'fullName',
+        defaultValue: user?.fullName || ''
     });
 
     const onSubmit = async (data: ProfileFormData) => {
@@ -58,7 +65,13 @@ export const ProfileEdit = ({ onCancel, onSave }: ProfileEditProps) => {
 
     return (
         <div className="bg-white border border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-8">
-            <h2 className="text-xl font-bold mb-6">Edit Profile</h2>
+            <div className="flex items-center gap-6 mb-8 pb-8 border-b border-gray-100">
+                <SchematicAvatar seed={watchedFullName || 'placeholder'} size={80} />
+                <div>
+                    <h2 className="text-xl font-bold">Edit Profile</h2>
+                    <p className="text-sm text-gray-500">Avatar updates automatically based on your name.</p>
+                </div>
+            </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div>

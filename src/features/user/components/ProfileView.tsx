@@ -1,5 +1,6 @@
 import { useAuth } from '../../../shared/context/AuthContext';
 import { Mail, Shield, Code, FileText } from 'lucide-react';
+import { SchematicAvatar } from '../../../shared/ui/SchematicAvatar';
 
 export const ProfileView = () => {
     const { user } = useAuth();
@@ -18,16 +19,22 @@ export const ProfileView = () => {
 
     return (
         <div className="bg-white border border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-8">
-            <div className="flex items-start justify-between mb-8">
-                <div>
-                    <h1 className="text-2xl font-bold mb-1">{user.fullName}</h1>
-                    <div className="flex items-center gap-2">
-                        <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                        <span className="text-xs font-mono text-gray-500 uppercase">Active Session</span>
+            <div className="flex items-start gap-6 mb-8">
+                <SchematicAvatar seed={user.email} size={100} className="shrink-0" />
+
+                <div className="flex-1">
+                    <div className="flex items-start justify-between">
+                        <div>
+                            <h1 className="text-2xl font-bold mb-1">{user.fullName}</h1>
+                            <div className="flex items-center gap-2">
+                                <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                <span className="text-xs font-mono text-gray-500 uppercase">Active Session</span>
+                            </div>
+                        </div>
+                        <div className="px-3 py-1 bg-gray-100 border border-gray-200 text-xs font-mono uppercase tracking-wider">
+                            {user.role}
+                        </div>
                     </div>
-                </div>
-                <div className="px-3 py-1 bg-gray-100 border border-gray-200 text-xs font-mono uppercase tracking-wider">
-                    {user.role}
                 </div>
             </div>
 

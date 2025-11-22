@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../shared/ui/Button';
+import { Navbar } from './components/Navbar';
 
 export const LandingPage = () => {
     const navigate = useNavigate();
@@ -14,22 +15,7 @@ export const LandingPage = () => {
             {/* Grid Background */}
             <div className="absolute inset-0 z-0 pointer-events-none bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px]" />
 
-            {/* Navbar */}
-            <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-                <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <div className="font-mono text-lg font-bold tracking-tighter">
-                        TUM MAKERSPACE
-                    </div>
-
-                    <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-600">
-                        <a href="#" className="hover:text-black transition-colors">Main</a>
-                        <button onClick={handleLogin} className="hover:text-black transition-colors">Login</button>
-                        <Button variant="primary" onClick={handleLogin} className="text-xs px-4 py-1.5">
-                            Sign In
-                        </Button>
-                    </div>
-                </div>
-            </nav>
+            <Navbar />
 
             {/* Hero Section */}
             <main className="relative z-10 pt-32 pb-20 px-6 max-w-7xl mx-auto min-h-screen flex flex-col justify-center">
