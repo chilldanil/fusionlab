@@ -10,6 +10,7 @@ import { SchematicAvatar } from '../../../shared/ui/SchematicAvatar';
 const ProfileSchema = z.object({
     fullName: z.string().min(2, 'Full name is required'),
     bio: z.string().optional(),
+    isIncognito: z.boolean().optional().default(false),
 });
 
 type ProfileFormData = z.infer<typeof ProfileSchema>;
@@ -29,6 +30,7 @@ export const ProfileEdit = ({ onCancel, onSave }: ProfileEditProps) => {
         defaultValues: {
             fullName: user?.fullName || '',
             bio: user?.bio || '',
+            isIncognito: user?.isIncognito ?? false,
         }
     });
 
@@ -36,6 +38,11 @@ export const ProfileEdit = ({ onCancel, onSave }: ProfileEditProps) => {
         control,
         name: 'fullName',
         defaultValue: user?.fullName || ''
+    });
+    const watchedIncognito = useWatch({
+        control,
+        name: 'isIncognito',
+        defaultValue: user?.isIncognito ?? false,
     });
 
     const onSubmit = async (data: ProfileFormData) => {
@@ -116,6 +123,28 @@ export const ProfileEdit = ({ onCancel, onSave }: ProfileEditProps) => {
                                 </button>
                             </span>
                         ))}
+                    </div>
+                </div>
+
+                <div className="border border-gray-200 p-4">
+                    <div className="flex items-center justify-between gap-4">
+                        <div>
+                            <p className="text-sm font-semibold">Stealth Mode</p>
+                            <p className="text-xs text-gray-500 font-mono uppercase tracking-wider">
+                                Hide presence and activity from everyone.
+                            </p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                                type="checkbox"
+                                {...register('isIncognito')}
+                                className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-black transition-colors"></div>
+                            <div
+                                className={`absolute left-0.5 top-0.5 w-5 h-5 bg-white border border-gray-300 rounded-full transition-all ${watchedIncognito ? 'translate-x-5 border-black' : ''}`}
+                            />
+                        </label>
                     </div>
                 </div>
 

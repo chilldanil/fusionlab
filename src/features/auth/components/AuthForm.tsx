@@ -26,7 +26,8 @@ export const AuthForm = () => {
             setError(null);
             await login(data.email, data.password);
             navigate('/profile');
-        } catch (err) {
+        } catch (error) {
+            console.error('Login failed', error);
             setError('Login failed. Please try again.');
         }
     };
@@ -36,7 +37,8 @@ export const AuthForm = () => {
             setError(null);
             await register(data.email, data.password, data.fullName);
             navigate('/profile');
-        } catch (err) {
+        } catch (error) {
+            console.error('Registration failed', error);
             setError('Registration failed. Please try again.');
         }
     };

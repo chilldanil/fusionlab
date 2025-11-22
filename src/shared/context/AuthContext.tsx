@@ -9,6 +9,8 @@ interface UserProfile {
     role: 'user' | 'admin';
     bio?: string;
     skills?: string[];
+    xp: number;
+    isIncognito: boolean;
 }
 
 interface AuthContextType {
@@ -68,6 +70,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                     email: authUser.email!,
                     fullName: authUser.user_metadata.full_name || 'User',
                     role: 'user',
+                    xp: 0,
+                    isIncognito: false,
                 });
             } else if (data) {
                 setUser({
@@ -77,6 +81,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                     role: data.role || 'user',
                     bio: data.bio,
                     skills: data.skills,
+                    xp: data.xp ?? 0,
+                    isIncognito: data.is_incognito ?? false,
                 });
             }
         } catch (error) {
@@ -116,12 +122,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const updateProfile = async (data: Partial<UserProfile>) => {
         if (!user) return;
 
-        const updates = {
-            full_name: data.fullName,
-            bio: data.bio,
-            skills: data.skills,
+        const updates: Record<string, unknown> = {
             updated_at: new Date().toISOString(),
         };
+
+        if (data.fullName !== undefined) updates.full_name = data.fullName;
+        if (data.bio !== undefined) updates.bio = data.bio;
+        if (data.skills !== undefined) updates.skills = data.skills;
+        if (data.isIncognito !== undefined) updates.is_incognito = data.isIncognito;
+        if (data.xp !== undefined) updates.xp = data.xp;
 
         const { error } = await supabase
             .from('profiles')
@@ -149,6 +158,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (context === undefined) {

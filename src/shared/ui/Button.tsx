@@ -2,9 +2,7 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-export function cn(...inputs: ClassValue[]) {
-    return twMerge(clsx(inputs));
-}
+const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'outline';
