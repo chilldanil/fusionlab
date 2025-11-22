@@ -53,6 +53,7 @@ pages:
     - build
   script:
     - npm ci
+    # Build with environment variables (set in GitLab CI/CD Variables)
     - npm run build
     # Move dist contents to public directory (required by GitLab Pages)
     - mkdir -p public
@@ -66,4 +67,6 @@ pages:
     expire_in: 30 days
   only:
     - main
+  # Note: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY must be set in
+  # GitLab project settings: Settings > CI/CD > Variables
 
