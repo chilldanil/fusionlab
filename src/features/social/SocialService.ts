@@ -98,7 +98,7 @@ export class SocialService {
 
         if (error) throw error;
 
-        return (data || []).map((row) => ({
+        return (data || []).map((row: any) => ({
             id: row.id,
             requesterId: row.requester_id,
             receiverId: row.receiver_id,

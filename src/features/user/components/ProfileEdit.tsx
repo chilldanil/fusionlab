@@ -10,7 +10,7 @@ import { SchematicAvatar } from '../../../shared/ui/SchematicAvatar';
 const ProfileSchema = z.object({
     fullName: z.string().min(2, 'Full name is required'),
     bio: z.string().optional(),
-    isIncognito: z.boolean().optional().default(false),
+    isIncognito: z.boolean(),
 });
 
 type ProfileFormData = z.infer<typeof ProfileSchema>;
