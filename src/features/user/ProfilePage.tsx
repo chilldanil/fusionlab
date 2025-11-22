@@ -3,12 +3,13 @@ import { useAuth } from '../../shared/context/AuthContext';
 import { ProfileView } from './components/ProfileView';
 import { ProfileEdit } from './components/ProfileEdit';
 import { Button } from '../../shared/ui/Button';
-import { LogOut, Edit2, Home, RefreshCcw, Users, Shield, Ghost } from 'lucide-react';
+import { LogOut, Edit2, Home, RefreshCcw, Users, Shield, Ghost, Search, UserPlus } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { SocialService, type FriendshipEdge } from '../social/SocialService';
 import { FriendList, type FriendListItem } from '../social/components/FriendList';
 import { ConnectButton } from '../social/components/ConnectButton';
 import { supabase } from '../../shared/config/supabase';
+import { SchematicAvatar } from '../../shared/ui/SchematicAvatar';
 
 type TabOption = 'overview' | 'network';
 
@@ -37,6 +38,11 @@ export const ProfilePage = () => {
     const [isLoadingNetwork, setIsLoadingNetwork] = useState(false);
     const [actionId, setActionId] = useState<string | null>(null);
     const [networkError, setNetworkError] = useState<string | null>(null);
+    const [discoveryQuery, setDiscoveryQuery] = useState('');
+    const [discoveryResults, setDiscoveryResults] = useState<DirectoryProfile[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [filterQuery, setFilterQuery] = useState('');
+    const [visibleConnections, setVisibleConnections] = useState(10);
 
     const xp = user?.xp ?? 0;
     const level = Math.floor(Math.sqrt(xp / 100)) + 1;
@@ -187,13 +193,12 @@ export const ProfilePage = () => {
             });
     }, [friendships, user]);
 
-    const directoryEntries: DirectoryEntry[] = useMemo(() => {
-        if (!user) return [];
-        return directory.map((profile) => {
+    const buildDirectoryEntry = useCallback(
+        (profile: DirectoryProfile): DirectoryEntry => {
             const edge = friendships.find(
                 (f) =>
-                    (f.requesterId === profile.id && f.receiverId === user.id) ||
-                    (f.receiverId === profile.id && f.requesterId === user.id)
+                    (f.requesterId === profile.id && f.receiverId === user?.id) ||
+                    (f.receiverId === profile.id && f.requesterId === user?.id)
             );
 
             let status: DirectoryEntry['status'] = 'idle';
@@ -205,23 +210,93 @@ export const ProfilePage = () => {
                     meta = 'Connected';
                 } else if (edge.status === 'pending') {
                     status = 'pending';
-                    meta = edge.receiverId === user.id ? 'Incoming request' : 'Request sent';
+                    meta = edge.receiverId === user?.id ? 'Incoming request' : 'Request sent';
                 } else if (edge.status === 'rejected') {
                     status = 'idle';
                     meta = 'Previously rejected';
                 }
             }
 
-            return {
-                ...profile,
-                status,
-                meta,
-                friendshipId: edge?.id,
-            };
-        });
-    }, [directory, friendships, user]);
+            return { ...profile, status, meta, friendshipId: edge?.id };
+        },
+        [friendships, user?.id]
+    );
+
+    const runDiscoverySearch = useCallback(
+        async (term: string) => {
+            if (!user?.id) return [];
+            const cleaned = term.trim();
+            if (cleaned.length < 2) {
+                setDiscoveryResults([]);
+                return [];
+            }
+            const isUuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+            const orFilters = [`full_name.ilike.%${cleaned}%`];
+            if (isUuid.test(cleaned)) {
+                orFilters.push(`id.eq.${cleaned}`);
+            }
+            setIsSearching(true);
+            setNetworkError(null);
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('id, full_name, role, bio, xp, is_incognito')
+                    .neq('id', user.id)
+                    .or(orFilters.join(','))
+                    .order('updated_at', { ascending: false })
+                    .limit(10);
+
+                if (error) throw error;
+
+                const mapped = (data || []).map((row) => ({
+                    id: row.id,
+                    fullName: row.full_name,
+                    role: row.role,
+                    bio: row.bio,
+                    xp: row.xp,
+                    isIncognito: row.is_incognito,
+                }));
+                setDiscoveryResults(mapped);
+                return mapped;
+            } catch (error) {
+                setNetworkError(error instanceof Error ? error.message : 'Unable to search directory.');
+                return [];
+            } finally {
+                setIsSearching(false);
+            }
+        },
+        [user?.id]
+    );
+
+    useEffect(() => {
+        const handle = setTimeout(() => {
+            if (discoveryQuery.trim().length >= 2) {
+                void runDiscoverySearch(discoveryQuery);
+            } else {
+                setDiscoveryResults([]);
+            }
+        }, 250);
+
+        return () => clearTimeout(handle);
+    }, [discoveryQuery, runDiscoverySearch]);
+
+    const discoveryEntries: DirectoryEntry[] = useMemo(() => {
+        const hasQuery = discoveryQuery.trim().length >= 2;
+        const source = hasQuery ? discoveryResults : directory.slice(0, 8);
+        return source.map(buildDirectoryEntry);
+    }, [buildDirectoryEntry, directory, discoveryQuery, discoveryResults]);
+
+    const filteredConnections = useMemo(() => {
+        const q = filterQuery.trim().toLowerCase();
+        if (!q) return acceptedFriends;
+        return acceptedFriends.filter((friend) => friend.name.toLowerCase().includes(q));
+    }, [acceptedFriends, filterQuery]);
+
+    const connectionsToShow = filteredConnections.slice(0, visibleConnections);
 
     const connectionCount = acceptedFriends.length;
+    const hasMoreConnections = filteredConnections.length > visibleConnections;
+    const pendingRequestsCount = incomingRequests.length;
 
     const switchTab = (tab: TabOption) => {
         setActiveTab(tab);
@@ -338,54 +413,141 @@ export const ProfilePage = () => {
                                 <div className="text-sm text-gray-500">Loading network...</div>
                             ) : (
                                 <div className="space-y-6">
-                                    <FriendList title="Connections" items={acceptedFriends} emptyLabel="No friends connected yet." />
-                                    <FriendList title="Incoming Requests" items={incomingRequests} emptyLabel="No incoming requests." />
-                                    <FriendList title="Outgoing Requests" items={outgoingRequests} emptyLabel="No outgoing requests." />
-                                </div>
-                            )}
-                        </div>
+                                    {pendingRequestsCount > 0 && (
+                                        <div className="border border-dashed border-amber-300 bg-amber-50 p-4">
+                                            <FriendList
+                                                title="Incoming Requests"
+                                                items={incomingRequests}
+                                                emptyLabel="No incoming requests."
+                                                variant="pending"
+                                            />
+                                        </div>
+                                    )}
 
-                        <div className="bg-white border border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6">
-                            <div className="flex items-center justify-between mb-4">
-                                <div>
-                                    <p className="text-lg font-bold">Directory</p>
-                                    <p className="text-xs text-gray-500 font-mono uppercase tracking-wider">Discover peers and connect</p>
-                                </div>
-                                <div className="flex items-center gap-2 text-xs text-gray-500 font-mono uppercase">
-                                    <Users className="w-4 h-4" />
-                                    <span>{directoryEntries.length} profiles</span>
-                                </div>
-                            </div>
-
-                            {isLoadingNetwork ? (
-                                <div className="text-sm text-gray-500">Loading profiles...</div>
-                            ) : directoryEntries.length === 0 ? (
-                                <div className="border border-dashed border-gray-200 bg-gray-50 p-4 text-sm text-gray-500">
-                                    No other profiles available yet.
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                    {directoryEntries.map((profile) => (
-                                        <div key={profile.id} className="border border-gray-200 bg-gray-50 p-4 flex flex-col gap-2">
-                                            <div className="flex items-start justify-between gap-3">
-                                                <div>
-                                                    <p className="font-semibold">{profile.fullName}</p>
-                                                    {profile.role && <p className="text-[11px] font-mono uppercase text-gray-500">{profile.role}</p>}
-                                                    {profile.bio && <p className="text-sm text-gray-600 mt-1">{profile.bio}</p>}
-                                                </div>
-                                                <ConnectButton
-                                                    status={profile.status}
-                                                    disabled={actionId === profile.id || isLoadingNetwork}
-                                                    onAdd={() => handleSendRequest(profile.id)}
+                                    <div className="border border-gray-200 bg-gray-50 p-4 space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <p className="text-sm font-semibold">Discovery</p>
+                                                <p className="text-[11px] text-gray-500 font-mono uppercase">Find new people</p>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-xs text-gray-500 font-mono uppercase">
+                                                <Users className="w-4 h-4" />
+                                                <span>{discoveryEntries.length} suggestions</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col sm:flex-row gap-2">
+                                            <div className="flex-1 relative">
+                                                <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                                                <input
+                                                    value={discoveryQuery}
+                                                    onChange={(e) => setDiscoveryQuery(e.target.value)}
+                                                    className="w-full border border-gray-300 rounded-sm p-2 pl-9 text-sm font-mono outline-none focus:border-black"
+                                                    placeholder="Enter User ID or Name to connect..."
                                                 />
                                             </div>
-                                            {profile.meta && (
-                                                <p className="text-[11px] text-gray-500 font-mono uppercase">
-                                                    {profile.meta}
-                                                </p>
+                                            <Button
+                                                onClick={async () => {
+                                                    const results = await runDiscoverySearch(discoveryQuery);
+                                                    if (results.length === 1) {
+                                                        await handleSendRequest(results[0].id);
+                                                    }
+                                                }}
+                                                disabled={discoveryQuery.trim().length < 2 || isSearching}
+                                                className="flex items-center gap-2"
+                                            >
+                                                <UserPlus className="w-4 h-4" />
+                                                {isSearching ? 'Searching...' : 'Send Request'}
+                                            </Button>
+                                        </div>
+                                        <p className="text-[11px] text-gray-500 font-mono uppercase">
+                                            Type 2+ letters to see live suggestions.
+                                        </p>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            {discoveryEntries.map((profile) => (
+                                                <div key={profile.id} className="border border-white bg-white p-3 flex flex-col gap-2 shadow-[2px_2px_0px_rgba(0,0,0,0.05)]">
+                                                    <div className="flex items-start justify-between gap-3">
+                                                        <div>
+                                                            <p className="font-semibold">{profile.fullName}</p>
+                                                            {profile.role && <p className="text-[11px] font-mono uppercase text-gray-500">{profile.role}</p>}
+                                                            {profile.bio && <p className="text-sm text-gray-600 mt-1 line-clamp-2">{profile.bio}</p>}
+                                                        </div>
+                                                        <ConnectButton
+                                                            status={profile.status}
+                                                            disabled={actionId === profile.id || isLoadingNetwork || isSearching}
+                                                            onAdd={() => handleSendRequest(profile.id)}
+                                                        />
+                                                    </div>
+                                                    {profile.meta && (
+                                                        <p className="text-[11px] text-gray-500 font-mono uppercase">
+                                                            {profile.meta}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            ))}
+                                            {discoveryEntries.length === 0 && (
+                                                <div className="border border-dashed border-gray-200 bg-gray-50 p-4 text-sm text-gray-500">
+                                                    Start typing to discover people.
+                                                </div>
                                             )}
                                         </div>
-                                    ))}
+                                    </div>
+
+                                    <div className="border border-gray-200 bg-gray-50 p-4 space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <p className="text-sm font-semibold">Connections ({filteredConnections.length})</p>
+                                                <p className="text-[11px] text-gray-500 font-mono uppercase">Filter and manage your registry</p>
+                                            </div>
+                                        </div>
+                                        <div className="relative">
+                                            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                                            <input
+                                                value={filterQuery}
+                                                onChange={(e) => {
+                                                    setFilterQuery(e.target.value);
+                                                    setVisibleConnections(10);
+                                                }}
+                                                className="w-full border border-gray-300 rounded-sm p-2 pl-9 text-sm font-mono outline-none focus:border-black"
+                                                placeholder="Filter by name..."
+                                            />
+                                        </div>
+                                        <div className="max-h-96 overflow-y-auto pr-2 space-y-3">
+                                            {connectionsToShow.length === 0 ? (
+                                                <div className="border border-dashed border-gray-200 bg-white p-4 text-sm text-gray-500">
+                                                    {filterQuery ? 'No matches found.' : 'No friends connected yet.'}
+                                                </div>
+                                            ) : (
+                                                connectionsToShow.map((item) => (
+                                                    <div key={item.id} className="border border-gray-200 bg-white p-3 flex items-center gap-3 shadow-[2px_2px_0px_rgba(0,0,0,0.05)]">
+                                                        <SchematicAvatar seed={item.id} size={48} className="border border-gray-300" />
+                                                        <div className="flex-1">
+                                                            <div className="flex items-center justify-between">
+                                                                <div>
+                                                                    <p className="font-semibold">{item.name}</p>
+                                                                    {item.role && (
+                                                                        <p className="text-[11px] font-mono uppercase text-gray-500">{item.role}</p>
+                                                                    )}
+                                                                </div>
+                                                                <span className="px-2 py-0.5 text-[11px] font-mono uppercase border border-green-200 bg-green-50 text-green-700">
+                                                                    {item.status}
+                                                                </span>
+                                                            </div>
+                                                            {item.bio && <p className="text-sm text-gray-600">{item.bio}</p>}
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                        {hasMoreConnections && (
+                                            <div className="flex justify-center">
+                                                <Button variant="outline" onClick={() => setVisibleConnections((prev) => prev + 10)}>
+                                                    Load More
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <FriendList title="Outgoing Requests" items={outgoingRequests} emptyLabel="No outgoing requests." />
                                 </div>
                             )}
                         </div>

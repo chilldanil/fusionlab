@@ -5,11 +5,6 @@ alter table public.profiles
     add column if not exists xp integer not null default 0,
     add column if not exists is_incognito boolean not null default false;
 
--- Ensure users can always read their own privacy flag
-create policy if not exists "Users can read their privacy flag."
-  on public.profiles for select
-  using (auth.uid() = id);
-
 -- Friendships table
 create table if not exists public.friendships (
     id uuid primary key default gen_random_uuid(),

@@ -17,6 +17,7 @@ interface FriendListProps {
     title: string;
     items: FriendListItem[];
     emptyLabel?: string;
+    variant?: 'default' | 'pending';
 }
 
 const statusClasses: Record<FriendshipStatus, string> = {
@@ -25,7 +26,9 @@ const statusClasses: Record<FriendshipStatus, string> = {
     rejected: 'border-red-200 bg-red-50 text-red-700',
 };
 
-export const FriendList = ({ title, items, emptyLabel = 'No connections yet.' }: FriendListProps) => {
+export const FriendList = ({ title, items, emptyLabel = 'No connections yet.', variant = 'default' }: FriendListProps) => {
+    const wrapperBorder = variant === 'pending' ? 'border-dashed border-amber-300 bg-amber-50' : 'border-gray-200 bg-white';
+
     return (
         <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -40,7 +43,10 @@ export const FriendList = ({ title, items, emptyLabel = 'No connections yet.' }:
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {items.map((item) => (
-                        <div key={item.id} className="border border-gray-200 bg-white p-4 flex gap-3 shadow-[3px_3px_0px_rgba(0,0,0,0.05)]">
+                        <div
+                            key={item.id}
+                            className={`border p-4 flex gap-3 shadow-[3px_3px_0px_rgba(0,0,0,0.05)] ${wrapperBorder}`}
+                        >
                             <SchematicAvatar seed={item.id} size={48} className="border border-gray-300" />
                             <div className="flex-1">
                                 <div className="flex items-start justify-between gap-2">
