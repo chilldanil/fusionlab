@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
 import { AuthForm } from './components/AuthForm';
+import { AnimatedCircuitBackground } from '../landing/components/AnimatedCircuitBackground';
 
 export const LoginPage = () => {
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 relative overflow-hidden">
             {/* Grid Background */}
-            <div className="absolute inset-0 z-0 pointer-events-none bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:20px_20px]" />
+            <AnimatedCircuitBackground />
 
             <div className="relative z-10 w-full max-w-md px-4">
                 <div className="mb-8 text-center">

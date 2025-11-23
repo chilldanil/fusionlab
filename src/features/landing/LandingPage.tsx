@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../shared/ui/Button';
 import { Navbar } from './components/Navbar';
+import { AnimatedCircuitBackground } from './components/AnimatedCircuitBackground';
 
 export const LandingPage = () => {
     const navigate = useNavigate();
@@ -12,8 +13,8 @@ export const LandingPage = () => {
 
     return (
         <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white overflow-hidden relative">
-            {/* Grid Background */}
-            <div className="absolute inset-0 z-0 pointer-events-none bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px]" />
+            {/* Animated Circuit Background */}
+            <AnimatedCircuitBackground />
 
             <Navbar />
 

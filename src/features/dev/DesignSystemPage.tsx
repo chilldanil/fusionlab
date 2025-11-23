@@ -1,8 +1,8 @@
-import React from 'react';
 import { Button } from '../../shared/ui/Button';
 import { SchematicAvatar } from '../../shared/ui/SchematicAvatar';
 import { EventCard } from '../events/components/EventCard';
 import { ConnectButton } from '../social/components/ConnectButton';
+import { AnimatedCircuitBackground } from '../landing/components/AnimatedCircuitBackground';
 import type { Event } from '../events/types';
 
 // --- MOCK DATA ---
@@ -31,8 +31,9 @@ const mockConfirmed: Event = {
 
 export const DesignSystemPage = () => {
     return (
-        <div className="min-h-screen bg-gray-50 p-12 font-sans text-black">
-            <div className="max-w-5xl mx-auto space-y-16">
+        <div className="min-h-screen bg-gray-50 p-12 font-sans text-black relative overflow-hidden">
+            <AnimatedCircuitBackground />
+            <div className="max-w-5xl mx-auto space-y-16 relative z-10">
 
                 {/* Header */}
                 <div>

@@ -11,6 +11,7 @@ import { ConnectButton } from '../social/components/ConnectButton';
 import { supabase } from '../../shared/config/supabase';
 import { SchematicAvatar } from '../../shared/ui/SchematicAvatar';
 import { EventsPage } from '../events/EventsPage';
+import { AnimatedCircuitBackground } from '../landing/components/AnimatedCircuitBackground';
 
 type TabOption = 'overview' | 'network' | 'events';
 
@@ -307,8 +308,8 @@ export const ProfilePage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 relative">
-            <div className="absolute inset-0 z-0 pointer-events-none bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px]" />
+        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+            <AnimatedCircuitBackground />
 
             <div className="max-w-5xl mx-auto relative z-10">
                 <div className="flex justify-between items-center mb-8">
