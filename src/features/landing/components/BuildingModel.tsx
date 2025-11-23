@@ -32,7 +32,7 @@ const Model = () => {
     useFrame((state) => {
         if (group.current) {
             // Initial rotation offset to match the desired starting view + slow rotation
-            group.current.rotation.y = 2 + state.clock.getElapsedTime() * 0.002;
+            group.current.rotation.y = 2 + state.clock.getElapsedTime() * 0.2;
         }
     });
 
