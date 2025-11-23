@@ -124,6 +124,26 @@ export const EventsService = {
         return data.map(row => row.event_id);
     },
 
+    async uploadPoster(file: File): Promise<string> {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+            .from('event-posters')
+            .upload(filePath, file);
+
+        if (uploadError) {
+            throw uploadError;
+        }
+
+        const { data } = supabase.storage
+            .from('event-posters')
+            .getPublicUrl(filePath);
+
+        return data.publicUrl;
+    },
+
     async deleteEvent(eventId: string): Promise<void> {
         const { error } = await supabase
             .from('events')

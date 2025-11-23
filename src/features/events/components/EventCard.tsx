@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Heart, Users, CheckCircle, Trash2 } from 'lucide-react';
+import { Calendar, Heart, Users, Trash2 } from 'lucide-react';
 import type { Event } from '../types';
 import { Button } from '../../../shared/ui/Button';
 import { SchematicAvatar } from '../../../shared/ui/SchematicAvatar';
@@ -44,6 +44,16 @@ export const EventCard: React.FC<EventCardProps> = ({
             animate={{ opacity: 1, y: 0 }}
             className={`group relative overflow-hidden rounded-xl border bg-white shadow-sm transition-all hover:shadow-md ${!isProposal ? 'border-l-4 border-l-black border-y-gray-200 border-r-gray-200' : 'border-gray-200'}`}
         >
+
+            {event.poster_url && (
+                <div className="relative h-48 w-full border-b border-gray-200">
+                    <img
+                        src={event.poster_url}
+                        alt={event.title}
+                        className="h-full w-full object-cover"
+                    />
+                </div>
+            )}
 
             <div className="p-5 pl-7">
                 {/* Header */}
@@ -127,11 +137,10 @@ export const EventCard: React.FC<EventCardProps> = ({
                     ) : (
                         <Button
                             variant={event.user_has_joined ? "outline" : "primary"}
-                            className="w-full gap-2 justify-center"
+                            className="w-full justify-center"
                             onClick={() => onJoin?.(event.id)}
                             disabled={isJoining || event.user_has_joined}
                         >
-                            <CheckCircle className="h-4 w-4" />
                             {event.user_has_joined ? 'RSVP Confirmed' : 'Join Event'}
                         </Button>
                     )}

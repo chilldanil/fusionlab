@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, AlertTriangle } from 'lucide-react';
 import { createEventSchema, type CreateEventFormData } from '../types';
 import { Button } from '../../../shared/ui/Button';
+import { EventsService } from '../services/EventsService';
 
 interface CreateEventDialogProps {
     isOpen: boolean;
@@ -27,10 +28,22 @@ export const CreateEventDialog: React.FC<CreateEventDialogProps> = ({
         resolver: zodResolver(createEventSchema),
     });
 
+    const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
+
     const handleFormSubmit = async (data: CreateEventFormData) => {
         try {
-            await onSubmit(data);
+            let posterUrl = data.poster_url;
+
+            if (selectedFile) {
+                posterUrl = await EventsService.uploadPoster(selectedFile);
+            }
+
+            await onSubmit({
+                ...data,
+                poster_url: posterUrl,
+            });
             reset();
+            setSelectedFile(null);
             onClose();
         } catch (error: any) {
             setError('root', {
@@ -102,6 +115,20 @@ export const CreateEventDialog: React.FC<CreateEventDialogProps> = ({
                                 {errors.description && (
                                     <p className="text-xs text-red-600 font-mono mt-1">{errors.description.message}</p>
                                 )}
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-gray-500 uppercase font-mono tracking-wider">Poster Image (Optional)</label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        if (e.target.files && e.target.files[0]) {
+                                            setSelectedFile(e.target.files[0]);
+                                        }
+                                    }}
+                                    className="w-full rounded-none border border-gray-300 bg-white px-3 py-2 text-black placeholder-gray-400 focus:border-black focus:ring-0 focus:outline-none transition-all font-mono text-sm file:mr-4 file:py-1 file:px-2 file:rounded-none file:border-0 file:text-xs file:font-mono file:bg-gray-100 file:text-black hover:file:bg-gray-200"
+                                />
                             </div>
 
                             <div className="space-y-1.5">

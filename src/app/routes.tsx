@@ -33,6 +33,8 @@ const PublicRoute = ({ children }: { children: React.ReactElement }) => {
     return children;
 };
 
+import { DesignSystemPage } from '../features/dev/DesignSystemPage';
+
 export const AppRoutes = () => {
     return (
         <Routes>
@@ -53,6 +55,7 @@ export const AppRoutes = () => {
                     </ProtectedRoute>
                 }
             />
+            <Route path="/design" element={<DesignSystemPage />} />
         </Routes>
     );
 };
