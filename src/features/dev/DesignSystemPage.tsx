@@ -1,8 +1,12 @@
+import { useEffect, useRef } from 'react';
+import '@ifc-viewer/core/styles';
+import './designSystem.css';
 import { Button } from '../../shared/ui/Button';
 import { SchematicAvatar } from '../../shared/ui/SchematicAvatar';
 import { EventCard } from '../events/components/EventCard';
 import { ConnectButton } from '../social/components/ConnectButton';
 import { AnimatedCircuitBackground } from '../landing/components/AnimatedCircuitBackground';
+import { createIFCViewer, type ViewerHandle } from '@ifc-viewer/core';
 import type { Event } from '../events/types';
 
 // --- MOCK DATA ---
@@ -27,6 +31,35 @@ const mockConfirmed: Event = {
     votes: [{ count: 15 }],
     event_date: new Date(Date.now() + 86400000 * 3).toISOString(),
     user_has_joined: true,
+};
+
+const IfcViewerPreview = () => {
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const viewerRef = useRef<ViewerHandle | null>(null);
+
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        try {
+            viewerRef.current = createIFCViewer({
+                container,
+                features: { minimap: false, measurement: false },
+            });
+
+            // Optional: load a default IFC file placed in your public folder.
+            // void viewerRef.current.loadModelFromUrl('/models/sample.ifc');
+        } catch (error) {
+            console.warn('IFC viewer preview: failed to initialize', error);
+        }
+
+        return () => {
+            viewerRef.current?.unmount();
+            viewerRef.current = null;
+        };
+    }, []);
+
+    return <div ref={containerRef} className="absolute inset-0" />;
 };
 
 export const DesignSystemPage = () => {
@@ -140,6 +173,45 @@ export const DesignSystemPage = () => {
                                 className="w-full border border-red-500 text-red-600 px-3 py-2 text-sm font-mono focus:outline-none"
                             />
                             <p className="text-xs text-red-500 font-mono mt-1">Validation error message</p>
+                        </div>
+                    </div>
+                </section>
+
+                {/* 6. Blocks */}
+                <section className="space-y-6">
+                    <h2 className="text-xl font-bold border-b border-black pb-2 mb-6">06. Blocks</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <p className="font-mono text-xs text-gray-400 uppercase">Profile Block</p>
+                            <div className="bg-white border border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6">
+                                <div className="flex items-start justify-between">
+                                    <div>
+                                        <p className="text-lg font-bold">Primary Container</p>
+                                        <p className="text-xs text-gray-500 font-mono uppercase tracking-wider">Used in Profile views and edits</p>
+                                    </div>
+                                </div>
+                                <p className="mt-4 text-sm text-gray-600">
+                                    This block uses a bold black border with an offset shadow to match the blueprint aesthetic.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="space-y-2">
+                        <p className="font-mono text-xs text-gray-400 uppercase">IFC Viewer Block</p>
+                        <div className="relative left-1/2 right-1/2 -ml-[50vw] w-screen">
+                            <div className="px-6 sm:px-12 lg:px-24">
+                                <div className="bg-white border border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col overflow-hidden min-h-[420px]">
+                                    <div className="p-4 border-b border-gray-100">
+                                        <p className="text-sm font-semibold">Embedded IFC Viewer</p>
+                                        <p className="text-[11px] text-gray-500 font-mono uppercase tracking-wider">
+                                            Renders BIM models inside the primary container
+                                        </p>
+                                    </div>
+                                <div className="relative flex-1 min-h-[480px] ifc-viewer-embed">
+                                        <IfcViewerPreview />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>

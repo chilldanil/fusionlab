@@ -1,0 +1,18 @@
+.ifc-viewer-embed {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.ifc-viewer-embed .ifc-viewer-library-container.layout {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.ifc-viewer-embed .sidebar-slot,
+.ifc-viewer-embed .sidebar-toggle {
+    position: absolute !important;
+}
+
+
