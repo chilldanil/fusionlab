@@ -62,13 +62,13 @@ export const CreateEventDialog: React.FC<CreateEventDialogProps> = ({
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/10 bg-[#0A0A0A] p-6 shadow-2xl"
+                        className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 bg-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] border-2 border-black"
                     >
-                        <div className="mb-6 flex items-center justify-between">
-                            <h2 className="text-xl font-bold text-white">Propose New Event</h2>
+                        <div className="mb-6 flex items-center justify-between border-b-2 border-black pb-4">
+                            <h2 className="text-xl font-bold text-black font-mono uppercase tracking-tight">Propose New Event</h2>
                             <button
                                 onClick={onClose}
-                                className="rounded-full p-1 text-white/50 hover:bg-white/10 hover:text-white"
+                                className="rounded-none p-1 text-black hover:bg-black hover:text-white transition-colors"
                             >
                                 <X className="h-5 w-5" />
                             </button>
@@ -76,51 +76,51 @@ export const CreateEventDialog: React.FC<CreateEventDialogProps> = ({
 
                         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
                             {errors.root && (
-                                <div className="flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">
+                                <div className="flex items-center gap-2 border border-red-500 bg-red-50 p-3 text-sm text-red-600 font-mono">
                                     <AlertCircle className="h-4 w-4" />
                                     {errors.root.message}
                                 </div>
                             )}
 
                             <div className="space-y-1.5">
-                                <label className="text-sm font-medium text-white/70">Event Title</label>
+                                <label className="text-xs font-bold text-gray-500 uppercase font-mono tracking-wider">Event Title</label>
                                 <input
                                     {...register('title')}
-                                    className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white placeholder-white/30 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                    placeholder="e.g., Community Hackathon 2024"
+                                    className="w-full rounded-none border border-gray-300 bg-transparent px-3 py-2 text-black placeholder-gray-400 focus:border-black focus:outline-none focus:ring-0 transition-all font-mono text-sm"
+                                    placeholder="E.G., COMMUNITY HACKATHON 2024"
                                 />
                                 {errors.title && (
-                                    <p className="text-xs text-red-400">{errors.title.message}</p>
+                                    <p className="text-xs text-red-600 font-mono mt-1">{errors.title.message}</p>
                                 )}
                             </div>
 
                             <div className="space-y-1.5">
-                                <label className="text-sm font-medium text-white/70">Description</label>
+                                <label className="text-xs font-bold text-gray-500 uppercase font-mono tracking-wider">Description</label>
                                 <textarea
                                     {...register('description')}
                                     rows={3}
-                                    className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white placeholder-white/30 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                    placeholder="Describe what this event is about..."
+                                    className="w-full rounded-none border border-gray-300 bg-transparent px-3 py-2 text-black placeholder-gray-400 focus:border-black focus:outline-none focus:ring-0 transition-all font-mono text-sm"
+                                    placeholder="DESCRIBE THE EVENT PARAMETERS..."
                                 />
                                 {errors.description && (
-                                    <p className="text-xs text-red-400">{errors.description.message}</p>
+                                    <p className="text-xs text-red-600 font-mono mt-1">{errors.description.message}</p>
                                 )}
                             </div>
 
                             <div className="space-y-1.5">
-                                <label className="text-sm font-medium text-white/70">Proposed Date</label>
+                                <label className="text-xs font-bold text-gray-500 uppercase font-mono tracking-wider">Proposed Date</label>
                                 <div className="relative">
                                     <input
                                         type="date"
                                         {...register('event_date', { valueAsDate: true })}
                                         min={minDateString}
-                                        className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 pl-10 text-white placeholder-white/30 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 [color-scheme:dark]"
+                                        className="w-full rounded-none border border-gray-300 bg-transparent px-3 py-2 pl-10 text-black placeholder-gray-400 focus:border-black focus:outline-none focus:ring-0 transition-all font-mono text-sm"
                                     />
-                                    <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-white/50" />
+                                    <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                                 </div>
-                                <p className="text-xs text-white/40">Must be at least 21 days in advance</p>
+                                <p className="text-[10px] text-gray-400 font-mono uppercase tracking-wider">Must be at least 21 days in advance</p>
                                 {errors.event_date && (
-                                    <p className="text-xs text-red-400">{errors.event_date.message}</p>
+                                    <p className="text-xs text-red-600 font-mono mt-1">{errors.event_date.message}</p>
                                 )}
                             </div>
 

@@ -42,16 +42,14 @@ export const EventCard: React.FC<EventCardProps> = ({
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:border-black hover:shadow-md"
+            className={`group relative overflow-hidden rounded-xl border bg-white shadow-sm transition-all hover:shadow-md ${!isProposal ? 'border-l-4 border-l-black border-y-gray-200 border-r-gray-200' : 'border-gray-200'}`}
         >
-            {/* Status Stripe */}
-            <div className={`absolute left-0 top-0 h-full w-1 ${isProposal ? 'bg-yellow-400' : 'bg-green-500'}`} />
 
             <div className="p-5 pl-7">
                 {/* Header */}
                 <div className="mb-4 flex items-start justify-between">
                     <div>
-                        <h3 className="text-lg font-bold text-black group-hover:text-blue-600 transition-colors">
+                        <h3 className="text-lg font-bold text-black transition-colors font-mono">
                             {event.title}
                         </h3>
                         <div className="mt-1 flex items-center gap-2 text-xs text-gray-500">
@@ -60,11 +58,11 @@ export const EventCard: React.FC<EventCardProps> = ({
                         </div>
                     </div>
                     <div className="flex flex-col items-end gap-1">
-                        <span className={`text-xs font-mono px-2 py-0.5 rounded-full border ${isProposal
-                                ? 'border-yellow-200 text-yellow-700 bg-yellow-50'
-                                : 'border-green-200 text-green-700 bg-green-50'
+                        <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 ${isProposal
+                            ? 'border border-dashed border-gray-400 text-gray-500 bg-transparent'
+                            : 'bg-black text-white border border-black'
                             }`}>
-                            {event.status.toUpperCase()}
+                            {event.status}
                         </span>
                         {isOwner && (
                             <button
@@ -101,26 +99,28 @@ export const EventCard: React.FC<EventCardProps> = ({
                 <div className="flex items-center justify-between gap-4 border-t border-gray-100 pt-4">
                     {isProposal ? (
                         <div className="w-full">
-                            <div className="mb-2 flex justify-between text-xs">
-                                <span className="text-gray-500">Progress to Official</span>
-                                <span className="text-blue-600">{Math.round(progress)}%</span>
-                            </div>
-                            <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
-                                <motion.div
-                                    initial={{ width: 0 }}
-                                    animate={{ width: `${progress}%` }}
-                                    className="absolute h-full bg-blue-600"
-                                />
-                            </div>
-                            <div className="mt-4">
+                            <div className="flex items-end gap-3">
+                                <div className="flex-1 space-y-1">
+                                    <div className="flex justify-between text-[10px] font-mono uppercase text-gray-500">
+                                        <span>Progress to Official</span>
+                                        <span>{Math.round(progress)}%</span>
+                                    </div>
+                                    <div className="relative h-1.5 w-full overflow-hidden bg-gray-100">
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${progress}%` }}
+                                            className="absolute h-full bg-black"
+                                        />
+                                    </div>
+                                </div>
                                 <Button
-                                    variant={event.user_has_voted ? "outline" : "primary"}
-                                    className="w-full gap-2 justify-center"
+                                    variant="outline"
+                                    className={`h-8 w-8 p-0 flex items-center justify-center border-black hover:bg-gray-100 ${event.user_has_voted ? 'bg-black text-white hover:bg-black/90' : 'text-black'}`}
                                     onClick={() => onVote?.(event.id)}
                                     disabled={isVoting}
+                                    title={event.user_has_voted ? 'Voted' : 'Vote for this event'}
                                 >
-                                    <Heart className={`h-4 w-4 ${event.user_has_voted ? 'fill-current text-red-500 border-red-500' : ''}`} />
-                                    {event.user_has_voted ? 'Voted' : 'Vote'}
+                                    <Heart className={`h-3.5 w-3.5 ${event.user_has_voted ? 'fill-white text-white' : ''}`} />
                                 </Button>
                             </div>
                         </div>

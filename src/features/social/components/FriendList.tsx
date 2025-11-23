@@ -21,13 +21,13 @@ interface FriendListProps {
 }
 
 const statusClasses: Record<FriendshipStatus, string> = {
-    accepted: 'border-green-200 bg-green-50 text-green-700',
-    pending: 'border-amber-200 bg-amber-50 text-amber-700',
-    rejected: 'border-red-200 bg-red-50 text-red-700',
+    accepted: 'bg-gray-100 text-gray-600 border border-gray-200',
+    pending: 'border border-black border-dashed text-black bg-transparent',
+    rejected: 'border border-red-200 bg-red-50 text-red-700',
 };
 
 export const FriendList = ({ title, items, emptyLabel = 'No connections yet.', variant = 'default' }: FriendListProps) => {
-    const wrapperBorder = variant === 'pending' ? 'border-dashed border-amber-300 bg-amber-50' : 'border-gray-200 bg-white';
+    const wrapperBorder = variant === 'pending' ? 'border-dashed border-black bg-transparent' : 'border-gray-200 bg-white';
 
     return (
         <div className="space-y-3">

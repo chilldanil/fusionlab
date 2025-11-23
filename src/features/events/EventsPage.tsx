@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Vote, Calendar as CalendarIcon } from 'lucide-react';
+import { Vote, Calendar as CalendarIcon } from 'lucide-react';
 import { useAuth } from '../../shared/context/AuthContext';
 import { EventsService } from './services/EventsService';
 import type { Event, CreateEventFormData } from './types';
@@ -119,12 +119,11 @@ export const EventsPage: React.FC = () => {
                         </p>
                     </div>
                     <Button
-                        variant="primary"
-                        className="gap-2"
+                        variant="outline"
+                        className="flex items-center gap-2 border-black hover:bg-black hover:text-white transition-colors whitespace-nowrap"
                         onClick={() => setIsCreateDialogOpen(true)}
                     >
-                        <Plus className="h-4 w-4" />
-                        New Proposal
+                        Create Event
                     </Button>
                 </div>
 
