@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../../shared/ui/Button';
 import { Navbar } from './components/Navbar';
 import { AnimatedCircuitBackground } from './components/AnimatedCircuitBackground';
+import { BuildingModel } from './components/BuildingModel';
 
 export const LandingPage = () => {
     const navigate = useNavigate();
@@ -52,18 +53,13 @@ export const LandingPage = () => {
                     </div>
                 </motion.div>
 
-                {/* Abstract Decorative Elements */}
+                {/* 3D Model Section */}
                 <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5, duration: 1 }}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 w-1/3 h-1/2 hidden lg:block pointer-events-none"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}                    transition={{ delay: 0.3, duration: 1 }}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 w-1/2 h-[80vh] hidden lg:block"
                 >
-                    <div className="w-full h-full border border-gray-100 relative">
-                        <div className="absolute top-0 right-0 w-20 h-20 border-b border-l border-gray-200" />
-                        <div className="absolute bottom-0 left-0 w-32 h-32 border-t border-r border-gray-200" />
-                        <div className="absolute inset-10 border border-dashed border-gray-100 rounded-full opacity-50" />
-                    </div>
+                    <BuildingModel />
                 </motion.div>
             </main>
         </div>
