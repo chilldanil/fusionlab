@@ -10,8 +10,9 @@ import { FriendList, type FriendListItem } from '../social/components/FriendList
 import { ConnectButton } from '../social/components/ConnectButton';
 import { supabase } from '../../shared/config/supabase';
 import { SchematicAvatar } from '../../shared/ui/SchematicAvatar';
+import { EventsPage } from '../events/EventsPage';
 
-type TabOption = 'overview' | 'network';
+type TabOption = 'overview' | 'network' | 'events';
 
 interface DirectoryProfile {
     id: string;
@@ -381,9 +382,17 @@ export const ProfilePage = () => {
                     >
                         Network
                     </button>
+                    <button
+                        onClick={() => switchTab('events')}
+                        className={`pb-3 px-1 text-sm font-semibold uppercase tracking-wider ${activeTab === 'events' ? 'border-b-2 border-black text-black' : 'text-gray-500'}`}
+                    >
+                        Events
+                    </button>
                 </div>
 
-                {activeTab === 'overview' ? (
+                {activeTab === 'events' ? (
+                    <EventsPage />
+                ) : activeTab === 'overview' ? (
                     isEditing ? (
                         <ProfileEdit onCancel={() => setIsEditing(false)} onSave={() => setIsEditing(false)} />
                     ) : (
