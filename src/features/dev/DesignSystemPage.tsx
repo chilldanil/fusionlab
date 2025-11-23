@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import '@ifc-viewer/core/styles';
 import './designSystem.css';
 import { Button } from '../../shared/ui/Button';
@@ -33,6 +33,63 @@ const mockConfirmed: Event = {
     user_has_joined: true,
 };
 
+const viewerTheme: Record<string, string> = {
+    '--sidebar-bg': '#f7f7f3',
+    '--sidebar-surface': '#ffffff',
+    '--sidebar-surface-muted': '#f1f1ed',
+    '--sidebar-surface-hover': '#ecece7',
+    '--sidebar-border': 'rgba(0, 0, 0, 0.12)',
+    '--sidebar-border-strong': 'rgba(0, 0, 0, 0.4)',
+    '--sidebar-divider': 'rgba(0, 0, 0, 0.16)',
+    '--sidebar-text': '#000000',
+    '--sidebar-text-muted': '#000000',
+    '--sidebar-text-subtle': '#000000',
+    '--sidebar-accent': '#000000',
+    '--sidebar-accent-soft': 'rgba(0, 0, 0, 0.06)',
+    '--sidebar-accent-strong': 'rgba(0, 0, 0, 0.35)',
+    '--sidebar-danger': '#c1121f',
+    '--sidebar-warning': '#d97706',
+    '--sidebar-success': '#0f8f5d',
+    '--sidebar-info': '#1f6feb',
+    '--sidebar-radius': '0px',
+    '--sidebar-control-height': '38px',
+    '--sidebar-control-bg': '#ffffff',
+    '--sidebar-control-hover': '#000000',
+    '--ifc-surface': '#ffffff',
+    '--ifc-surface-hover': '#f3f3ef',
+    '--ifc-surface-border': 'rgba(0, 0, 0, 0.12)',
+    '--ifc-text-primary': '#000000',
+    '--ifc-text-muted': '#000000',
+    '--ifc-accent': '#000000',
+    '--ifc-background': '#f6f6f3',
+};
+
+type FeatureFont = 'mono' | 'sans';
+
+const featureFontFamilies: Record<FeatureFont, string> = {
+    mono: '"IBM Plex Mono", "Space Mono", monospace',
+    sans: '"Inter", "Space Grotesk", sans-serif',
+};
+
+const viewerFeatureList = [
+    { title: 'Relations Tree', description: 'Traverse the full IFC hierarchy to focus on the systems you care about.' },
+    { title: 'Visibility Controls', description: 'Toggle categories, disciplines, or saved sets without touching raw IFC data.' },
+    { title: 'Element Colors', description: 'Apply semantic palettes to highlight statuses, clashes, or ownership.' },
+    { title: 'Render Modes', description: 'Swap between shaded, wireframe, and x-ray presets to inspect complex assemblies.' },
+    { title: 'Camera', description: 'Lock to preset views or orbit freely with smooth easing for demos.' },
+    { title: 'Floor Plan View', description: 'Slice per-level orthographic planes for precise spatial coordination.' },
+    { title: 'Measurement Tools', description: 'Capture ad-hoc lengths, areas, and volumes with contextual readouts.' },
+    { title: 'Performance', description: 'Monitor FPS, triangles, and GPU timings to keep heavy models responsive.' },
+    { title: 'View Cube', description: 'Jump to canonical orientations instantly during reviews.' },
+    { title: 'Screenshot', description: 'Export annotated viewport snapshots for async updates.' },
+    { title: 'Minimap', description: 'Retain spatial awareness inside megaprojects with a persistent locator.' },
+    { title: 'Clipping', description: 'Layer boolean planes to expose interiors without duplicating files.' },
+    { title: 'Model Transform', description: 'Reposition, rotate, or scale references when federating packages.' },
+    { title: 'Element Properties (Editable)', description: 'Inspect and edit metadata inline with immediate syncing.' },
+    { title: 'Export Modified IFC', description: 'Capture deltas and generate clean IFCs for downstream teams.' },
+    { title: 'AI Visualizer', description: 'Blend procedural renders with natural-language prompts for ideation.' },
+];
+
 const IfcViewerPreview = () => {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const viewerRef = useRef<ViewerHandle | null>(null);
@@ -44,11 +101,30 @@ const IfcViewerPreview = () => {
         try {
             viewerRef.current = createIFCViewer({
                 container,
-                features: { minimap: false, measurement: false },
+                theme: viewerTheme,
+                features: {
+                    minimap: false,
+                    measurement: false,
+                    clipping: false,
+                    floorplans: false,
+                },
             });
 
-            // Optional: load a default IFC file placed in your public folder.
-            // void viewerRef.current.loadModelFromUrl('/models/sample.ifc');
+            const loadDefaultModel = async () => {
+                try {
+                    const response = await fetch('/small-modified.ifc');
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch IFC: ${response.status}`);
+                    }
+                    const blob = await response.blob();
+                    const file = new File([blob], 'small-modified.ifc', { type: 'model/ifc' });
+                    await viewerRef.current?.loadModelFromFile(file);
+                } catch (modelError) {
+                    console.warn('IFC viewer preview: failed to load default model', modelError);
+                }
+            };
+
+            void loadDefaultModel();
         } catch (error) {
             console.warn('IFC viewer preview: failed to initialize', error);
         }
@@ -63,6 +139,10 @@ const IfcViewerPreview = () => {
 };
 
 export const DesignSystemPage = () => {
+    const [featureAccent, setFeatureAccent] = useState('#050505');
+    const [featureFont, setFeatureFont] = useState<FeatureFont>('mono');
+    const currentFontFamily = featureFontFamilies[featureFont];
+
     return (
         <div className="min-h-screen bg-gray-50 p-12 font-sans text-black relative overflow-hidden">
             <AnimatedCircuitBackground />
@@ -213,6 +293,55 @@ export const DesignSystemPage = () => {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </section>
+
+                {/* 7. IFC Viewer Controls */}
+                <section className="space-y-6">
+                    <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+                        <h2 className="text-xl font-bold border-b border-black pb-2 lg:border-none lg:pb-0 mb-0">07. IFC Viewer Controls</h2>
+                        <div className="viewer-feature-controls">
+                            <label className="viewer-feature-control">
+                                <span>Font Color</span>
+                                <input
+                                    type="color"
+                                    value={featureAccent}
+                                    onChange={(event) => setFeatureAccent(event.target.value)}
+                                    aria-label="Select font color"
+                                />
+                                <span className="viewer-feature-control-value">{featureAccent.toUpperCase()}</span>
+                            </label>
+                            <div className="viewer-font-toggle" role="group" aria-label="Font style toggle">
+                                {(['mono', 'sans'] as const).map((option) => (
+                                    <button
+                                        key={option}
+                                        type="button"
+                                        className={`viewer-font-toggle__btn ${featureFont === option ? 'is-active' : ''}`}
+                                        onClick={() => setFeatureFont(option)}
+                                    >
+                                        {option === 'mono' ? 'Mono' : 'Sans'}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="viewer-feature-grid">
+                        {viewerFeatureList.map((feature) => (
+                            <article
+                                key={feature.title}
+                                className="viewer-feature-card"
+                                style={{ borderColor: featureAccent }}
+                            >
+                                <p
+                                    className="viewer-feature-title"
+                                    style={{ color: featureAccent, fontFamily: currentFontFamily }}
+                                >
+                                    {feature.title}
+                                </p>
+                                <p className="viewer-feature-description">{feature.description}</p>
+                            </article>
+                        ))}
                     </div>
                 </section>
 
