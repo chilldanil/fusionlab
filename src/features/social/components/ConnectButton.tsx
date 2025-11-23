@@ -13,9 +13,9 @@ const labels: Record<ConnectState, string> = {
 };
 
 const styles: Record<ConnectState, string> = {
-    idle: 'bg-black text-white hover:bg-gray-800 border border-transparent',
-    pending: 'bg-amber-50 text-amber-700 border border-amber-200 cursor-not-allowed',
-    connected: 'bg-green-50 text-green-700 border border-green-200 cursor-not-allowed',
+    idle: 'bg-black text-white hover:bg-gray-800 border border-black',
+    pending: 'bg-transparent text-gray-500 border border-dashed border-gray-400 cursor-not-allowed',
+    connected: 'bg-gray-100 text-gray-800 border border-gray-200 font-medium cursor-default',
 };
 
 export const ConnectButton = ({ status, onAdd, disabled }: ConnectButtonProps) => {

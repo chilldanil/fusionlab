@@ -23,7 +23,7 @@ interface FriendListProps {
 const statusClasses: Record<FriendshipStatus, string> = {
     accepted: 'bg-gray-100 text-gray-600 border border-gray-200',
     pending: 'border border-black border-dashed text-black bg-transparent',
-    rejected: 'border border-red-200 bg-red-50 text-red-700',
+    rejected: 'border border-gray-300 bg-gray-50 text-gray-400 line-through decoration-gray-400',
 };
 
 export const FriendList = ({ title, items, emptyLabel = 'No connections yet.', variant = 'default' }: FriendListProps) => {

@@ -2,7 +2,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, AlertCircle } from 'lucide-react';
+import { X, Calendar, AlertTriangle } from 'lucide-react';
 import { createEventSchema, type CreateEventFormData } from '../types';
 import { Button } from '../../../shared/ui/Button';
 
@@ -39,7 +39,7 @@ export const CreateEventDialog: React.FC<CreateEventDialogProps> = ({
         }
     };
 
-    // Calculate min date for the date picker (21 days from now)
+    // Calculate min date (21 days from now)
     const minDate = new Date();
     minDate.setDate(minDate.getDate() + 21);
     const minDateString = minDate.toISOString().split('T')[0];
@@ -48,16 +48,13 @@ export const CreateEventDialog: React.FC<CreateEventDialogProps> = ({
         <AnimatePresence>
             {isOpen && (
                 <>
-                    {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm"
+                        className="fixed inset-0 z-50 bg-white/80 backdrop-blur-sm"
                     />
-
-                    {/* Dialog */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -74,11 +71,11 @@ export const CreateEventDialog: React.FC<CreateEventDialogProps> = ({
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+                        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5">
                             {errors.root && (
-                                <div className="flex items-center gap-2 border border-red-500 bg-red-50 p-3 text-sm text-red-600 font-mono">
-                                    <AlertCircle className="h-4 w-4" />
-                                    {errors.root.message}
+                                <div className="flex items-start gap-3 border border-red-600 bg-white p-3 text-sm text-red-600 font-mono">
+                                    <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                                    <div className="flex-1 leading-tight">{errors.root.message}</div>
                                 </div>
                             )}
 
@@ -86,7 +83,7 @@ export const CreateEventDialog: React.FC<CreateEventDialogProps> = ({
                                 <label className="text-xs font-bold text-gray-500 uppercase font-mono tracking-wider">Event Title</label>
                                 <input
                                     {...register('title')}
-                                    className="w-full rounded-none border border-gray-300 bg-transparent px-3 py-2 text-black placeholder-gray-400 focus:border-black focus:outline-none focus:ring-0 transition-all font-mono text-sm"
+                                    className="w-full rounded-none border border-gray-300 bg-white px-3 py-2 text-black placeholder-gray-400 focus:border-black focus:ring-0 focus:outline-none transition-all font-mono text-sm"
                                     placeholder="E.G., COMMUNITY HACKATHON 2024"
                                 />
                                 {errors.title && (
@@ -99,7 +96,7 @@ export const CreateEventDialog: React.FC<CreateEventDialogProps> = ({
                                 <textarea
                                     {...register('description')}
                                     rows={3}
-                                    className="w-full rounded-none border border-gray-300 bg-transparent px-3 py-2 text-black placeholder-gray-400 focus:border-black focus:outline-none focus:ring-0 transition-all font-mono text-sm"
+                                    className="w-full rounded-none border border-gray-300 bg-white px-3 py-2 text-black placeholder-gray-400 focus:border-black focus:ring-0 focus:outline-none transition-all font-mono text-sm"
                                     placeholder="DESCRIBE THE EVENT PARAMETERS..."
                                 />
                                 {errors.description && (
@@ -114,23 +111,19 @@ export const CreateEventDialog: React.FC<CreateEventDialogProps> = ({
                                         type="date"
                                         {...register('event_date', { valueAsDate: true })}
                                         min={minDateString}
-                                        className="w-full rounded-none border border-gray-300 bg-transparent px-3 py-2 pl-10 text-black placeholder-gray-400 focus:border-black focus:outline-none focus:ring-0 transition-all font-mono text-sm"
+                                        className="w-full rounded-none border border-gray-300 bg-white px-3 py-2 pl-10 text-black placeholder-gray-400 focus:border-black focus:ring-0 focus:outline-none transition-all font-mono text-sm uppercase"
                                     />
-                                    <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                                    <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-gray-400 pointer-events-none" />
                                 </div>
-                                <p className="text-[10px] text-gray-400 font-mono uppercase tracking-wider">Must be at least 21 days in advance</p>
+                                <p className="text-[10px] text-gray-400 font-mono uppercase tracking-wider">Minimum 21 days notice required</p>
                                 {errors.event_date && (
                                     <p className="text-xs text-red-600 font-mono mt-1">{errors.event_date.message}</p>
                                 )}
                             </div>
 
-                            <div className="pt-4">
-                                <Button
-                                    type="submit"
-                                    variant="primary"
-                                    className="w-full justify-center"
-                                    disabled={isSubmitting}
-                                >
+                            <div className="pt-4 flex justify-end gap-3">
+                                <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+                                <Button type="submit" disabled={isSubmitting}>
                                     {isSubmitting ? 'Submitting...' : 'Submit Proposal'}
                                 </Button>
                             </div>

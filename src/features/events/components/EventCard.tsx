@@ -115,12 +115,12 @@ export const EventCard: React.FC<EventCardProps> = ({
                                 </div>
                                 <Button
                                     variant="outline"
-                                    className={`h-8 w-8 p-0 flex items-center justify-center border-black hover:bg-gray-100 ${event.user_has_voted ? 'bg-black text-white hover:bg-black/90' : 'text-black'}`}
+                                    className={`h-9 w-9 p-0 flex items-center justify-center border-black hover:bg-gray-100 ${event.user_has_voted ? 'bg-black text-white hover:bg-black/90' : 'text-black'}`}
                                     onClick={() => onVote?.(event.id)}
                                     disabled={isVoting}
                                     title={event.user_has_voted ? 'Voted' : 'Vote for this event'}
                                 >
-                                    <Heart className={`h-3.5 w-3.5 ${event.user_has_voted ? 'fill-white text-white' : ''}`} />
+                                    <Heart className={`h-4 w-4 ${event.user_has_voted ? 'fill-white text-white' : ''}`} />
                                 </Button>
                             </div>
                         </div>
