@@ -800,32 +800,32 @@ bim-label {
 }
 
 .ifc-viewer-embed ::-webkit-scrollbar-thumb {
-    background: rgba(10, 10, 10, 0.3);
+    background: #000000;
     border-radius: 6px;
     border: 2px solid transparent;
     background-clip: padding-box;
 }
 
 .ifc-viewer-embed ::-webkit-scrollbar-thumb:hover {
-    background: rgba(10, 10, 10, 0.5);
+    background: #000000;
     background-clip: padding-box;
 }
 
 .ifc-viewer-embed ::-webkit-scrollbar-thumb:active {
-    background: rgba(10, 10, 10, 0.7);
+    background: #000000;
     background-clip: padding-box;
 }
 
 /* Firefox scrollbar */
 .ifc-viewer-embed * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(10, 10, 10, 0.3) transparent;
+    scrollbar-color: #000000 transparent;
 }
 
 .ifc-viewer-embed .sidebar,
 .ifc-viewer-embed .sidebar * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(10, 10, 10, 0.3) transparent;
+    scrollbar-color: #000000 transparent;
 }
 
 /* Floor Plan View buttons - match Model Tree style exactly */

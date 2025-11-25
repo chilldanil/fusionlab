@@ -93,49 +93,99 @@ const viewerFeatureList = [
 const IfcViewerPreview = () => {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const viewerRef = useRef<ViewerHandle | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const container = containerRef.current;
         if (!container) return;
 
+        // Check if viewer already exists
+        if (viewerRef.current) return;
+
+        // Set the base path for web-ifc WASM files
+        if (typeof window !== 'undefined') {
+            (window as any).WEB_IFC_BASE_PATH = window.location.origin + '/';
+        }
+
         try {
-            viewerRef.current = createIFCViewer({
+            const viewer = createIFCViewer({
                 container,
                 theme: viewerTheme,
+                // NEW: Use appearance API for better control
+                appearance: {
+                    world: {
+                        backgroundColor: '#ffffff',
+                        // Increase ambient light for overall brightness
+                        ambientLightColor: '#ffffff',
+                        ambientLightIntensity: 0.8, // Higher value = brighter (0.0 to 1.0)
+                        // Directional light for shadows and definition
+                        directionalLightColor: '#ffffff',
+                        directionalLightIntensity: 1.2, // Boost directional light intensity
+                        directionalLightPosition: [20, 35, 10],
+                    },
+                    grid: {
+                        enabled: true,
+                        color: '#000000',
+                        primarySize: 5,
+                        secondarySize: 1,
+                        distance: 200,
+                    },
+                    viewCube: {
+                        faceColor: 0xffffff,
+                        hoverColor: 0xf3f3ef,
+                        outlineColor: 0x000000,
+                        hoverHighlightColor: 0x000000,
+                        labelColor: '#000000',
+                        labelBackground: 'rgba(255, 255, 255, 0.98)',
+                        labelBorderColor: 'rgba(0, 0, 0, 0.18)',
+                        labelFont: '"IBM Plex Mono", "Space Mono", monospace',
+                    },
+                },
                 features: {
                     minimap: false,
                     measurement: false,
-                    clipping: false,
-                    floorplans: false,
+                    clipping: true,
+                    floorplans: true,
+                    aiVisualizer: false,
                 },
             });
-
-            const loadDefaultModel = async () => {
-                try {
-                    const response = await fetch('/small-modified.ifc');
-                    if (!response.ok) {
-                        throw new Error(`Failed to fetch IFC: ${response.status}`);
-                    }
-                    const blob = await response.blob();
-                    const file = new File([blob], 'small-modified.ifc', { type: 'model/ifc' });
-                    await viewerRef.current?.loadModelFromFile(file);
-                } catch (modelError) {
-                    console.warn('IFC viewer preview: failed to load default model', modelError);
-                }
-            };
-
-            void loadDefaultModel();
+            viewerRef.current = viewer;
         } catch (error) {
-            console.warn('IFC viewer preview: failed to initialize', error);
+            console.error('Failed to initialize IFC viewer:', error);
         }
 
-        return () => {
-            viewerRef.current?.unmount();
-            viewerRef.current = null;
-        };
+        // Don't clean up the viewer - keep it alive
+        return undefined;
     }, []);
 
-    return <div ref={containerRef} className="absolute inset-0" />;
+    const handleLoadModel = async () => {
+        if (!viewerRef.current) {
+            console.error('Viewer not initialized');
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            await viewerRef.current.loadModelFromUrl('/small-modified.ifc');
+        } catch (error) {
+            console.error('Failed to load model:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <>
+            <div ref={containerRef} className="absolute inset-0" />
+            <button
+                onClick={handleLoadModel}
+                disabled={isLoading}
+                className="absolute top-4 right-4 px-4 py-2 bg-white border border-black text-sm font-mono font-semibold hover:bg-black hover:!text-white transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] z-10 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                {isLoading ? 'Loading...' : 'Load HV Model'}
+            </button>
+        </>
+    );
 };
 
 export const DesignSystemPage = () => {
@@ -280,14 +330,14 @@ export const DesignSystemPage = () => {
                         <p className="font-mono text-xs text-gray-400 uppercase">IFC Viewer Block</p>
                         <div className="relative left-1/2 right-1/2 -ml-[50vw] w-screen">
                             <div className="px-6 sm:px-12 lg:px-24">
-                                <div className="bg-white border border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col overflow-hidden min-h-[420px]">
+                                <div className="bg-white border border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col overflow-hidden min-h-[600px]">
                                     <div className="p-4 border-b border-gray-100">
                                         <p className="text-sm font-semibold">Embedded IFC Viewer</p>
                                         <p className="text-[11px] text-gray-500 font-mono uppercase tracking-wider">
                                             Renders BIM models inside the primary container
                                         </p>
                                     </div>
-                                <div className="relative flex-1 min-h-[480px] ifc-viewer-embed">
+                                <div className="relative flex-1 min-h-[700px] ifc-viewer-embed">
                                         <IfcViewerPreview />
                                     </div>
                                 </div>
