@@ -10,8 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ifc-viewer/core": "0.1.5",
     "@hookform/resolvers": "^5.2.2",
+    "@ifc-viewer/core": "^0.2.2",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.4.0",
     "@supabase/supabase-js": "^2.84.0",

@@ -11,9 +11,10 @@ import { ConnectButton } from '../social/components/ConnectButton';
 import { supabase } from '../../shared/config/supabase';
 import { SchematicAvatar } from '../../shared/ui/SchematicAvatar';
 import { EventsPage } from '../events/EventsPage';
+import { ComplaintsPage } from '../complaints/ComplaintsPage';
 import { AnimatedCircuitBackground } from '../landing/components/AnimatedCircuitBackground';
 
-type TabOption = 'overview' | 'network' | 'events';
+type TabOption = 'overview' | 'network' | 'events' | 'complaints';
 
 interface DirectoryProfile {
     id: string;
@@ -389,10 +390,18 @@ export const ProfilePage = () => {
                     >
                         Events
                     </button>
+                    <button
+                        onClick={() => switchTab('complaints')}
+                        className={`pb-3 px-1 text-sm font-semibold uppercase tracking-wider ${activeTab === 'complaints' ? 'border-b-2 border-black text-black' : 'text-gray-500'}`}
+                    >
+                        Complaints
+                    </button>
                 </div>
 
                 {activeTab === 'events' ? (
                     <EventsPage />
+                ) : activeTab === 'complaints' ? (
+                    <ComplaintsPage />
                 ) : activeTab === 'overview' ? (
                     isEditing ? (
                         <ProfileEdit onCancel={() => setIsEditing(false)} onSave={() => setIsEditing(false)} />
