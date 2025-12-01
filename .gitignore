@@ -28,3 +28,7 @@ MAINPROMPT.MD
 .gemini/
 .agent/
 haus.glb
+
+# WebAssembly binaries and workers (should come from node_modules)
+*.wasm
+*.worker.js

@@ -800,32 +800,32 @@ bim-label {
 }
 
 .ifc-viewer-embed ::-webkit-scrollbar-thumb {
-    background: #000000;
+    background: rgba(10, 10, 10, 0.3);
     border-radius: 6px;
     border: 2px solid transparent;
     background-clip: padding-box;
 }
 
 .ifc-viewer-embed ::-webkit-scrollbar-thumb:hover {
-    background: #000000;
+    background: rgba(10, 10, 10, 0.5);
     background-clip: padding-box;
 }
 
 .ifc-viewer-embed ::-webkit-scrollbar-thumb:active {
-    background: #000000;
+    background: rgba(10, 10, 10, 0.7);
     background-clip: padding-box;
 }
 
 /* Firefox scrollbar */
 .ifc-viewer-embed * {
     scrollbar-width: thin;
-    scrollbar-color: #000000 transparent;
+    scrollbar-color: rgba(10, 10, 10, 0.3) transparent;
 }
 
 .ifc-viewer-embed .sidebar,
 .ifc-viewer-embed .sidebar * {
     scrollbar-width: thin;
-    scrollbar-color: #000000 transparent;
+    scrollbar-color: rgba(10, 10, 10, 0.3) transparent;
 }
 
 /* Floor Plan View buttons - match Model Tree style exactly */
@@ -1033,4 +1033,25 @@ bim-label {
     color: #000000 !important;
     font-weight: 700 !important;
     border-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Hide all panels except Relations Tree and Visibility Controls */
+/* Hide panels by their index - Relations Tree (1st) and Visibility Controls (2nd) should remain */
+.ifc-viewer-embed .sidebar bim-panel-section:nth-child(n+3),
+.ifc-viewer-library-container .sidebar bim-panel-section:nth-child(n+3) {
+    display: none !important;
+}
+
+/* If the above doesn't work, hide by checking if panel contains specific keywords */
+.ifc-viewer-embed bim-panel-section:has(*:contains("Element Colors")),
+.ifc-viewer-embed bim-panel-section:has(*:contains("Render Modes")),
+.ifc-viewer-embed bim-panel-section:has(*:contains("Camera")),
+.ifc-viewer-embed bim-panel-section:has(*:contains("Performance")),
+.ifc-viewer-embed bim-panel-section:has(*:contains("View Cube")),
+.ifc-viewer-library-container bim-panel-section:has(*:contains("Element Colors")),
+.ifc-viewer-library-container bim-panel-section:has(*:contains("Render Modes")),
+.ifc-viewer-library-container bim-panel-section:has(*:contains("Camera")),
+.ifc-viewer-library-container bim-panel-section:has(*:contains("Performance")),
+.ifc-viewer-library-container bim-panel-section:has(*:contains("View Cube")) {
+    display: none !important;
 }

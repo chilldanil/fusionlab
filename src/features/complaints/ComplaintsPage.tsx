@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import '@ifc-viewer/core/styles';
 import '../dev/designSystem.css';
-import { createIFCViewer, type ViewerHandle } from '@ifc-viewer/core';
+import {
+    createIFCViewer,
+    type ViewerHandle,
+    type ElementSelectionDetails,
+    getElementCode
+} from '@ifc-viewer/core';
 
 const viewerTheme: Record<string, string> = {
     '--sidebar-bg': '#f7f7f3',
@@ -34,7 +39,12 @@ const viewerTheme: Record<string, string> = {
     '--ifc-background': '#f6f6f3',
 };
 
-const IfcViewerPreview = () => {
+interface IfcViewerPreviewProps {
+    onElementSelect?: (elementInfo: string, details: ElementSelectionDetails) => void;
+    onScreenshot?: (screenshot: string) => void;
+}
+
+const IfcViewerPreview = ({ onElementSelect, onScreenshot }: IfcViewerPreviewProps) => {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const viewerRef = useRef<ViewerHandle | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -43,10 +53,8 @@ const IfcViewerPreview = () => {
         const container = containerRef.current;
         if (!container) return;
 
-        // Check if viewer already exists
         if (viewerRef.current) return;
 
-        // Set the base path for web-ifc WASM files
         if (typeof window !== 'undefined') {
             (window as any).WEB_IFC_BASE_PATH = window.location.origin + '/';
         }
@@ -89,15 +97,46 @@ const IfcViewerPreview = () => {
                     floorplans: true,
                     aiVisualizer: false,
                 },
+                // v0.2.5: Callback fires twice - first immediately, then with details
+                onObjectSelected: async (selection) => {
+                    // Access detailed element information from the new API
+                    const elementDetails = (selection as any)._primaryElement as ElementSelectionDetails;
+
+                    if (elementDetails) {
+                        // Second call: Enhanced data available
+                        console.log('🎯 Element details loaded:', elementDetails);
+
+                        // Use helper directly
+                        const itemCode = getElementCode(elementDetails);
+                        const name = elementDetails.name || 'Unnamed';
+                        const type = elementDetails.type || 'Unknown';
+                        const info = `${itemCode} (${type} - ${name})`;
+
+                        // Pass details up
+                        onElementSelect?.(info, elementDetails);
+
+                        // Capture screenshot automatically
+                        try {
+                            if (viewer.captureScreenshot) {
+                                const screenshot = await viewer.captureScreenshot();
+                                onScreenshot?.(screenshot);
+                            }
+                        } catch (err) {
+                            console.warn('Screenshot capture failed:', err);
+                        }
+                    } else {
+                        // First call: Immediate feedback
+                        console.log('⏳ Element selected, loading details...');
+                    }
+                }
             });
             viewerRef.current = viewer;
         } catch (error) {
             console.error('Failed to initialize IFC viewer:', error);
         }
 
-        // Don't clean up the viewer - keep it alive
         return undefined;
-    }, []);
+    }, [onElementSelect, onScreenshot]);
 
     const handleLoadModel = async () => {
         if (!viewerRef.current) {
@@ -153,6 +192,15 @@ export const ComplaintsPage = () => {
         console.log('Complaint submitted:', { itemCode, message, imageFile });
     };
 
+    const handleElementSelect = (elementInfo: string) => {
+        setItemCode(elementInfo);
+    };
+
+    const handleScreenshot = (screenshot: string) => {
+        setImagePreview(screenshot);
+        // Convert base64 to file if needed, or just keep as preview
+    };
+
     return (
         <div className="space-y-6">
             {/* IFC Viewer Block */}
@@ -163,11 +211,11 @@ export const ComplaintsPage = () => {
                         Dear users, we highly ask you to leave your complaints with exact code of an item, image and your message.
                     </p>
                     <p className="text-xs text-gray-500 font-mono uppercase tracking-wider mt-3">
-                        Use the viewer below to identify the item code
+                        Click on any element in the viewer to auto-fill the item code
                     </p>
                 </div>
                 <div className="relative flex-1 min-h-[700px] ifc-viewer-embed">
-                    <IfcViewerPreview />
+                    <IfcViewerPreview onElementSelect={handleElementSelect} onScreenshot={handleScreenshot} />
                 </div>
             </div>
 
@@ -190,12 +238,12 @@ export const ComplaintsPage = () => {
                             type="text"
                             value={itemCode}
                             onChange={(e) => setItemCode(e.target.value)}
-                            placeholder="Enter item code from viewer..."
+                            placeholder="Click an element in the viewer or enter manually..."
                             className="w-full border border-gray-300 px-3 py-2 text-sm font-mono focus:border-black focus:outline-none transition-colors"
                             required
                         />
                         <p className="text-xs text-gray-500 font-mono">
-                            Select an element in the viewer to get its code
+                            {itemCode ? '✓ Element selected' : 'Click an element in the viewer above'}
                         </p>
                     </div>
 
@@ -272,7 +320,7 @@ export const ComplaintsPage = () => {
                         </button>
                         <button
                             type="submit"
-                            className="px-6 py-2 bg-black border border-black text-white text-sm font-mono font-semibold hover:bg-gray-800 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                            className="px-6 py-2 bg-black border border-black text-white text-sm font-mono font-semibold hover:border-black transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                         >
                             Submit Complaint
                         </button>

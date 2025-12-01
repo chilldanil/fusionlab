@@ -12,6 +12,10 @@ export const LandingPage = () => {
         navigate('/login');
     };
 
+    const handleDocumentation = () => {
+        navigate('/design');
+    };
+
     return (
         <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white overflow-hidden relative">
             {/* Animated Circuit Background */}
@@ -47,7 +51,7 @@ export const LandingPage = () => {
                         <Button onClick={handleLogin} className="h-12 px-8 text-lg">
                             Access Portal
                         </Button>
-                        <Button variant="outline" onClick={handleLogin} className="h-12 px-8 text-lg">
+                        <Button variant="outline" onClick={handleDocumentation} className="h-12 px-8 text-lg">
                             Documentation
                         </Button>
                     </div>
