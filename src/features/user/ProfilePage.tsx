@@ -3,7 +3,7 @@ import { useAuth } from '../../shared/context/AuthContext';
 import { ProfileView } from './components/ProfileView';
 import { ProfileEdit } from './components/ProfileEdit';
 import { Button } from '../../shared/ui/Button';
-import { LogOut, Edit2, Home, RefreshCcw, Users, Shield, Ghost, Search, UserPlus } from 'lucide-react';
+import { LogOut, Edit2, Home, RefreshCcw, Users, Shield, Ghost, Search, UserPlus, Calendar } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { SocialService, type FriendshipEdge } from '../social/SocialService';
 import { FriendList, type FriendListItem } from '../social/components/FriendList';
@@ -317,6 +317,10 @@ export const ProfilePage = () => {
                     <div className="flex items-center gap-4">
                         <Link to="/" className="p-2 bg-white border border-gray-200 rounded-md hover:border-black transition-colors group">
                             <Home className="w-5 h-5 text-gray-500 group-hover:text-black" />
+                        </Link>
+                        <Link to="/booking" className="p-2 bg-white border border-gray-200 rounded-md hover:border-black transition-colors group flex items-center gap-2">
+                            <Calendar className="w-5 h-5 text-gray-500 group-hover:text-black" />
+                            <span className="text-xs font-mono uppercase tracking-wider text-gray-500 group-hover:text-black hidden sm:inline">Booking</span>
                         </Link>
                         <h1 className="text-3xl font-bold tracking-tight">User Profile</h1>
                     </div>

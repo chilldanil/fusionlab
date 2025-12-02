@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { LandingPage } from '../features/landing/LandingPage';
 import { LoginPage } from '../features/auth/LoginPage';
 import { ProfilePage } from '../features/user/ProfilePage';
+import { BookingPage } from '../features/booking/BookingPage';
 import { useAuth } from '../shared/context/AuthContext';
 
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
@@ -52,6 +53,14 @@ export const AppRoutes = () => {
                 element={
                     <ProtectedRoute>
                         <ProfilePage />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/booking"
+                element={
+                    <ProtectedRoute>
+                        <BookingPage />
                     </ProtectedRoute>
                 }
             />
