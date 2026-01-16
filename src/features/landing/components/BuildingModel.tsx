@@ -26,7 +26,7 @@ const RenderNode = ({ node }: { node: Object3D }) => {
 const Model = () => {
     const group = useRef<Group>(null);
     // Load the GLB model from the public folder
-    const { scene } = useGLTF('/haus.glb');
+    const { scene } = useGLTF('/hvhaus.glb');
 
     // Add gentle auto-rotation
     useFrame((state) => {
@@ -72,5 +72,5 @@ export const BuildingModel = () => {
 };
 
 // Preload the model
-useGLTF.preload('/haus.glb');
+useGLTF.preload('/hvhaus.glb');
 
