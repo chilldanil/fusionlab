@@ -7,118 +7,118 @@ import { AnimatedCircuitBackground } from '../landing/components/AnimatedCircuit
 interface BookableItem {
     id: string;
     name: string;
-    type: 'conference' | 'nook' | 'desk' | 'table-4p' | 'workbench-6p' | 'workshop' | 'printing' | 'kitchen';
+    type: 'desk-1p' | 'desk-double' | 'desk-3p-round' | 'table-6p-share' | 'private-zone';
     status: 'available' | 'occupied' | 'reserved';
     gridPosition: { col: number; row: number; colSpan: number; rowSpan: number };
     lastBookedBy?: string;
     capacity?: number;
 }
 
-// Floor plan grid based on architectural drawing
-// Approximately 14 columns x 8 rows to match the layout
+// Floor plan grid - complete coverage
 const FLOOR_GRID_COLS = 14;
 const FLOOR_GRID_ROWS = 8;
 
-// Mapping the TUM Makerspace floor plan
+// Complete floor plan with all new desk types
 const FLOOR_PLAN: BookableItem[] = [
-    // === CONFERENCE HALL (Top-left, large room) ===
-    { id: 'CONF-1', name: 'Conference Hall', type: 'conference', status: 'available', gridPosition: { col: 1, row: 1, colSpan: 3, rowSpan: 3 }, capacity: 14 },
-
-    // === SINGLE CORNER NOOKS - Top Left (near conference) ===
-    { id: 'NOOK-TL1', name: 'Corner Nook', type: 'nook', status: 'available', gridPosition: { col: 4, row: 1, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-    { id: 'NOOK-TL2', name: 'Corner Nook', type: 'nook', status: 'occupied', gridPosition: { col: 4, row: 2, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Maria S.', capacity: 1 },
-
-    // === SINGLE DESKS - Top Row (6 desks) ===
-    { id: 'DESK-T1', name: 'Single Desk', type: 'desk', status: 'available', gridPosition: { col: 5, row: 1, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-    { id: 'DESK-T2', name: 'Single Desk', type: 'desk', status: 'occupied', gridPosition: { col: 6, row: 1, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Tom K.', capacity: 1 },
-    { id: 'DESK-T3', name: 'Single Desk', type: 'desk', status: 'available', gridPosition: { col: 7, row: 1, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-    { id: 'DESK-T4', name: 'Single Desk', type: 'desk', status: 'reserved', gridPosition: { col: 8, row: 1, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Team A', capacity: 1 },
-    { id: 'DESK-T5', name: 'Single Desk', type: 'desk', status: 'available', gridPosition: { col: 9, row: 1, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-    { id: 'DESK-T6', name: 'Single Desk', type: 'desk', status: 'occupied', gridPosition: { col: 10, row: 1, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Lisa M.', capacity: 1 },
-
-    // === SINGLE CORNER NOOKS - Top Right ===
-    { id: 'NOOK-TR1', name: 'Corner Nook', type: 'nook', status: 'available', gridPosition: { col: 11, row: 1, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-    { id: 'NOOK-TR2', name: 'Corner Nook', type: 'nook', status: 'reserved', gridPosition: { col: 12, row: 1, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Jan P.', capacity: 1 },
-
-    // === WORKSHOP AREA (Right strip) ===
-    { id: 'WORK-1', name: 'Workshop Area', type: 'workshop', status: 'occupied', gridPosition: { col: 13, row: 1, colSpan: 2, rowSpan: 6 }, lastBookedBy: 'Workshop Team', capacity: 8 },
-
-    // === 4-PERSON TABLES - Left side ===
-    { id: 'TBL4-L1', name: '4-Person Table', type: 'table-4p', status: 'available', gridPosition: { col: 1, row: 4, colSpan: 2, rowSpan: 1 }, capacity: 4 },
-    { id: 'TBL4-L2', name: '4-Person Table', type: 'table-4p', status: 'occupied', gridPosition: { col: 1, row: 5, colSpan: 2, rowSpan: 1 }, lastBookedBy: 'Study Group', capacity: 4 },
-
-    // === SINGLE DESKS - Middle Area Row 2 (6 desks) ===
-    { id: 'DESK-M1', name: 'Single Desk', type: 'desk', status: 'available', gridPosition: { col: 5, row: 2, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-    { id: 'DESK-M2', name: 'Single Desk', type: 'desk', status: 'available', gridPosition: { col: 6, row: 2, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-    { id: 'DESK-M3', name: 'Single Desk', type: 'desk', status: 'occupied', gridPosition: { col: 7, row: 2, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Alex B.', capacity: 1 },
-    { id: 'DESK-M4', name: 'Single Desk', type: 'desk', status: 'available', gridPosition: { col: 8, row: 2, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-
-    // === 6-PERSON WORKBENCHES - Right side ===
-    { id: 'WB6-1', name: '6P Workbench', type: 'workbench-6p', status: 'reserved', gridPosition: { col: 9, row: 2, colSpan: 2, rowSpan: 2 }, lastBookedBy: 'Project X', capacity: 6 },
-    { id: 'WB6-2', name: '6P Workbench', type: 'workbench-6p', status: 'available', gridPosition: { col: 11, row: 2, colSpan: 2, rowSpan: 2 }, capacity: 6 },
-
-    // === SINGLE DESKS - Middle Area Row 3-4 ===
-    { id: 'DESK-M5', name: 'Single Desk', type: 'desk', status: 'reserved', gridPosition: { col: 3, row: 3, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Chris L.', capacity: 1 },
-    { id: 'DESK-M6', name: 'Single Desk', type: 'desk', status: 'available', gridPosition: { col: 4, row: 3, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-    { id: 'DESK-M7', name: 'Single Desk', type: 'desk', status: 'occupied', gridPosition: { col: 5, row: 3, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Nina W.', capacity: 1 },
-    { id: 'DESK-M8', name: 'Single Desk', type: 'desk', status: 'available', gridPosition: { col: 6, row: 3, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-    { id: 'DESK-M9', name: 'Single Desk', type: 'desk', status: 'available', gridPosition: { col: 7, row: 3, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-    { id: 'DESK-M10', name: 'Single Desk', type: 'desk', status: 'occupied', gridPosition: { col: 8, row: 3, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Max F.', capacity: 1 },
-
-    { id: 'DESK-M11', name: 'Single Desk', type: 'desk', status: 'available', gridPosition: { col: 3, row: 4, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-    { id: 'DESK-M12', name: 'Single Desk', type: 'desk', status: 'available', gridPosition: { col: 4, row: 4, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-    { id: 'DESK-M13', name: 'Single Desk', type: 'desk', status: 'reserved', gridPosition: { col: 5, row: 4, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Sara K.', capacity: 1 },
-    { id: 'DESK-M14', name: 'Single Desk', type: 'desk', status: 'available', gridPosition: { col: 6, row: 4, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-    { id: 'DESK-M15', name: 'Single Desk', type: 'desk', status: 'occupied', gridPosition: { col: 7, row: 4, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Paul R.', capacity: 1 },
-    { id: 'DESK-M16', name: 'Single Desk', type: 'desk', status: 'available', gridPosition: { col: 8, row: 4, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-
-    // === 6-PERSON WORKBENCHES - Lower right ===
-    { id: 'WB6-3', name: '6P Workbench', type: 'workbench-6p', status: 'occupied', gridPosition: { col: 9, row: 4, colSpan: 2, rowSpan: 2 }, lastBookedBy: 'Design Team', capacity: 6 },
-    { id: 'WB6-4', name: '6P Workbench', type: 'workbench-6p', status: 'available', gridPosition: { col: 11, row: 4, colSpan: 2, rowSpan: 2 }, capacity: 6 },
-
-    // === SINGLE CORNER NOOKS - Bottom Left ===
-    { id: 'NOOK-BL1', name: 'Corner Nook', type: 'nook', status: 'available', gridPosition: { col: 1, row: 6, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-    { id: 'NOOK-BL2', name: 'Corner Nook', type: 'nook', status: 'occupied', gridPosition: { col: 2, row: 6, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Emma J.', capacity: 1 },
-
-    // === 4-PERSON TABLES - Bottom Center ===
-    { id: 'TBL4-B1', name: '4-Person Table', type: 'table-4p', status: 'available', gridPosition: { col: 3, row: 5, colSpan: 2, rowSpan: 1 }, capacity: 4 },
-    { id: 'TBL4-B2', name: '4-Person Table', type: 'table-4p', status: 'reserved', gridPosition: { col: 5, row: 5, colSpan: 2, rowSpan: 1 }, lastBookedBy: 'Team B', capacity: 4 },
-
-    // === SINGLE DESKS - Bottom Row ===
-    { id: 'DESK-B1', name: 'Single Desk', type: 'desk', status: 'available', gridPosition: { col: 3, row: 6, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-    { id: 'DESK-B2', name: 'Single Desk', type: 'desk', status: 'available', gridPosition: { col: 4, row: 6, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-    { id: 'DESK-B3', name: 'Single Desk', type: 'desk', status: 'occupied', gridPosition: { col: 5, row: 6, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Mike T.', capacity: 1 },
-    { id: 'DESK-B4', name: 'Single Desk', type: 'desk', status: 'available', gridPosition: { col: 6, row: 6, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-
-    // === 3D PRINTING ZONE ===
-    { id: '3DPRINT', name: '3D Printing Zone', type: 'printing', status: 'available', gridPosition: { col: 7, row: 5, colSpan: 2, rowSpan: 2 }, capacity: 4 },
-
-    // === KITCHENETTE/CAFE ===
-    { id: 'KITCHEN', name: 'Kitchenette/Cafe', type: 'kitchen', status: 'occupied', gridPosition: { col: 9, row: 6, colSpan: 2, rowSpan: 2 }, lastBookedBy: 'Everyone', capacity: 6 },
-
-    // === SINGLE CORNER NOOKS - Bottom Right ===
-    { id: 'NOOK-BR1', name: 'Corner Nook', type: 'nook', status: 'available', gridPosition: { col: 11, row: 6, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-    { id: 'NOOK-BR2', name: 'Corner Nook', type: 'nook', status: 'reserved', gridPosition: { col: 12, row: 6, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Focus Time', capacity: 1 },
-
-    // === Bottom edge zones ===
-    { id: 'NOOK-BL3', name: 'Corner Nook', type: 'nook', status: 'available', gridPosition: { col: 1, row: 7, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-    { id: 'NOOK-BL4', name: 'Corner Nook', type: 'nook', status: 'available', gridPosition: { col: 2, row: 7, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-    { id: 'TBL4-B3', name: '4-Person Table', type: 'table-4p', status: 'occupied', gridPosition: { col: 3, row: 7, colSpan: 2, rowSpan: 1 }, lastBookedBy: 'Lunch Group', capacity: 4 },
-    { id: 'TBL4-B4', name: '4-Person Table', type: 'table-4p', status: 'available', gridPosition: { col: 5, row: 7, colSpan: 2, rowSpan: 1 }, capacity: 4 },
-
-    // === South Wall Nooks ===
-    { id: 'NOOK-BR3', name: 'Corner Nook', type: 'nook', status: 'occupied', gridPosition: { col: 11, row: 7, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Julia H.', capacity: 1 },
-    { id: 'NOOK-BR4', name: 'Corner Nook', type: 'nook', status: 'available', gridPosition: { col: 12, row: 7, colSpan: 1, rowSpan: 1 }, capacity: 1 },
-
-    // === Fill remaining bottom row ===
-    { id: 'ENTRY', name: 'Entry Area', type: 'nook', status: 'available', gridPosition: { col: 13, row: 7, colSpan: 2, rowSpan: 1 }, capacity: 0 },
-
-    // === Hallway/passage areas to fill gaps ===
-    { id: 'PASS-1', name: 'Passage', type: 'nook', status: 'available', gridPosition: { col: 1, row: 8, colSpan: 3, rowSpan: 1 } },
-    { id: 'PASS-2', name: 'Passage', type: 'nook', status: 'available', gridPosition: { col: 4, row: 8, colSpan: 3, rowSpan: 1 } },
-    { id: 'PASS-3', name: 'Passage', type: 'nook', status: 'available', gridPosition: { col: 7, row: 8, colSpan: 2, rowSpan: 1 } },
-    { id: 'PASS-4', name: 'Passage', type: 'nook', status: 'available', gridPosition: { col: 9, row: 8, colSpan: 3, rowSpan: 1 } },
-    { id: 'EXIT', name: 'Exit', type: 'nook', status: 'available', gridPosition: { col: 12, row: 8, colSpan: 3, rowSpan: 1 } },
+    // === ROW 1 ===
+    // Private Zone (4-6 people) - Top Left
+    { id: 'PZ-1', name: 'Private Zone', type: 'private-zone', status: 'occupied', gridPosition: { col: 1, row: 1, colSpan: 3, rowSpan: 2 }, lastBookedBy: 'Team Alpha', capacity: 6 },
+    
+    // 3P Round Desks - Top Center
+    { id: 'RD-1', name: '3P Round Desk', type: 'desk-3p-round', status: 'available', gridPosition: { col: 4, row: 1, colSpan: 2, rowSpan: 2 }, capacity: 3 },
+    { id: 'RD-2', name: '3P Round Desk', type: 'desk-3p-round', status: 'reserved', gridPosition: { col: 6, row: 1, colSpan: 2, rowSpan: 2 }, lastBookedBy: 'Creative Team', capacity: 3 },
+    
+    // 6P Work Table Share - Top Right
+    { id: 'WT-1', name: '6P Work Table', type: 'table-6p-share', status: 'available', gridPosition: { col: 8, row: 1, colSpan: 3, rowSpan: 2 }, capacity: 6 },
+    
+    // Single Desks - Top Right Corner
+    { id: 'SD-1', name: '1P Desk', type: 'desk-1p', status: 'available', gridPosition: { col: 11, row: 1, colSpan: 1, rowSpan: 1 }, capacity: 1 },
+    { id: 'SD-2', name: '1P Desk', type: 'desk-1p', status: 'occupied', gridPosition: { col: 12, row: 1, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Maria S.', capacity: 1 },
+    { id: 'DD-1', name: 'Double Desk', type: 'desk-double', status: 'available', gridPosition: { col: 13, row: 1, colSpan: 2, rowSpan: 1 }, capacity: 2 },
+    
+    // === ROW 2 ===
+    { id: 'SD-3', name: '1P Desk', type: 'desk-1p', status: 'available', gridPosition: { col: 11, row: 2, colSpan: 1, rowSpan: 1 }, capacity: 1 },
+    { id: 'SD-4', name: '1P Desk', type: 'desk-1p', status: 'reserved', gridPosition: { col: 12, row: 2, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Tom K.', capacity: 1 },
+    { id: 'DD-2', name: 'Double Desk', type: 'desk-double', status: 'occupied', gridPosition: { col: 13, row: 2, colSpan: 2, rowSpan: 1 }, lastBookedBy: 'Pair Program', capacity: 2 },
+    
+    // === ROW 3 ===
+    // Single Desks - Left side
+    { id: 'SD-5', name: '1P Desk', type: 'desk-1p', status: 'available', gridPosition: { col: 1, row: 3, colSpan: 1, rowSpan: 1 }, capacity: 1 },
+    { id: 'SD-6', name: '1P Desk', type: 'desk-1p', status: 'occupied', gridPosition: { col: 2, row: 3, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Alex B.', capacity: 1 },
+    { id: 'SD-7', name: '1P Desk', type: 'desk-1p', status: 'available', gridPosition: { col: 3, row: 3, colSpan: 1, rowSpan: 1 }, capacity: 1 },
+    
+    // Private Zone - Center
+    { id: 'PZ-2', name: 'Private Zone', type: 'private-zone', status: 'available', gridPosition: { col: 4, row: 3, colSpan: 3, rowSpan: 2 }, capacity: 5 },
+    
+    // 6P Work Table Share
+    { id: 'WT-2', name: '6P Work Table', type: 'table-6p-share', status: 'reserved', gridPosition: { col: 7, row: 3, colSpan: 3, rowSpan: 2 }, lastBookedBy: 'Project X', capacity: 6 },
+    
+    // 3P Round Desk
+    { id: 'RD-3', name: '3P Round Desk', type: 'desk-3p-round', status: 'occupied', gridPosition: { col: 10, row: 3, colSpan: 2, rowSpan: 2 }, lastBookedBy: 'Squad B', capacity: 3 },
+    
+    // Double Desks
+    { id: 'DD-3', name: 'Double Desk', type: 'desk-double', status: 'available', gridPosition: { col: 12, row: 3, colSpan: 2, rowSpan: 1 }, capacity: 2 },
+    { id: 'DD-4', name: 'Double Desk', type: 'desk-double', status: 'available', gridPosition: { col: 14, row: 3, colSpan: 1, rowSpan: 1 }, capacity: 2 },
+    
+    // === ROW 4 ===
+    { id: 'SD-8', name: '1P Desk', type: 'desk-1p', status: 'reserved', gridPosition: { col: 1, row: 4, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Chris L.', capacity: 1 },
+    { id: 'SD-9', name: '1P Desk', type: 'desk-1p', status: 'available', gridPosition: { col: 2, row: 4, colSpan: 1, rowSpan: 1 }, capacity: 1 },
+    { id: 'SD-10', name: '1P Desk', type: 'desk-1p', status: 'occupied', gridPosition: { col: 3, row: 4, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Nina W.', capacity: 1 },
+    
+    { id: 'DD-5', name: 'Double Desk', type: 'desk-double', status: 'available', gridPosition: { col: 12, row: 4, colSpan: 2, rowSpan: 1 }, capacity: 2 },
+    { id: 'SD-11', name: '1P Desk', type: 'desk-1p', status: 'available', gridPosition: { col: 14, row: 4, colSpan: 1, rowSpan: 1 }, capacity: 1 },
+    
+    // === ROW 5 ===
+    // Double Desks - Left
+    { id: 'DD-6', name: 'Double Desk', type: 'desk-double', status: 'available', gridPosition: { col: 1, row: 5, colSpan: 2, rowSpan: 1 }, capacity: 2 },
+    
+    // 3P Round Desk
+    { id: 'RD-4', name: '3P Round Desk', type: 'desk-3p-round', status: 'available', gridPosition: { col: 3, row: 5, colSpan: 2, rowSpan: 2 }, capacity: 3 },
+    
+    // Private Zone
+    { id: 'PZ-3', name: 'Private Zone', type: 'private-zone', status: 'reserved', gridPosition: { col: 5, row: 5, colSpan: 3, rowSpan: 2 }, lastBookedBy: 'Team Beta', capacity: 4 },
+    
+    // 6P Work Table Share
+    { id: 'WT-3', name: '6P Work Table', type: 'table-6p-share', status: 'available', gridPosition: { col: 8, row: 5, colSpan: 3, rowSpan: 2 }, capacity: 6 },
+    
+    // Single Desks - Right
+    { id: 'SD-12', name: '1P Desk', type: 'desk-1p', status: 'occupied', gridPosition: { col: 11, row: 5, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Max F.', capacity: 1 },
+    { id: 'SD-13', name: '1P Desk', type: 'desk-1p', status: 'available', gridPosition: { col: 12, row: 5, colSpan: 1, rowSpan: 1 }, capacity: 1 },
+    { id: 'DD-7', name: 'Double Desk', type: 'desk-double', status: 'available', gridPosition: { col: 13, row: 5, colSpan: 2, rowSpan: 1 }, capacity: 2 },
+    
+    // === ROW 6 ===
+    { id: 'DD-8', name: 'Double Desk', type: 'desk-double', status: 'occupied', gridPosition: { col: 1, row: 6, colSpan: 2, rowSpan: 1 }, lastBookedBy: 'Study Pair', capacity: 2 },
+    
+    { id: 'SD-14', name: '1P Desk', type: 'desk-1p', status: 'available', gridPosition: { col: 11, row: 6, colSpan: 1, rowSpan: 1 }, capacity: 1 },
+    { id: 'SD-15', name: '1P Desk', type: 'desk-1p', status: 'reserved', gridPosition: { col: 12, row: 6, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Sara K.', capacity: 1 },
+    { id: 'DD-9', name: 'Double Desk', type: 'desk-double', status: 'available', gridPosition: { col: 13, row: 6, colSpan: 2, rowSpan: 1 }, capacity: 2 },
+    
+    // === ROW 7 ===
+    // Single Desks
+    { id: 'SD-16', name: '1P Desk', type: 'desk-1p', status: 'available', gridPosition: { col: 1, row: 7, colSpan: 1, rowSpan: 1 }, capacity: 1 },
+    { id: 'SD-17', name: '1P Desk', type: 'desk-1p', status: 'occupied', gridPosition: { col: 2, row: 7, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Emma J.', capacity: 1 },
+    
+    // 3P Round Desk
+    { id: 'RD-5', name: '3P Round Desk', type: 'desk-3p-round', status: 'available', gridPosition: { col: 3, row: 7, colSpan: 2, rowSpan: 2 }, capacity: 3 },
+    
+    // 6P Work Table Share
+    { id: 'WT-4', name: '6P Work Table', type: 'table-6p-share', status: 'occupied', gridPosition: { col: 5, row: 7, colSpan: 3, rowSpan: 2 }, lastBookedBy: 'Design Team', capacity: 6 },
+    
+    // Private Zone
+    { id: 'PZ-4', name: 'Private Zone', type: 'private-zone', status: 'available', gridPosition: { col: 8, row: 7, colSpan: 3, rowSpan: 2 }, capacity: 6 },
+    
+    // Double Desks
+    { id: 'DD-10', name: 'Double Desk', type: 'desk-double', status: 'available', gridPosition: { col: 11, row: 7, colSpan: 2, rowSpan: 1 }, capacity: 2 },
+    { id: 'SD-18', name: '1P Desk', type: 'desk-1p', status: 'available', gridPosition: { col: 13, row: 7, colSpan: 1, rowSpan: 1 }, capacity: 1 },
+    { id: 'SD-19', name: '1P Desk', type: 'desk-1p', status: 'occupied', gridPosition: { col: 14, row: 7, colSpan: 1, rowSpan: 1 }, lastBookedBy: 'Julia H.', capacity: 1 },
+    
+    // === ROW 8 ===
+    { id: 'SD-20', name: '1P Desk', type: 'desk-1p', status: 'available', gridPosition: { col: 1, row: 8, colSpan: 1, rowSpan: 1 }, capacity: 1 },
+    { id: 'SD-21', name: '1P Desk', type: 'desk-1p', status: 'available', gridPosition: { col: 2, row: 8, colSpan: 1, rowSpan: 1 }, capacity: 1 },
+    
+    { id: 'DD-11', name: 'Double Desk', type: 'desk-double', status: 'reserved', gridPosition: { col: 11, row: 8, colSpan: 2, rowSpan: 1 }, lastBookedBy: 'Team C', capacity: 2 },
+    { id: 'SD-22', name: '1P Desk', type: 'desk-1p', status: 'available', gridPosition: { col: 13, row: 8, colSpan: 1, rowSpan: 1 }, capacity: 1 },
+    { id: 'SD-23', name: '1P Desk', type: 'desk-1p', status: 'available', gridPosition: { col: 14, row: 8, colSpan: 1, rowSpan: 1 }, capacity: 1 },
 ];
 
 const STATUS_STYLES = {
@@ -143,14 +143,11 @@ const STATUS_STYLES = {
 };
 
 const TYPE_STYLES: Record<BookableItem['type'], { icon: string; color: string }> = {
-    conference: { icon: '▣', color: 'bg-blue-100/60 border-blue-400' },
-    nook: { icon: '●', color: 'bg-orange-100/60 border-orange-400' },
-    desk: { icon: '▫', color: '' },
-    'table-4p': { icon: '▬', color: 'bg-yellow-100/60 border-yellow-400' },
-    'workbench-6p': { icon: '▭', color: 'bg-purple-100/60 border-purple-400' },
-    workshop: { icon: '⚙', color: 'bg-slate-200/70 border-slate-500' },
-    printing: { icon: '▣', color: 'bg-cyan-100/60 border-cyan-400' },
-    kitchen: { icon: '☕', color: 'bg-rose-100/60 border-rose-400' },
+    'desk-1p': { icon: '▫', color: 'bg-blue-50/60 border-blue-300' },
+    'desk-double': { icon: '▬', color: 'bg-green-50/60 border-green-300' },
+    'desk-3p-round': { icon: '●', color: 'bg-purple-50/60 border-purple-300' },
+    'table-6p-share': { icon: '▭', color: 'bg-amber-50/60 border-amber-400' },
+    'private-zone': { icon: '▣', color: 'bg-cyan-50/60 border-cyan-400' },
 };
 
 export const BookingPage = () => {
@@ -181,9 +178,9 @@ export const BookingPage = () => {
                             <Home className="w-5 h-5 text-gray-500 group-hover:text-black" />
                         </Link>
                         <div>
-                            <h1 className="text-2xl font-bold tracking-tight">TUM Makerspace</h1>
+                            <h1 className="text-2xl font-bold tracking-tight">Workspace Booking</h1>
                             <p className="text-xs font-mono text-gray-500 uppercase tracking-wider">
-                                Floor Plan Booking • 100% Coverage
+                                Desk & Zone Booking • Full Coverage
                             </p>
                         </div>
                     </div>
@@ -221,13 +218,11 @@ export const BookingPage = () => {
                             <span>Reserved ({stats.reserved})</span>
                         </div>
                         <div className="h-4 w-px bg-gray-300" />
-                        <span>▣ Conf</span>
-                        <span>● Nook</span>
-                        <span>▫ Desk</span>
-                        <span>▬ 4P Table</span>
-                        <span>▭ 6P Bench</span>
-                        <span>⚙ Workshop</span>
-                        <span>☕ Kitchen</span>
+                        <span>▫ 1P Desk</span>
+                        <span>▬ Double</span>
+                        <span>● 3P Round</span>
+                        <span>▭ 6P Table</span>
+                        <span>▣ Private</span>
                     </div>
                 </div>
 
