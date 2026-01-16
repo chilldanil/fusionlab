@@ -1,0 +1,915 @@
+/* ============================================================================
+   IFC VIEWER DESIGN SYSTEM - REFACTORED
+   Monochrome neo-brutalist theme with CSS custom properties
+   ============================================================================ */
+
+/* --- BIM UI Library Overrides (Required for third-party components) -------- */
+:root {
+    --bim-ui_main-base: #0a0a0a !important;
+    --bim-ui_accent-base: #0a0a0a !important;
+    --bim-ui_main-contrast: #ffffff !important;
+    --bim-ui_accent-contrast: #ffffff !important;
+
+    --bim-ui_gray-0: hsl(0 0% 100%) !important;
+    --bim-ui_gray-1: hsl(0 0% 95%) !important;
+    --bim-ui_gray-2: hsl(0 0% 90%) !important;
+    --bim-ui_gray-3: hsl(0 0% 85%) !important;
+    --bim-ui_gray-4: hsl(0 0% 80%) !important;
+    --bim-ui_gray-5: hsl(0 0% 70%) !important;
+    --bim-ui_gray-6: hsl(0 0% 60%) !important;
+    --bim-ui_gray-7: hsl(0 0% 50%) !important;
+    --bim-ui_gray-8: hsl(0 0% 30%) !important;
+    --bim-ui_gray-9: hsl(0 0% 15%) !important;
+    --bim-ui_gray-10: hsl(0 0% 10%) !important;
+
+    --bim-ui_bg-base: hsl(0 0% 100%) !important;
+    --bim-ui_bg-contrast-10: hsl(0 0% 95%) !important;
+    --bim-ui_bg-contrast-20: hsl(0 0% 90%) !important;
+    --bim-ui_bg-contrast-30: hsl(0 0% 85%) !important;
+    --bim-ui_bg-contrast-40: hsl(0 0% 80%) !important;
+    --bim-ui_bg-contrast-60: hsl(0 0% 60%) !important;
+    --bim-ui_bg-contrast-80: hsl(0 0% 30%) !important;
+    --bim-ui_bg-contrast-100: hsl(0 0% 10%) !important;
+}
+
+/* --- Design Tokens (Custom Properties) ------------------------------------- */
+:root {
+    /* Colors */
+    --ifc-color-primary: #0a0a0a;
+    --ifc-color-primary-light: #050505;
+    --ifc-color-black: #000000;
+    --ifc-color-white: #ffffff;
+    --ifc-color-bg-light: #f7f7f3;
+    --ifc-color-bg-muted: #f3f3ef;
+    --ifc-color-bg-hover: #f9f9f7;
+    --ifc-color-bg-surface: #f1f1ed;
+    --ifc-color-bg-subtle: #fbfbf8;
+    --ifc-color-bg-semi: rgba(255, 255, 255, 0.98);
+    --ifc-color-gray: #6b7280;
+    --ifc-color-gray-dark: #2c2c2c;
+
+    /* Borders */
+    --ifc-border-width: 1.5px;
+    --ifc-border-width-thin: 1px;
+    --ifc-border-primary: 1.5px solid var(--ifc-color-primary);
+    --ifc-border-light: 1.5px solid rgba(0, 0, 0, 0.18);
+    --ifc-border-lighter: 1.5px solid rgba(0, 0, 0, 0.16);
+    --ifc-border-lightest: 1.5px solid rgba(0, 0, 0, 0.12);
+    --ifc-border-medium: 1.5px solid rgba(0, 0, 0, 0.2);
+    --ifc-border-strong: 1.5px solid rgba(0, 0, 0, 0.22);
+    --ifc-border-thin: 1px solid rgba(0, 0, 0, 0.1);
+
+    /* Shadows */
+    --ifc-shadow-sm: 2px 2px 0 rgba(0, 0, 0, 0.2);
+    --ifc-shadow-md: 4px 4px 0 rgba(0, 0, 0, 0.18);
+    --ifc-shadow-lg: 6px 6px 0 rgba(0, 0, 0, 0.2);
+    --ifc-shadow-xl: 8px 8px 0 rgba(0, 0, 0, 0.15);
+    --ifc-shadow-subtle: 4px 4px 0 rgba(0, 0, 0, 0.08);
+    --ifc-shadow-light: 4px 4px 0 rgba(0, 0, 0, 0.1);
+    --ifc-shadow-xs: 3px 3px 0 rgba(0, 0, 0, 0.12);
+    --ifc-shadow-inset: 2px 2px 0 rgba(0, 0, 0, 0.08) inset;
+    --ifc-shadow-panel: 6px 6px 0 rgba(0, 0, 0, 0.08);
+    --ifc-shadow-panel-hover: 8px 8px 0 rgba(0, 0, 0, 0.12);
+
+    /* Radius */
+    --ifc-radius-sm: 4px;
+    --ifc-radius-md: 6px;
+    --ifc-radius-lg: 8px;
+    --ifc-radius-xl: 12px;
+
+    /* Typography */
+    --ifc-font-mono: "IBM Plex Mono", "Space Mono", monospace;
+    --ifc-font-sans: "Inter", "IBM Plex Mono", monospace;
+    --ifc-letter-spacing-wide: 0.08em;
+    --ifc-letter-spacing-normal: 0.04em;
+    --ifc-letter-spacing-tight: 0.02em;
+
+    /* Sizing */
+    --ifc-control-height: 38px;
+
+    /* Transitions */
+    --ifc-transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+    --ifc-transition-color: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* --- Container Base Styles ------------------------------------------------- */
+.ifc-viewer-embed {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--ifc-color-white) !important;
+    background-color: var(--ifc-color-white) !important;
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px) !important;
+    background-size: 56px 56px, 56px 56px !important;
+    accent-color: var(--ifc-color-primary) !important;
+
+    /* Re-apply BIM overrides at component level */
+    --bim-ui_main-base: var(--ifc-color-primary) !important;
+    --bim-ui_main-contrast: var(--ifc-color-white) !important;
+    --bim-ui_accent-base: var(--ifc-color-primary) !important;
+    --bim-ui_accent-contrast: var(--ifc-color-white) !important;
+    --ifc-background: var(--ifc-color-white) !important;
+}
+
+.ifc-viewer-embed bim-viewport,
+bim-viewport,
+.ifc-viewer-library-container bim-viewport {
+    background: var(--ifc-color-white) !important;
+    background-color: var(--ifc-color-white) !important;
+}
+
+.ifc-viewer-embed .ifc-viewer-library-container.layout {
+    width: 100% !important;
+    height: 100% !important;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.ifc-viewer-embed .ifc-viewer-library-container {
+    font-family: var(--ifc-font-sans);
+    color: var(--ifc-color-primary);
+    --bim-ui_main-base: var(--ifc-color-primary) !important;
+    --bim-ui_accent-base: var(--ifc-color-primary) !important;
+    --bim-ui_accent-contrast: var(--ifc-color-white) !important;
+}
+
+.ifc-viewer-embed .viewer-container,
+.ifc-viewer-library-container .viewer-container,
+.viewer-container,
+canvas {
+    background: var(--ifc-color-white) !important;
+    background-color: var(--ifc-color-white) !important;
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px) !important;
+    background-size: 48px 48px, 48px 48px !important;
+}
+
+.ifc-viewer-embed .viewer-pane {
+    border: var(--ifc-border-light) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+/* --- Sidebar Styles -------------------------------------------------------- */
+.ifc-viewer-embed .sidebar-slot,
+.ifc-viewer-embed .sidebar-toggle {
+    position: absolute !important;
+}
+
+.ifc-viewer-embed .sidebar-slot {
+    border-right: var(--ifc-border-lighter);
+    box-shadow: none;
+}
+
+.ifc-viewer-embed .sidebar-toggle {
+    border-radius: var(--ifc-radius-md);
+    border: var(--ifc-border-strong) !important;
+    background: var(--ifc-color-white) !important;
+    color: var(--ifc-color-primary-light) !important;
+    box-shadow: var(--ifc-shadow-md);
+}
+
+.ifc-viewer-embed .sidebar {
+    background: var(--ifc-color-bg-semi) !important;
+    color: var(--ifc-color-primary-light) !important;
+    font-family: var(--ifc-font-sans);
+    letter-spacing: var(--ifc-letter-spacing-tight);
+    text-transform: none;
+    border-right: var(--ifc-border-lighter);
+    box-shadow: none;
+}
+
+.ifc-viewer-embed .sidebar-heading {
+    font-family: var(--ifc-font-mono);
+    text-transform: uppercase;
+    letter-spacing: var(--ifc-letter-spacing-wide);
+    color: var(--ifc-color-gray);
+}
+
+.ifc-viewer-embed .sidebar bim-panel {
+    padding-right: 6px;
+}
+
+.ifc-viewer-embed .sidebar bim-panel-section {
+    border-radius: var(--ifc-radius-lg) !important;
+    border: var(--ifc-border-light) !important;
+    background: var(--ifc-color-white) !important;
+    box-shadow: var(--ifc-shadow-panel);
+}
+
+.ifc-viewer-embed .sidebar bim-panel-section[collapsed] {
+    background: var(--ifc-color-bg-muted) !important;
+    border-color: rgba(0, 0, 0, 0.12) !important;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.05);
+}
+
+.ifc-viewer-embed .sidebar bim-panel-section::part(header) {
+    font-family: var(--ifc-font-mono);
+    letter-spacing: var(--ifc-letter-spacing-wide);
+    text-transform: uppercase;
+    font-size: 11px;
+    color: var(--ifc-color-black) !important;
+    background: var(--ifc-color-white);
+}
+
+.ifc-viewer-embed .sidebar bim-panel-section::part(content) {
+    color: var(--ifc-color-primary) !important;
+}
+
+.ifc-viewer-embed bim-panel-section:hover,
+.ifc-viewer-embed bim-panel-section[expanded]:hover {
+    border-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+.ifc-viewer-embed .sidebar bim-panel-section::part(header):hover {
+    background: var(--ifc-color-bg-hover) !important;
+    color: var(--ifc-color-black) !important;
+}
+
+/* --- Text & Typography ----------------------------------------------------- */
+.ifc-viewer-embed *:hover {
+    accent-color: var(--ifc-color-primary) !important;
+}
+
+.ifc-viewer-embed .sidebar p:not(.floor-option),
+.ifc-viewer-embed .sidebar span:not(.floor-option),
+.ifc-viewer-embed .sidebar div:not(.floor-option),
+.ifc-viewer-embed .sidebar label:not(.floor-option),
+.ifc-viewer-embed .sidebar .field-label:not(.floor-option),
+.ifc-viewer-embed .sidebar .section-title:not(.floor-option),
+.ifc-viewer-embed .sidebar .text:not(.floor-option),
+.ifc-viewer-embed .sidebar bim-label:not(.floor-option) {
+    color: var(--ifc-color-primary) !important;
+}
+
+.ifc-viewer-library-container button.active,
+.ifc-viewer-library-container button.active *,
+.ifc-viewer-embed button.active,
+.ifc-viewer-embed button.active *,
+.ifc-viewer-embed .sidebar button.active,
+.ifc-viewer-embed .sidebar button.active *,
+.ifc-viewer-embed .sidebar .render-presets button.active,
+.ifc-viewer-embed .sidebar .render-presets button.active *,
+.ifc-viewer-library-container .render-presets button.active,
+.ifc-viewer-library-container .render-presets button.active *,
+button.active,
+button.active * {
+    color: var(--ifc-color-white) !important;
+}
+
+.ifc-viewer-embed .sidebar input::placeholder,
+.ifc-viewer-embed .sidebar textarea::placeholder {
+    color: rgba(10, 10, 10, 0.6) !important;
+}
+
+.ifc-viewer-embed .sidebar .description,
+.ifc-viewer-embed .sidebar .hint,
+.ifc-viewer-embed .sidebar .info-text,
+.ifc-viewer-embed .sidebar [class*="hint"],
+.ifc-viewer-embed .sidebar [class*="description"],
+.ifc-viewer-embed .sidebar [class*="info"] {
+    color: rgba(10, 10, 10, 0.75) !important;
+}
+
+.ifc-viewer-embed .sidebar label,
+.ifc-viewer-embed .sidebar .field-label {
+    font-family: var(--ifc-font-mono);
+    text-transform: uppercase;
+    letter-spacing: var(--ifc-letter-spacing-wide);
+    font-size: 11px;
+    color: var(--ifc-color-black) !important;
+}
+
+.ifc-viewer-embed .status-text,
+.ifc-viewer-embed .info-message,
+.ifc-viewer-embed .hint-text,
+.ifc-viewer-embed .model-name,
+.ifc-viewer-embed .floor-name,
+.ifc-viewer-embed .element-name,
+.ifc-viewer-embed [class*="text"],
+.ifc-viewer-embed [class*="label"],
+.ifc-viewer-embed [class*="name"],
+.ifc-viewer-embed [class*="title"] {
+    color: var(--ifc-color-primary) !important;
+}
+
+bim-label {
+    color: var(--ifc-color-black);
+}
+
+/* --- Inputs & Form Controls ------------------------------------------------ */
+.ifc-viewer-embed .sidebar input:not([type=range]):not([type=checkbox]),
+.ifc-viewer-embed .sidebar select,
+.ifc-viewer-embed .sidebar textarea,
+.ifc-viewer-embed .sidebar .sidebar-input,
+.ifc-viewer-embed .minimap-controls-container bim-number-input::part(input),
+.ifc-viewer-embed bim-number-input::part(input),
+.ifc-viewer-embed bim-text-input::part(input) {
+    min-height: var(--ifc-control-height);
+    border: var(--ifc-border-light) !important;
+    border-radius: var(--ifc-radius-md);
+    background: var(--ifc-color-bg-light) !important;
+    color: var(--ifc-color-primary) !important;
+    font-family: var(--ifc-font-mono);
+    letter-spacing: var(--ifc-letter-spacing-normal);
+    box-shadow: var(--ifc-shadow-inset);
+}
+
+.ifc-viewer-embed .sidebar input:not([type=range]):not([type=checkbox])::placeholder,
+.ifc-viewer-embed .sidebar textarea::placeholder {
+    color: rgba(5, 5, 5, 0.45) !important;
+}
+
+.ifc-viewer-embed .sidebar input:not([type=range]):not([type=checkbox]):focus,
+.ifc-viewer-embed .sidebar select:focus,
+.ifc-viewer-embed .sidebar textarea:focus {
+    border-color: var(--ifc-color-primary-light) !important;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.08);
+    background: var(--ifc-color-white) !important;
+}
+
+.ifc-viewer-embed input[type="range"],
+.ifc-viewer-embed input[type="checkbox"] {
+    accent-color: var(--ifc-color-primary-light);
+}
+
+.ifc-viewer-embed bim-checkbox,
+.ifc-viewer-embed bim-number-input,
+.ifc-viewer-embed bim-text-input {
+    --accent-color: var(--ifc-color-primary) !important;
+    --bim-checkbox-primary: var(--ifc-color-primary) !important;
+    --bim-checkbox-border: var(--ifc-color-primary) !important;
+    --bim-ui_main-base: var(--ifc-color-primary) !important;
+    --bim-ui_accent-base: var(--ifc-color-primary) !important;
+    font-family: var(--ifc-font-mono);
+    letter-spacing: var(--ifc-letter-spacing-normal);
+}
+
+.ifc-viewer-embed bim-checkbox input[type="checkbox"] {
+    accent-color: var(--ifc-color-primary) !important;
+}
+
+.ifc-viewer-embed select {
+    appearance: none;
+    background: var(--ifc-color-white) url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%230a0a0a' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+    padding-right: 32px;
+    font-family: var(--ifc-font-mono);
+    letter-spacing: var(--ifc-letter-spacing-normal);
+    border: var(--ifc-border-light) !important;
+}
+
+.ifc-viewer-embed select option {
+    color: var(--ifc-color-primary) !important;
+    background: var(--ifc-color-white) !important;
+}
+
+/* --- Buttons (Consolidated) ------------------------------------------------ */
+.ifc-viewer-embed .sidebar button:not(.active):not([class*="active"]),
+.ifc-viewer-embed .sidebar .sidebar-button:not(.active),
+.ifc-viewer-embed .sidebar .multi-view-options__button:not(.active),
+.ifc-viewer-embed .sidebar .model-manager__button:not(.is-active),
+.ifc-viewer-embed bim-button::part(button),
+.ifc-viewer-embed .preset-btn,
+.ifc-viewer-embed .render-presets .preset-btn,
+.ifc-viewer-embed .render-presets button,
+.ifc-viewer-embed .render-mode-btn,
+.ifc-viewer-embed .render-reset-btn,
+.ifc-viewer-embed button[class*="reset"],
+.ifc-viewer-embed .floor-plan-controls bim-button::part(button),
+.ifc-viewer-embed .compare-open-btn,
+.ifc-viewer-embed .preview-mini-btn,
+.ifc-viewer-embed .download-mini-btn,
+.ifc-viewer-embed .performance-chip,
+.ifc-viewer-embed .screenshot-download-btn,
+.ifc-viewer-embed .modal-primary-btn,
+.ifc-viewer-embed .modal-secondary-btn,
+.ifc-viewer-embed .export-modified-ifc__button,
+.ifc-viewer-embed .property-editor__button,
+.ifc-viewer-embed .generate-btn,
+.ifc-viewer-embed .clear-btn,
+.ifc-viewer-embed .compare-stage__slider,
+.ifc-viewer-embed .model-manager__button,
+.ifc-viewer-library-container .floor-plan-controls bim-button,
+.ifc-viewer-library-container .floor-plan-controls bim-button::part(button),
+.ifc-viewer-embed .floor-plan-controls bim-button,
+.ifc-viewer-embed .floor-buttons bim-button,
+.ifc-viewer-embed .floor-buttons bim-button::part(button),
+.ifc-viewer-embed [class*="floor"] button,
+.ifc-viewer-library-container .camera-style-buttons bim-button,
+.ifc-viewer-library-container .camera-style-buttons bim-button::part(button),
+.ifc-viewer-embed [class*="floors"] select,
+.ifc-viewer-embed .floors-select,
+.ifc-viewer-embed summary[class*="floor"],
+.ifc-viewer-library-container summary[class*="floor"],
+.ifc-viewer-library-container .floors-dropdown,
+.ifc-viewer-library-container details[class*="floor"] > summary,
+.ifc-viewer-library-container .camera-style-buttons .floors-panel-header,
+.camera-style-buttons .floors-panel-header {
+    min-height: var(--ifc-control-height);
+    font-family: var(--ifc-font-mono);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: var(--ifc-letter-spacing-wide);
+    border-radius: var(--ifc-radius-md) !important;
+    border: var(--ifc-border-primary) !important;
+    background: var(--ifc-color-white) !important;
+    color: var(--ifc-color-black) !important;
+    box-shadow: var(--ifc-shadow-md) !important;
+    transition: var(--ifc-transition);
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: none;
+}
+
+.ifc-viewer-embed .sidebar button:not(.active):hover,
+.ifc-viewer-embed .sidebar .sidebar-button:not(.active):hover,
+.ifc-viewer-embed .sidebar .multi-view-options__button:not(.active):hover,
+.ifc-viewer-embed .sidebar .model-manager__button:not(.is-active):hover,
+.ifc-viewer-embed bim-button:hover::part(button),
+.ifc-viewer-embed .preset-btn:hover,
+.ifc-viewer-embed .render-presets .preset-btn:hover,
+.ifc-viewer-embed .render-presets button:hover,
+.ifc-viewer-embed .render-mode-btn:hover,
+.ifc-viewer-embed .render-reset-btn:hover,
+.ifc-viewer-embed button[class*="reset"]:hover,
+.ifc-viewer-embed .floor-plan-controls bim-button:hover::part(button),
+.ifc-viewer-embed .performance-chip:hover,
+.ifc-viewer-embed .screenshot-download-btn:hover,
+.ifc-viewer-embed .modal-primary-btn:hover,
+.ifc-viewer-embed .modal-secondary-btn:hover,
+.ifc-viewer-embed .export-modified-ifc__button:hover,
+.ifc-viewer-embed .property-editor__button:hover,
+.ifc-viewer-embed .generate-btn:hover,
+.ifc-viewer-embed .clear-btn:hover,
+.ifc-viewer-embed .model-manager__button:hover,
+.ifc-viewer-library-container .floor-plan-controls bim-button:hover,
+.ifc-viewer-library-container .floor-plan-controls bim-button:hover::part(button),
+.ifc-viewer-embed .floor-plan-controls bim-button:hover,
+.ifc-viewer-embed .floor-buttons bim-button:hover,
+.ifc-viewer-embed .floor-buttons bim-button:hover::part(button),
+.ifc-viewer-embed [class*="floors"] select:hover,
+.ifc-viewer-embed .floors-select:hover,
+.ifc-viewer-embed summary[class*="floor"]:hover,
+.ifc-viewer-library-container summary[class*="floor"]:hover,
+.ifc-viewer-library-container .floors-dropdown:hover,
+.ifc-viewer-library-container details[class*="floor"] > summary:hover,
+.ifc-viewer-library-container .camera-style-buttons .floors-panel-header:hover,
+.camera-style-buttons .floors-panel-header:hover {
+    transform: translate(-1px, -1px) !important;
+    box-shadow: var(--ifc-shadow-lg) !important;
+    color: var(--ifc-color-black) !important;
+    background: var(--ifc-color-white) !important;
+    border-color: var(--ifc-color-black) !important;
+}
+
+.ifc-viewer-embed .sidebar button:not(.active):hover *,
+.ifc-viewer-embed .sidebar .sidebar-button:not(.active):hover *,
+.ifc-viewer-embed button:not(.active):hover * {
+    color: var(--ifc-color-black) !important;
+}
+
+.ifc-viewer-embed .sidebar button:active,
+.ifc-viewer-embed .sidebar .sidebar-button:active,
+.ifc-viewer-embed .sidebar .multi-view-options__button:active,
+.ifc-viewer-embed .sidebar .model-manager__button:active,
+.ifc-viewer-embed .render-presets button:active,
+.ifc-viewer-embed .render-mode-btn:active,
+.ifc-viewer-embed .render-reset-btn:active,
+.ifc-viewer-embed button[class*="reset"]:active,
+.ifc-viewer-library-container .floor-plan-controls bim-button:active,
+.ifc-viewer-library-container .floor-plan-controls bim-button:active::part(button),
+.ifc-viewer-embed .floor-plan-controls bim-button:active,
+.ifc-viewer-embed .floor-plan-controls bim-button:active::part(button),
+.ifc-viewer-embed .floor-buttons bim-button:active,
+.ifc-viewer-embed .floor-buttons bim-button:active::part(button) {
+    transform: translate(0, 0) !important;
+    box-shadow: var(--ifc-shadow-sm) !important;
+}
+
+.ifc-viewer-embed .sidebar button:disabled,
+.ifc-viewer-embed .sidebar .sidebar-button:disabled,
+.ifc-viewer-embed bim-button[disabled]::part(button),
+.ifc-viewer-embed .export-modified-ifc__button:disabled {
+    opacity: 1;
+    box-shadow: none !important;
+    background: var(--ifc-color-bg-muted) !important;
+    color: rgba(10, 10, 10, 0.65) !important;
+    border-color: rgba(10, 10, 10, 0.3) !important;
+}
+
+.ifc-viewer-embed .sidebar .button--primary,
+.ifc-viewer-embed .sidebar button.primary,
+.ifc-viewer-embed .sidebar .primary-action,
+.ifc-viewer-embed .sidebar .model-manager__button--primary,
+.ifc-viewer-embed .sidebar .multi-view-options__button.is-active,
+.ifc-viewer-embed .preset-btn.active,
+.ifc-viewer-embed .performance-chip[aria-pressed="true"],
+.ifc-viewer-embed .floor-buttons bim-button[aria-pressed="true"]::part(button),
+.ifc-viewer-embed .floor-buttons bim-button.active::part(button),
+.ifc-viewer-embed .model-manager__button.is-active,
+.ifc-viewer-embed .generate-btn,
+.ifc-viewer-embed .export-modified-ifc__button:not(:disabled),
+.ifc-viewer-library-container .render-presets button.active,
+.ifc-viewer-embed .render-presets button.active,
+.ifc-viewer-embed .render-mode-btn.active,
+.ifc-viewer-embed .sidebar .render-presets button.active,
+.ifc-viewer-embed .sidebar button.active,
+button.active[class*="render"],
+.ifc-viewer-library-container .floor-plan-controls bim-button[aria-pressed="true"],
+.ifc-viewer-library-container .floor-plan-controls bim-button[aria-pressed="true"]::part(button),
+.ifc-viewer-library-container .floor-plan-controls bim-button.active,
+.ifc-viewer-library-container .floor-plan-controls bim-button.active::part(button),
+.ifc-viewer-embed .floor-buttons bim-button[aria-pressed="true"],
+.ifc-viewer-embed .floor-buttons bim-button[aria-pressed="true"]::part(button),
+.ifc-viewer-embed .floor-buttons bim-button.active,
+.ifc-viewer-embed .floor-buttons bim-button.active::part(button),
+.ifc-viewer-embed .floor-plan-controls bim-button[aria-pressed="true"],
+.ifc-viewer-embed .floor-plan-controls bim-button[aria-pressed="true"]::part(button),
+.ifc-viewer-embed .floor-plan-controls bim-button.active,
+.ifc-viewer-embed .floor-plan-controls bim-button.active::part(button) {
+    background: var(--ifc-color-primary) !important;
+    color: var(--ifc-color-white) !important;
+    box-shadow: var(--ifc-shadow-lg) !important;
+    transform: translate(-1px, -1px) !important;
+}
+
+/* Floor plan special buttons */
+.ifc-viewer-embed button[class*="exit"],
+.ifc-viewer-embed button[class*="Exit"],
+.ifc-viewer-embed .exit-floor-plan-btn,
+.ifc-viewer-embed .reset-floors-btn,
+.ifc-viewer-embed .top-view-btn,
+.ifc-viewer-embed .fit-view-btn {
+    background: var(--ifc-color-gray-dark) !important;
+    color: var(--ifc-color-white) !important;
+    border: var(--ifc-border-primary) !important;
+    border-radius: var(--ifc-radius-md) !important;
+    box-shadow: var(--ifc-shadow-md) !important;
+    font-family: var(--ifc-font-mono);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: var(--ifc-letter-spacing-wide);
+    min-height: var(--ifc-control-height);
+    padding: 0.5rem 1rem;
+    width: 100%;
+    transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.ifc-viewer-embed button[class*="exit"]:hover,
+.ifc-viewer-embed button[class*="Exit"]:hover,
+.ifc-viewer-embed .exit-floor-plan-btn:hover,
+.ifc-viewer-embed .reset-floors-btn:hover,
+.ifc-viewer-embed .top-view-btn:hover,
+.ifc-viewer-embed .fit-view-btn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: var(--ifc-shadow-lg) !important;
+}
+
+/* --- Component-Specific Styles --------------------------------------------- */
+.ifc-viewer-embed .sidebar .relations-tree-container bim-table-row {
+    border: var(--ifc-border-thin);
+    background: var(--ifc-color-bg-subtle);
+}
+
+.ifc-viewer-embed .sidebar .relations-tree-container bim-table-row:hover {
+    background: var(--ifc-color-bg-surface);
+}
+
+.ifc-viewer-embed .sidebar .relations-tree-container bim-table-row.relations-tree__row--selected {
+    background: var(--ifc-color-primary-light);
+    color: var(--ifc-color-white);
+    box-shadow: inset 0 0 0 1px var(--ifc-color-primary-light);
+}
+
+.ifc-viewer-embed .minimap-container canvas {
+    border: var(--ifc-border-primary) !important;
+    box-shadow: var(--ifc-shadow-panel);
+    background: var(--ifc-color-white) !important;
+}
+
+.ifc-viewer-embed .property-editor,
+.ifc-viewer-embed .property-row,
+.ifc-viewer-embed .property-create-form,
+.ifc-viewer-embed .property-editor__button,
+.ifc-viewer-embed .export-modified-ifc__button {
+    border-radius: var(--ifc-radius-lg);
+    border: var(--ifc-border-lighter) !important;
+    background: var(--ifc-color-white) !important;
+    color: var(--ifc-color-primary) !important;
+    box-shadow: var(--ifc-shadow-light);
+    font-family: var(--ifc-font-sans) !important;
+}
+
+.ifc-viewer-embed .property-editor__button,
+.ifc-viewer-embed .export-modified-ifc__button {
+    text-transform: uppercase;
+    letter-spacing: var(--ifc-letter-spacing-wide);
+    font-weight: 700;
+}
+
+.ifc-viewer-embed .ai-visualizer-section,
+.ifc-viewer-embed .comparison-item,
+.ifc-viewer-embed .floor-plan-controls bim-button {
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.12);
+}
+
+.ifc-viewer-embed .render-presets label,
+.ifc-viewer-embed .floor-plan-section .floor-plan-mode-indicator,
+.ifc-viewer-embed .active-floor-display,
+.ifc-viewer-embed .property-editor__meta,
+.ifc-viewer-embed .property-name,
+.ifc-viewer-embed .property-value {
+    font-family: var(--ifc-font-mono);
+    letter-spacing: var(--ifc-letter-spacing-normal);
+    text-transform: uppercase;
+    color: var(--ifc-color-primary) !important;
+}
+
+.ifc-viewer-embed .floor-plan-section .floor-plan-mode-indicator,
+.ifc-viewer-embed .active-floor-display,
+.ifc-viewer-embed .property-editor__info {
+    background: var(--ifc-color-bg-light) !important;
+    color: var(--ifc-color-primary) !important;
+    border: var(--ifc-border-lighter) !important;
+    box-shadow: var(--ifc-shadow-light);
+}
+
+.ifc-viewer-embed .model-manager__item,
+.ifc-viewer-embed .floor-plan-controls,
+.ifc-viewer-embed .comparison-item,
+.ifc-viewer-embed .property-row,
+.ifc-viewer-embed .property-create-form,
+.ifc-viewer-embed .ai-visualizer-section {
+    background: var(--ifc-color-white) !important;
+    border: 1.5px solid rgba(0, 0, 0, 0.14) !important;
+    box-shadow: var(--ifc-shadow-subtle);
+}
+
+.ifc-viewer-embed .property-editor__badge {
+    background: var(--ifc-color-primary) !important;
+    color: var(--ifc-color-white) !important;
+    border-radius: var(--ifc-radius-sm);
+    letter-spacing: var(--ifc-letter-spacing-wide);
+}
+
+.ifc-viewer-embed .ai-visualizer-modal__content,
+.ifc-viewer-embed .compare-stage {
+    background: var(--ifc-color-white) !important;
+    color: var(--ifc-color-primary) !important;
+    border: var(--ifc-border-medium) !important;
+    box-shadow: var(--ifc-shadow-xl);
+}
+
+.ifc-viewer-embed .ai-visualizer-modal__close {
+    background: var(--ifc-color-white) !important;
+    color: var(--ifc-color-primary) !important;
+    border: var(--ifc-border-primary) !important;
+    box-shadow: var(--ifc-shadow-md);
+}
+
+.ifc-viewer-embed .comparison-image {
+    border: var(--ifc-border-light) !important;
+}
+
+.ifc-viewer-embed .comparison-grid {
+    gap: 14px;
+}
+
+.ifc-viewer-embed .comparison-toolbar {
+    justify-content: flex-start;
+}
+
+.ifc-viewer-embed .length-display,
+.ifc-viewer-embed .volume-display,
+.ifc-viewer-embed .measurement-tool-placeholder,
+.ifc-viewer-embed .property-input,
+.ifc-viewer-embed .property-value-wrapper {
+    border: var(--ifc-border-lighter) !important;
+    background: var(--ifc-color-white) !important;
+    color: var(--ifc-color-primary) !important;
+}
+
+.ifc-viewer-embed .color-control button,
+.ifc-viewer-embed .element-color,
+.ifc-viewer-embed .color-swatch,
+.ifc-viewer-embed .color-picker button {
+    border: var(--ifc-border-medium) !important;
+    box-shadow: var(--ifc-shadow-xs);
+    border-radius: var(--ifc-radius-md);
+}
+
+.ifc-viewer-embed .field-label,
+.ifc-viewer-embed .property-editor__title,
+.ifc-viewer-embed .property-editor__info,
+.ifc-viewer-embed .property-editor__meta,
+.ifc-viewer-embed .property-editor__list,
+.ifc-viewer-embed .property-name,
+.ifc-viewer-embed .property-value {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* Floor options in dropdown */
+.ifc-viewer-library-container .camera-style-buttons .floor-option,
+.ifc-viewer-library-container .floor-option,
+.ifc-viewer-embed .sidebar .floor-option,
+.ifc-viewer-embed .floor-option,
+.floor-option {
+    color: var(--ifc-color-black) !important;
+    background: var(--ifc-color-white) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
+    padding: 10px 14px !important;
+    cursor: pointer !important;
+    font-size: 0.82rem !important;
+    font-family: var(--ifc-font-mono) !important;
+    font-weight: 600 !important;
+    letter-spacing: var(--ifc-letter-spacing-normal) !important;
+    text-transform: uppercase !important;
+    transition: var(--ifc-transition-color) !important;
+}
+
+.ifc-viewer-library-container .camera-style-buttons .floor-option:hover,
+.ifc-viewer-library-container .floor-option:hover,
+.ifc-viewer-embed .sidebar .floor-option:hover,
+.ifc-viewer-embed .floor-option:hover,
+.floor-option:hover {
+    background: var(--ifc-color-bg-hover) !important;
+    color: var(--ifc-color-black) !important;
+    border-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+.ifc-viewer-library-container .camera-style-buttons .floor-option.selected,
+.ifc-viewer-library-container .floor-option.selected,
+.ifc-viewer-embed .sidebar .floor-option.selected,
+.ifc-viewer-embed .floor-option.selected,
+.floor-option.selected,
+.ifc-viewer-library-container .camera-style-buttons .floor-option[aria-selected="true"],
+.ifc-viewer-library-container .floor-option[aria-selected="true"],
+.ifc-viewer-embed .sidebar .floor-option[aria-selected="true"],
+.ifc-viewer-embed .floor-option[aria-selected="true"],
+.floor-option[aria-selected="true"] {
+    background: var(--ifc-color-bg-surface) !important;
+    color: var(--ifc-color-black) !important;
+    font-weight: 700 !important;
+    border-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+/* --- Design System Page Styles (not IFC viewer) ---------------------------- */
+.viewer-feature-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+}
+
+.viewer-feature-control {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-family: var(--ifc-font-mono);
+    font-size: 0.65rem;
+    letter-spacing: var(--ifc-letter-spacing-wide);
+    text-transform: uppercase;
+    color: var(--ifc-color-gray);
+}
+
+.viewer-feature-control input[type="color"] {
+    width: 72px;
+    height: var(--ifc-control-height);
+    border: var(--ifc-border-medium);
+    border-radius: var(--ifc-radius-md);
+    padding: 0;
+    background: var(--ifc-color-white);
+    cursor: pointer;
+}
+
+.viewer-feature-control-value {
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: #111827;
+}
+
+.viewer-font-toggle {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.viewer-font-toggle__btn {
+    border: var(--ifc-border-primary);
+    border-radius: var(--ifc-radius-md);
+    padding: 0.45rem 1.15rem;
+    font-family: var(--ifc-font-mono);
+    text-transform: uppercase;
+    letter-spacing: var(--ifc-letter-spacing-wide);
+    font-size: 0.7rem;
+    background: var(--ifc-color-white);
+    color: var(--ifc-color-primary);
+    box-shadow: var(--ifc-shadow-md);
+    transition: color 120ms ease, background 120ms ease, transform 120ms ease, box-shadow 120ms ease;
+}
+
+.viewer-font-toggle__btn.is-active {
+    background: var(--ifc-color-primary);
+    color: var(--ifc-color-white);
+    transform: translate(-1px, -1px);
+    box-shadow: var(--ifc-shadow-lg);
+}
+
+.viewer-feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+.viewer-feature-card {
+    border: var(--ifc-border-lighter);
+    border-radius: var(--ifc-radius-xl);
+    padding: 1.25rem;
+    background: var(--ifc-color-white);
+    box-shadow: var(--ifc-shadow-subtle);
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.viewer-feature-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--ifc-shadow-panel-hover);
+}
+
+.viewer-feature-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+}
+
+.viewer-feature-description {
+    font-size: 0.85rem;
+    color: #4b5563;
+    line-height: 1.45;
+}
+
+/* --- Scrollbar Styling ----------------------------------------------------- */
+.ifc-viewer-embed ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+.ifc-viewer-embed ::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.ifc-viewer-embed ::-webkit-scrollbar-thumb {
+    background: rgba(10, 10, 10, 0.3);
+    border-radius: var(--ifc-radius-md);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.ifc-viewer-embed ::-webkit-scrollbar-thumb:hover {
+    background: rgba(10, 10, 10, 0.5);
+    background-clip: padding-box;
+}
+
+.ifc-viewer-embed ::-webkit-scrollbar-thumb:active {
+    background: rgba(10, 10, 10, 0.7);
+    background-clip: padding-box;
+}
+
+.ifc-viewer-embed *,
+.ifc-viewer-embed .sidebar,
+.ifc-viewer-embed .sidebar * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(10, 10, 10, 0.3) transparent;
+}
+
+/* --- Panel Visibility (Hide specific panels) ------------------------------- */
+.ifc-viewer-embed .sidebar bim-panel-section:nth-child(n+3),
+.ifc-viewer-library-container .sidebar bim-panel-section:nth-child(n+3) {
+    display: none !important;
+}
+
+.ifc-viewer-embed bim-panel-section:has(*:contains("Element Colors")),
+.ifc-viewer-embed bim-panel-section:has(*:contains("Render Modes")),
+.ifc-viewer-embed bim-panel-section:has(*:contains("Camera")),
+.ifc-viewer-embed bim-panel-section:has(*:contains("Performance")),
+.ifc-viewer-embed bim-panel-section:has(*:contains("View Cube")),
+.ifc-viewer-library-container bim-panel-section:has(*:contains("Element Colors")),
+.ifc-viewer-library-container bim-panel-section:has(*:contains("Render Modes")),
+.ifc-viewer-library-container bim-panel-section:has(*:contains("Camera")),
+.ifc-viewer-library-container bim-panel-section:has(*:contains("Performance")),
+.ifc-viewer-library-container bim-panel-section:has(*:contains("View Cube")) {
+    display: none !important;
+}

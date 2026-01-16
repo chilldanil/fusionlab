@@ -1,0 +1,76 @@
+image: node:20-slim
+
+stages:
+  - build
+  - deploy
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+
+# Default tags - allow any runner
+default:
+  tags: []
+
+# Lint job
+lint:
+  stage: build
+  script:
+    - npm ci
+    - npm run lint
+  only:
+    - merge_requests
+    - main
+    - develop
+
+# Type-check job
+type-check:
+  stage: build
+  script:
+    - npm ci
+    - npx tsc --noEmit
+  only:
+    - merge_requests
+    - main
+    - develop
+
+# Build job (verification)
+build:
+  stage: build
+  script:
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 hour
+  only:
+    - merge_requests
+    - main
+    - develop
+
+# GitLab Pages deployment
+pages:
+  stage: deploy
+  dependencies:
+    - build
+  script:
+    - npm ci
+    # Build with environment variables (set in GitLab CI/CD Variables)
+    - npm run build
+    # Move dist contents to public directory (required by GitLab Pages)
+    - mkdir -p public
+    - cp -r dist/* public/
+    # Cleanup to reduce artifact size
+    - rm -rf node_modules
+    - rm -rf dist
+  artifacts:
+    paths:
+      - public
+    expire_in: 30 days
+  only:
+    - main
+  # Note: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY must be set in
+  # GitLab project settings: Settings > CI/CD > Variables
+
