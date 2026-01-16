@@ -4,6 +4,7 @@ import { LandingPage } from '../features/landing/LandingPage';
 import { LoginPage } from '../features/auth/LoginPage';
 import { ProfilePage } from '../features/user/ProfilePage';
 import { BookingPage } from '../features/booking/BookingPage';
+import { MyBookingsPage } from '../features/booking/MyBookingsPage';
 import { useAuth } from '../shared/context/AuthContext';
 
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
@@ -61,6 +62,14 @@ export const AppRoutes = () => {
                 element={
                     <ProtectedRoute>
                         <BookingPage />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/my-bookings"
+                element={
+                    <ProtectedRoute>
+                        <MyBookingsPage />
                     </ProtectedRoute>
                 }
             />
