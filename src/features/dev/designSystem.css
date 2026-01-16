@@ -1,11 +1,15 @@
-/* Override :root BIM UI variables globally before anything else */
+/* ============================================================================
+   IFC VIEWER DESIGN SYSTEM - REFACTORED
+   Monochrome neo-brutalist theme with CSS custom properties
+   ============================================================================ */
+
+/* --- BIM UI Library Overrides (Required for third-party components) -------- */
 :root {
     --bim-ui_main-base: #0a0a0a !important;
     --bim-ui_accent-base: #0a0a0a !important;
     --bim-ui_main-contrast: #ffffff !important;
     --bim-ui_accent-contrast: #ffffff !important;
-    
-    /* Override gray scale to remove any color tint */
+
     --bim-ui_gray-0: hsl(0 0% 100%) !important;
     --bim-ui_gray-1: hsl(0 0% 95%) !important;
     --bim-ui_gray-2: hsl(0 0% 90%) !important;
@@ -17,8 +21,7 @@
     --bim-ui_gray-8: hsl(0 0% 30%) !important;
     --bim-ui_gray-9: hsl(0 0% 15%) !important;
     --bim-ui_gray-10: hsl(0 0% 10%) !important;
-    
-    /* Background contrasts */
+
     --bim-ui_bg-base: hsl(0 0% 100%) !important;
     --bim-ui_bg-contrast-10: hsl(0 0% 95%) !important;
     --bim-ui_bg-contrast-20: hsl(0 0% 90%) !important;
@@ -29,49 +32,93 @@
     --bim-ui_bg-contrast-100: hsl(0 0% 10%) !important;
 }
 
-/* Override dark mode to keep monochrome */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bim-ui_main-base: #0a0a0a !important;
-        --bim-ui_accent-base: #0a0a0a !important;
-        --bim-ui_bg-base: hsl(0 0% 100%) !important;
-        --bim-ui_bg-contrast-10: hsl(0 0% 95%) !important;
-        --bim-ui_bg-contrast-20: hsl(0 0% 90%) !important;
-        --bim-ui_bg-contrast-30: hsl(0 0% 85%) !important;
-        --bim-ui_bg-contrast-40: hsl(0 0% 80%) !important;
-        --bim-ui_bg-contrast-60: hsl(0 0% 60%) !important;
-        --bim-ui_bg-contrast-80: hsl(0 0% 30%) !important;
-        --bim-ui_bg-contrast-100: hsl(0 0% 10%) !important;
-    }
+/* --- Design Tokens (Custom Properties) ------------------------------------- */
+:root {
+    /* Colors */
+    --ifc-color-primary: #0a0a0a;
+    --ifc-color-primary-light: #050505;
+    --ifc-color-black: #000000;
+    --ifc-color-white: #ffffff;
+    --ifc-color-bg-light: #f7f7f3;
+    --ifc-color-bg-muted: #f3f3ef;
+    --ifc-color-bg-hover: #f9f9f7;
+    --ifc-color-bg-surface: #f1f1ed;
+    --ifc-color-bg-subtle: #fbfbf8;
+    --ifc-color-bg-semi: rgba(255, 255, 255, 0.98);
+    --ifc-color-gray: #6b7280;
+    --ifc-color-gray-dark: #2c2c2c;
+
+    /* Borders */
+    --ifc-border-width: 1.5px;
+    --ifc-border-width-thin: 1px;
+    --ifc-border-primary: 1.5px solid var(--ifc-color-primary);
+    --ifc-border-light: 1.5px solid rgba(0, 0, 0, 0.18);
+    --ifc-border-lighter: 1.5px solid rgba(0, 0, 0, 0.16);
+    --ifc-border-lightest: 1.5px solid rgba(0, 0, 0, 0.12);
+    --ifc-border-medium: 1.5px solid rgba(0, 0, 0, 0.2);
+    --ifc-border-strong: 1.5px solid rgba(0, 0, 0, 0.22);
+    --ifc-border-thin: 1px solid rgba(0, 0, 0, 0.1);
+
+    /* Shadows */
+    --ifc-shadow-sm: 2px 2px 0 rgba(0, 0, 0, 0.2);
+    --ifc-shadow-md: 4px 4px 0 rgba(0, 0, 0, 0.18);
+    --ifc-shadow-lg: 6px 6px 0 rgba(0, 0, 0, 0.2);
+    --ifc-shadow-xl: 8px 8px 0 rgba(0, 0, 0, 0.15);
+    --ifc-shadow-subtle: 4px 4px 0 rgba(0, 0, 0, 0.08);
+    --ifc-shadow-light: 4px 4px 0 rgba(0, 0, 0, 0.1);
+    --ifc-shadow-xs: 3px 3px 0 rgba(0, 0, 0, 0.12);
+    --ifc-shadow-inset: 2px 2px 0 rgba(0, 0, 0, 0.08) inset;
+    --ifc-shadow-panel: 6px 6px 0 rgba(0, 0, 0, 0.08);
+    --ifc-shadow-panel-hover: 8px 8px 0 rgba(0, 0, 0, 0.12);
+
+    /* Radius */
+    --ifc-radius-sm: 4px;
+    --ifc-radius-md: 6px;
+    --ifc-radius-lg: 8px;
+    --ifc-radius-xl: 12px;
+
+    /* Typography */
+    --ifc-font-mono: "IBM Plex Mono", "Space Mono", monospace;
+    --ifc-font-sans: "Inter", "IBM Plex Mono", monospace;
+    --ifc-letter-spacing-wide: 0.08em;
+    --ifc-letter-spacing-normal: 0.04em;
+    --ifc-letter-spacing-tight: 0.02em;
+
+    /* Sizing */
+    --ifc-control-height: 38px;
+
+    /* Transitions */
+    --ifc-transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+    --ifc-transition-color: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
+/* --- Container Base Styles ------------------------------------------------- */
 .ifc-viewer-embed {
     position: relative;
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background: #ffffff !important;
-    background-color: #ffffff !important;
+    background: var(--ifc-color-white) !important;
+    background-color: var(--ifc-color-white) !important;
     background-image:
         linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
         linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px) !important;
     background-size: 56px 56px, 56px 56px !important;
-    
-    /* Re-apply overrides at component level */
-    --bim-ui_main-base: #0a0a0a !important;
-    --bim-ui_main-contrast: #ffffff !important;
-    --bim-ui_accent-base: #0a0a0a !important;
-    --bim-ui_accent-contrast: #ffffff !important;
-    --ifc-background: #ffffff !important;
-    
-    accent-color: #0a0a0a !important;
+    accent-color: var(--ifc-color-primary) !important;
+
+    /* Re-apply BIM overrides at component level */
+    --bim-ui_main-base: var(--ifc-color-primary) !important;
+    --bim-ui_main-contrast: var(--ifc-color-white) !important;
+    --bim-ui_accent-base: var(--ifc-color-primary) !important;
+    --bim-ui_accent-contrast: var(--ifc-color-white) !important;
+    --ifc-background: var(--ifc-color-white) !important;
 }
 
 .ifc-viewer-embed bim-viewport,
 bim-viewport,
 .ifc-viewer-library-container bim-viewport {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
+    background: var(--ifc-color-white) !important;
+    background-color: var(--ifc-color-white) !important;
 }
 
 .ifc-viewer-embed .ifc-viewer-library-container.layout {
@@ -83,21 +130,19 @@ bim-viewport,
 }
 
 .ifc-viewer-embed .ifc-viewer-library-container {
-    font-family: "Inter", "IBM Plex Mono", monospace;
-    color: #0a0a0a;
-    
-    /* Force override on the library container level */
-    --bim-ui_main-base: #0a0a0a !important;
-    --bim-ui_accent-base: #0a0a0a !important;
-    --bim-ui_accent-contrast: #ffffff !important;
+    font-family: var(--ifc-font-sans);
+    color: var(--ifc-color-primary);
+    --bim-ui_main-base: var(--ifc-color-primary) !important;
+    --bim-ui_accent-base: var(--ifc-color-primary) !important;
+    --bim-ui_accent-contrast: var(--ifc-color-white) !important;
 }
 
 .ifc-viewer-embed .viewer-container,
 .ifc-viewer-library-container .viewer-container,
 .viewer-container,
 canvas {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
+    background: var(--ifc-color-white) !important;
+    background-color: var(--ifc-color-white) !important;
     background-image:
         linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
         linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px) !important;
@@ -105,44 +150,45 @@ canvas {
 }
 
 .ifc-viewer-embed .viewer-pane {
-    border: 1.5px solid rgba(0, 0, 0, 0.18) !important;
+    border: var(--ifc-border-light) !important;
     border-radius: 0 !important;
     box-shadow: none !important;
 }
 
+/* --- Sidebar Styles -------------------------------------------------------- */
 .ifc-viewer-embed .sidebar-slot,
 .ifc-viewer-embed .sidebar-toggle {
     position: absolute !important;
 }
 
 .ifc-viewer-embed .sidebar-slot {
-    border-right: 1.5px solid rgba(0, 0, 0, 0.16);
+    border-right: var(--ifc-border-lighter);
     box-shadow: none;
 }
 
 .ifc-viewer-embed .sidebar-toggle {
-    border-radius: 6px;
-    border: 1.5px solid rgba(0, 0, 0, 0.22) !important;
-    background: #ffffff !important;
-    color: #050505 !important;
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.18);
+    border-radius: var(--ifc-radius-md);
+    border: var(--ifc-border-strong) !important;
+    background: var(--ifc-color-white) !important;
+    color: var(--ifc-color-primary-light) !important;
+    box-shadow: var(--ifc-shadow-md);
 }
 
 .ifc-viewer-embed .sidebar {
-    background: rgba(255, 255, 255, 0.98) !important;
-    color: #050505 !important;
-    font-family: "Inter", "IBM Plex Mono", monospace;
-    letter-spacing: 0.02em;
+    background: var(--ifc-color-bg-semi) !important;
+    color: var(--ifc-color-primary-light) !important;
+    font-family: var(--ifc-font-sans);
+    letter-spacing: var(--ifc-letter-spacing-tight);
     text-transform: none;
-    border-right: 1.5px solid rgba(0, 0, 0, 0.16);
+    border-right: var(--ifc-border-lighter);
     box-shadow: none;
 }
 
 .ifc-viewer-embed .sidebar-heading {
-    font-family: "IBM Plex Mono", "Space Mono", monospace;
+    font-family: var(--ifc-font-mono);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #6b7280;
+    letter-spacing: var(--ifc-letter-spacing-wide);
+    color: var(--ifc-color-gray);
 }
 
 .ifc-viewer-embed .sidebar bim-panel {
@@ -150,34 +196,29 @@ canvas {
 }
 
 .ifc-viewer-embed .sidebar bim-panel-section {
-    border-radius: 8px !important;
-    border: 1.5px solid rgba(0, 0, 0, 0.18) !important;
-    background: #ffffff !important;
-    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.08);
+    border-radius: var(--ifc-radius-lg) !important;
+    border: var(--ifc-border-light) !important;
+    background: var(--ifc-color-white) !important;
+    box-shadow: var(--ifc-shadow-panel);
 }
 
 .ifc-viewer-embed .sidebar bim-panel-section[collapsed] {
-    background: #f3f3ef !important;
+    background: var(--ifc-color-bg-muted) !important;
     border-color: rgba(0, 0, 0, 0.12) !important;
     box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.05);
 }
 
 .ifc-viewer-embed .sidebar bim-panel-section::part(header) {
-    font-family: "IBM Plex Mono", "Space Mono", monospace;
-    letter-spacing: 0.08em;
+    font-family: var(--ifc-font-mono);
+    letter-spacing: var(--ifc-letter-spacing-wide);
     text-transform: uppercase;
     font-size: 11px;
-    color: #000000 !important;
-    background: #ffffff;
+    color: var(--ifc-color-black) !important;
+    background: var(--ifc-color-white);
 }
 
 .ifc-viewer-embed .sidebar bim-panel-section::part(content) {
-    color: #0a0a0a !important;
-}
-
-/* Override any green/color hover states globally */
-.ifc-viewer-embed *:hover {
-    accent-color: #0a0a0a !important;
+    color: var(--ifc-color-primary) !important;
 }
 
 .ifc-viewer-embed bim-panel-section:hover,
@@ -186,11 +227,15 @@ canvas {
 }
 
 .ifc-viewer-embed .sidebar bim-panel-section::part(header):hover {
-    background: #f9f9f7 !important;
-    color: #000000 !important;
+    background: var(--ifc-color-bg-hover) !important;
+    color: var(--ifc-color-black) !important;
 }
 
-/* Force all text elements to be dark and readable (except floor options) */
+/* --- Text & Typography ----------------------------------------------------- */
+.ifc-viewer-embed *:hover {
+    accent-color: var(--ifc-color-primary) !important;
+}
+
 .ifc-viewer-embed .sidebar p:not(.floor-option),
 .ifc-viewer-embed .sidebar span:not(.floor-option),
 .ifc-viewer-embed .sidebar div:not(.floor-option),
@@ -199,34 +244,29 @@ canvas {
 .ifc-viewer-embed .sidebar .section-title:not(.floor-option),
 .ifc-viewer-embed .sidebar .text:not(.floor-option),
 .ifc-viewer-embed .sidebar bim-label:not(.floor-option) {
-    color: #0a0a0a !important;
+    color: var(--ifc-color-primary) !important;
 }
 
-/* OVERRIDE: Ensure text inside active buttons is WHITE - must come AFTER the above rule */
 .ifc-viewer-library-container button.active,
 .ifc-viewer-library-container button.active *,
 .ifc-viewer-embed button.active,
 .ifc-viewer-embed button.active *,
 .ifc-viewer-embed .sidebar button.active,
 .ifc-viewer-embed .sidebar button.active *,
-.ifc-viewer-embed .sidebar button.active span,
-.ifc-viewer-embed .sidebar button.active div,
 .ifc-viewer-embed .sidebar .render-presets button.active,
 .ifc-viewer-embed .sidebar .render-presets button.active *,
 .ifc-viewer-library-container .render-presets button.active,
 .ifc-viewer-library-container .render-presets button.active *,
 button.active,
 button.active * {
-    color: #ffffff !important;
+    color: var(--ifc-color-white) !important;
 }
 
-/* Placeholder text should also be dark */
 .ifc-viewer-embed .sidebar input::placeholder,
 .ifc-viewer-embed .sidebar textarea::placeholder {
     color: rgba(10, 10, 10, 0.6) !important;
 }
 
-/* Info text, hints, descriptions */
 .ifc-viewer-embed .sidebar .description,
 .ifc-viewer-embed .sidebar .hint,
 .ifc-viewer-embed .sidebar .info-text,
@@ -236,39 +276,48 @@ button.active * {
     color: rgba(10, 10, 10, 0.75) !important;
 }
 
-/* Force CSS variables on all bim-* components */
-.ifc-viewer-embed [class*="bim-"],
-.ifc-viewer-embed bim-button,
-.ifc-viewer-embed bim-panel,
-.ifc-viewer-embed bim-panel-section,
-.ifc-viewer-embed bim-table,
-.ifc-viewer-embed bim-table-row {
-    --bim-ui_main-base: #0a0a0a !important;
-    --bim-ui_accent-base: #0a0a0a !important;
-    --bim-ui_accent-contrast: #ffffff !important;
-}
-
 .ifc-viewer-embed .sidebar label,
 .ifc-viewer-embed .sidebar .field-label {
-    font-family: "IBM Plex Mono", "Space Mono", monospace;
+    font-family: var(--ifc-font-mono);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: var(--ifc-letter-spacing-wide);
     font-size: 11px;
-    color: #000000 !important;
+    color: var(--ifc-color-black) !important;
 }
 
+.ifc-viewer-embed .status-text,
+.ifc-viewer-embed .info-message,
+.ifc-viewer-embed .hint-text,
+.ifc-viewer-embed .model-name,
+.ifc-viewer-embed .floor-name,
+.ifc-viewer-embed .element-name,
+.ifc-viewer-embed [class*="text"],
+.ifc-viewer-embed [class*="label"],
+.ifc-viewer-embed [class*="name"],
+.ifc-viewer-embed [class*="title"] {
+    color: var(--ifc-color-primary) !important;
+}
+
+bim-label {
+    color: var(--ifc-color-black);
+}
+
+/* --- Inputs & Form Controls ------------------------------------------------ */
 .ifc-viewer-embed .sidebar input:not([type=range]):not([type=checkbox]),
 .ifc-viewer-embed .sidebar select,
 .ifc-viewer-embed .sidebar textarea,
-.ifc-viewer-embed .sidebar .sidebar-input {
-    min-height: 38px;
-    border: 1.5px solid rgba(0, 0, 0, 0.18) !important;
-    border-radius: 6px;
-    background: #f7f7f3 !important;
-    color: #0a0a0a !important;
-    font-family: "IBM Plex Mono", "Space Mono", monospace;
-    letter-spacing: 0.04em;
-    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.08) inset;
+.ifc-viewer-embed .sidebar .sidebar-input,
+.ifc-viewer-embed .minimap-controls-container bim-number-input::part(input),
+.ifc-viewer-embed bim-number-input::part(input),
+.ifc-viewer-embed bim-text-input::part(input) {
+    min-height: var(--ifc-control-height);
+    border: var(--ifc-border-light) !important;
+    border-radius: var(--ifc-radius-md);
+    background: var(--ifc-color-bg-light) !important;
+    color: var(--ifc-color-primary) !important;
+    font-family: var(--ifc-font-mono);
+    letter-spacing: var(--ifc-letter-spacing-normal);
+    box-shadow: var(--ifc-shadow-inset);
 }
 
 .ifc-viewer-embed .sidebar input:not([type=range]):not([type=checkbox])::placeholder,
@@ -279,157 +328,58 @@ button.active * {
 .ifc-viewer-embed .sidebar input:not([type=range]):not([type=checkbox]):focus,
 .ifc-viewer-embed .sidebar select:focus,
 .ifc-viewer-embed .sidebar textarea:focus {
-    border-color: #050505 !important;
+    border-color: var(--ifc-color-primary-light) !important;
     box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.08);
-    background: #ffffff !important;
+    background: var(--ifc-color-white) !important;
 }
 
 .ifc-viewer-embed input[type="range"],
 .ifc-viewer-embed input[type="checkbox"] {
-    accent-color: #050505;
+    accent-color: var(--ifc-color-primary-light);
 }
 
+.ifc-viewer-embed bim-checkbox,
+.ifc-viewer-embed bim-number-input,
+.ifc-viewer-embed bim-text-input {
+    --accent-color: var(--ifc-color-primary) !important;
+    --bim-checkbox-primary: var(--ifc-color-primary) !important;
+    --bim-checkbox-border: var(--ifc-color-primary) !important;
+    --bim-ui_main-base: var(--ifc-color-primary) !important;
+    --bim-ui_accent-base: var(--ifc-color-primary) !important;
+    font-family: var(--ifc-font-mono);
+    letter-spacing: var(--ifc-letter-spacing-normal);
+}
+
+.ifc-viewer-embed bim-checkbox input[type="checkbox"] {
+    accent-color: var(--ifc-color-primary) !important;
+}
+
+.ifc-viewer-embed select {
+    appearance: none;
+    background: var(--ifc-color-white) url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%230a0a0a' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+    padding-right: 32px;
+    font-family: var(--ifc-font-mono);
+    letter-spacing: var(--ifc-letter-spacing-normal);
+    border: var(--ifc-border-light) !important;
+}
+
+.ifc-viewer-embed select option {
+    color: var(--ifc-color-primary) !important;
+    background: var(--ifc-color-white) !important;
+}
+
+/* --- Buttons (Consolidated) ------------------------------------------------ */
 .ifc-viewer-embed .sidebar button:not(.active):not([class*="active"]),
 .ifc-viewer-embed .sidebar .sidebar-button:not(.active),
 .ifc-viewer-embed .sidebar .multi-view-options__button:not(.active),
-.ifc-viewer-embed .sidebar .model-manager__button:not(.is-active) {
-    min-height: 38px;
-    font-family: "IBM Plex Mono", "Space Mono", monospace;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    border-radius: 6px !important;
-    border: 1.5px solid #0a0a0a !important;
-    background: #ffffff !important;
-    color: #000000 !important;
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.18);
-    transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
-}
-
-.ifc-viewer-embed .sidebar .button--primary,
-.ifc-viewer-embed .sidebar button.primary,
-.ifc-viewer-embed .sidebar .primary-action,
-.ifc-viewer-embed .sidebar .model-manager__button--primary {
-    background: #050505 !important;
-    color: #ffffff !important;
-}
-
-.ifc-viewer-embed .sidebar button:not(.active):hover,
-.ifc-viewer-embed .sidebar .sidebar-button:not(.active):hover,
-.ifc-viewer-embed .sidebar .multi-view-options__button:not(.active):hover,
-.ifc-viewer-embed .sidebar .model-manager__button:not(.is-active):hover {
-    transform: translate(-1px, -1px);
-    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.2);
-    color: #000000 !important;
-    background: #ffffff !important;
-}
-
-/* Ensure text inside hovered non-active buttons stays BLACK */
-.ifc-viewer-embed .sidebar button:not(.active):hover *,
-.ifc-viewer-embed .sidebar .sidebar-button:not(.active):hover *,
-.ifc-viewer-embed button:not(.active):hover * {
-    color: #000000 !important;
-}
-
-.ifc-viewer-embed .sidebar button:active,
-.ifc-viewer-embed .sidebar .sidebar-button:active,
-.ifc-viewer-embed .sidebar .multi-view-options__button:active,
-.ifc-viewer-embed .sidebar .model-manager__button:active {
-    transform: translate(0, 0);
-    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
-}
-
-.ifc-viewer-embed .sidebar button:disabled,
-.ifc-viewer-embed .sidebar .sidebar-button:disabled {
-    opacity: 1;
-    box-shadow: none;
-    background: #f3f3ef !important;
-    color: rgba(10, 10, 10, 0.65) !important;
-    border-color: rgba(10, 10, 10, 0.3) !important;
-}
-
-.ifc-viewer-embed .sidebar .multi-view-options__button.is-active {
-    background: #050505 !important;
-    color: #ffffff !important;
-    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.2);
-}
-
-.ifc-viewer-embed .sidebar .relations-tree-container bim-table-row {
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    background: #fbfbf8;
-}
-
-.ifc-viewer-embed .sidebar .relations-tree-container bim-table-row:hover {
-    background: #f1f1ed;
-}
-
-.ifc-viewer-embed .sidebar .relations-tree-container bim-table-row.relations-tree__row--selected {
-    background: #050505;
-    color: #ffffff;
-    box-shadow: inset 0 0 0 1px #050505;
-}
-
-.ifc-viewer-embed bim-button::part(button) {
-    font-family: "IBM Plex Mono", "Space Mono", monospace;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-weight: 700;
-    border-radius: 6px;
-    border: 1.5px solid #0a0a0a;
-    background: #ffffff;
-    color: #000000 !important;
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.18);
-    transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
-}
-
-.ifc-viewer-embed bim-button:hover::part(button) {
-    transform: translate(-1px, -1px);
-    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.2);
-}
-
-.ifc-viewer-embed bim-button[disabled]::part(button) {
-    opacity: 1;
-    box-shadow: none;
-    background: #f3f3ef;
-    color: rgba(10, 10, 10, 0.65) !important;
-    border-color: rgba(10, 10, 10, 0.3);
-}
-
-.ifc-viewer-embed .minimap-container canvas {
-    border: 1.5px solid #0a0a0a !important;
-    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.12);
-    background: #ffffff !important;
-}
-
-.ifc-viewer-embed .property-editor,
-.ifc-viewer-embed .property-row,
-.ifc-viewer-embed .property-create-form,
-.ifc-viewer-embed .property-editor__button,
-.ifc-viewer-embed .export-modified-ifc__button {
-    border-radius: 8px;
-    border: 1.5px solid rgba(0, 0, 0, 0.16) !important;
-    background: #ffffff !important;
-    color: #0a0a0a !important;
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
-    font-family: "Inter", "IBM Plex Mono", monospace !important;
-}
-
-.ifc-viewer-embed .property-editor__button,
-.ifc-viewer-embed .export-modified-ifc__button {
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-weight: 700;
-}
-
-.ifc-viewer-embed .ai-visualizer-section,
-.ifc-viewer-embed .comparison-item,
-.ifc-viewer-embed .floor-plan-controls bim-button {
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.12);
-}
-
-/* --- Section-specific cleanups ------------------------------------------------ */
+.ifc-viewer-embed .sidebar .model-manager__button:not(.is-active),
+.ifc-viewer-embed bim-button::part(button),
 .ifc-viewer-embed .preset-btn,
 .ifc-viewer-embed .render-presets .preset-btn,
+.ifc-viewer-embed .render-presets button,
+.ifc-viewer-embed .render-mode-btn,
+.ifc-viewer-embed .render-reset-btn,
+.ifc-viewer-embed button[class*="reset"],
 .ifc-viewer-embed .floor-plan-controls bim-button::part(button),
 .ifc-viewer-embed .compare-open-btn,
 .ifc-viewer-embed .preview-mini-btn,
@@ -443,32 +393,53 @@ button.active * {
 .ifc-viewer-embed .generate-btn,
 .ifc-viewer-embed .clear-btn,
 .ifc-viewer-embed .compare-stage__slider,
-.ifc-viewer-embed .model-manager__button {
-    background: #ffffff !important;
-    color: #000000 !important;
-    border: 1.5px solid #0a0a0a !important;
-    border-radius: 6px !important;
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.18) !important;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-family: "IBM Plex Mono", "Space Mono", monospace;
+.ifc-viewer-embed .model-manager__button,
+.ifc-viewer-library-container .floor-plan-controls bim-button,
+.ifc-viewer-library-container .floor-plan-controls bim-button::part(button),
+.ifc-viewer-embed .floor-plan-controls bim-button,
+.ifc-viewer-embed .floor-buttons bim-button,
+.ifc-viewer-embed .floor-buttons bim-button::part(button),
+.ifc-viewer-embed [class*="floor"] button,
+.ifc-viewer-library-container .camera-style-buttons bim-button,
+.ifc-viewer-library-container .camera-style-buttons bim-button::part(button),
+.ifc-viewer-embed [class*="floors"] select,
+.ifc-viewer-embed .floors-select,
+.ifc-viewer-embed summary[class*="floor"],
+.ifc-viewer-library-container summary[class*="floor"],
+.ifc-viewer-library-container .floors-dropdown,
+.ifc-viewer-library-container details[class*="floor"] > summary,
+.ifc-viewer-library-container .camera-style-buttons .floors-panel-header,
+.camera-style-buttons .floors-panel-header {
+    min-height: var(--ifc-control-height);
+    font-family: var(--ifc-font-mono);
     font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: var(--ifc-letter-spacing-wide);
+    border-radius: var(--ifc-radius-md) !important;
+    border: var(--ifc-border-primary) !important;
+    background: var(--ifc-color-white) !important;
+    color: var(--ifc-color-black) !important;
+    box-shadow: var(--ifc-shadow-md) !important;
+    transition: var(--ifc-transition);
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: none;
 }
 
-.ifc-viewer-embed .preset-btn.active,
-.ifc-viewer-embed .performance-chip[aria-pressed="true"],
-.ifc-viewer-embed .floor-buttons bim-button[aria-pressed="true"]::part(button),
-.ifc-viewer-embed .floor-buttons bim-button.active::part(button),
-.ifc-viewer-embed .model-manager__button.is-active,
-.ifc-viewer-embed .generate-btn,
-.ifc-viewer-embed .export-modified-ifc__button:not(:disabled) {
-    background: #0a0a0a !important;
-    color: #ffffff !important;
-    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.2) !important;
-}
-
+.ifc-viewer-embed .sidebar button:not(.active):hover,
+.ifc-viewer-embed .sidebar .sidebar-button:not(.active):hover,
+.ifc-viewer-embed .sidebar .multi-view-options__button:not(.active):hover,
+.ifc-viewer-embed .sidebar .model-manager__button:not(.is-active):hover,
+.ifc-viewer-embed bim-button:hover::part(button),
 .ifc-viewer-embed .preset-btn:hover,
 .ifc-viewer-embed .render-presets .preset-btn:hover,
+.ifc-viewer-embed .render-presets button:hover,
+.ifc-viewer-embed .render-mode-btn:hover,
+.ifc-viewer-embed .render-reset-btn:hover,
+.ifc-viewer-embed button[class*="reset"]:hover,
 .ifc-viewer-embed .floor-plan-controls bim-button:hover::part(button),
 .ifc-viewer-embed .performance-chip:hover,
 .ifc-viewer-embed .screenshot-download-btn:hover,
@@ -478,8 +449,176 @@ button.active * {
 .ifc-viewer-embed .property-editor__button:hover,
 .ifc-viewer-embed .generate-btn:hover,
 .ifc-viewer-embed .clear-btn:hover,
-.ifc-viewer-embed .model-manager__button:hover {
+.ifc-viewer-embed .model-manager__button:hover,
+.ifc-viewer-library-container .floor-plan-controls bim-button:hover,
+.ifc-viewer-library-container .floor-plan-controls bim-button:hover::part(button),
+.ifc-viewer-embed .floor-plan-controls bim-button:hover,
+.ifc-viewer-embed .floor-buttons bim-button:hover,
+.ifc-viewer-embed .floor-buttons bim-button:hover::part(button),
+.ifc-viewer-embed [class*="floors"] select:hover,
+.ifc-viewer-embed .floors-select:hover,
+.ifc-viewer-embed summary[class*="floor"]:hover,
+.ifc-viewer-library-container summary[class*="floor"]:hover,
+.ifc-viewer-library-container .floors-dropdown:hover,
+.ifc-viewer-library-container details[class*="floor"] > summary:hover,
+.ifc-viewer-library-container .camera-style-buttons .floors-panel-header:hover,
+.camera-style-buttons .floors-panel-header:hover {
+    transform: translate(-1px, -1px) !important;
+    box-shadow: var(--ifc-shadow-lg) !important;
+    color: var(--ifc-color-black) !important;
+    background: var(--ifc-color-white) !important;
+    border-color: var(--ifc-color-black) !important;
+}
+
+.ifc-viewer-embed .sidebar button:not(.active):hover *,
+.ifc-viewer-embed .sidebar .sidebar-button:not(.active):hover *,
+.ifc-viewer-embed button:not(.active):hover * {
+    color: var(--ifc-color-black) !important;
+}
+
+.ifc-viewer-embed .sidebar button:active,
+.ifc-viewer-embed .sidebar .sidebar-button:active,
+.ifc-viewer-embed .sidebar .multi-view-options__button:active,
+.ifc-viewer-embed .sidebar .model-manager__button:active,
+.ifc-viewer-embed .render-presets button:active,
+.ifc-viewer-embed .render-mode-btn:active,
+.ifc-viewer-embed .render-reset-btn:active,
+.ifc-viewer-embed button[class*="reset"]:active,
+.ifc-viewer-library-container .floor-plan-controls bim-button:active,
+.ifc-viewer-library-container .floor-plan-controls bim-button:active::part(button),
+.ifc-viewer-embed .floor-plan-controls bim-button:active,
+.ifc-viewer-embed .floor-plan-controls bim-button:active::part(button),
+.ifc-viewer-embed .floor-buttons bim-button:active,
+.ifc-viewer-embed .floor-buttons bim-button:active::part(button) {
+    transform: translate(0, 0) !important;
+    box-shadow: var(--ifc-shadow-sm) !important;
+}
+
+.ifc-viewer-embed .sidebar button:disabled,
+.ifc-viewer-embed .sidebar .sidebar-button:disabled,
+.ifc-viewer-embed bim-button[disabled]::part(button),
+.ifc-viewer-embed .export-modified-ifc__button:disabled {
+    opacity: 1;
+    box-shadow: none !important;
+    background: var(--ifc-color-bg-muted) !important;
+    color: rgba(10, 10, 10, 0.65) !important;
+    border-color: rgba(10, 10, 10, 0.3) !important;
+}
+
+.ifc-viewer-embed .sidebar .button--primary,
+.ifc-viewer-embed .sidebar button.primary,
+.ifc-viewer-embed .sidebar .primary-action,
+.ifc-viewer-embed .sidebar .model-manager__button--primary,
+.ifc-viewer-embed .sidebar .multi-view-options__button.is-active,
+.ifc-viewer-embed .preset-btn.active,
+.ifc-viewer-embed .performance-chip[aria-pressed="true"],
+.ifc-viewer-embed .floor-buttons bim-button[aria-pressed="true"]::part(button),
+.ifc-viewer-embed .floor-buttons bim-button.active::part(button),
+.ifc-viewer-embed .model-manager__button.is-active,
+.ifc-viewer-embed .generate-btn,
+.ifc-viewer-embed .export-modified-ifc__button:not(:disabled),
+.ifc-viewer-library-container .render-presets button.active,
+.ifc-viewer-embed .render-presets button.active,
+.ifc-viewer-embed .render-mode-btn.active,
+.ifc-viewer-embed .sidebar .render-presets button.active,
+.ifc-viewer-embed .sidebar button.active,
+button.active[class*="render"],
+.ifc-viewer-library-container .floor-plan-controls bim-button[aria-pressed="true"],
+.ifc-viewer-library-container .floor-plan-controls bim-button[aria-pressed="true"]::part(button),
+.ifc-viewer-library-container .floor-plan-controls bim-button.active,
+.ifc-viewer-library-container .floor-plan-controls bim-button.active::part(button),
+.ifc-viewer-embed .floor-buttons bim-button[aria-pressed="true"],
+.ifc-viewer-embed .floor-buttons bim-button[aria-pressed="true"]::part(button),
+.ifc-viewer-embed .floor-buttons bim-button.active,
+.ifc-viewer-embed .floor-buttons bim-button.active::part(button),
+.ifc-viewer-embed .floor-plan-controls bim-button[aria-pressed="true"],
+.ifc-viewer-embed .floor-plan-controls bim-button[aria-pressed="true"]::part(button),
+.ifc-viewer-embed .floor-plan-controls bim-button.active,
+.ifc-viewer-embed .floor-plan-controls bim-button.active::part(button) {
+    background: var(--ifc-color-primary) !important;
+    color: var(--ifc-color-white) !important;
+    box-shadow: var(--ifc-shadow-lg) !important;
+    transform: translate(-1px, -1px) !important;
+}
+
+/* Floor plan special buttons */
+.ifc-viewer-embed button[class*="exit"],
+.ifc-viewer-embed button[class*="Exit"],
+.ifc-viewer-embed .exit-floor-plan-btn,
+.ifc-viewer-embed .reset-floors-btn,
+.ifc-viewer-embed .top-view-btn,
+.ifc-viewer-embed .fit-view-btn {
+    background: var(--ifc-color-gray-dark) !important;
+    color: var(--ifc-color-white) !important;
+    border: var(--ifc-border-primary) !important;
+    border-radius: var(--ifc-radius-md) !important;
+    box-shadow: var(--ifc-shadow-md) !important;
+    font-family: var(--ifc-font-mono);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: var(--ifc-letter-spacing-wide);
+    min-height: var(--ifc-control-height);
+    padding: 0.5rem 1rem;
+    width: 100%;
+    transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.ifc-viewer-embed button[class*="exit"]:hover,
+.ifc-viewer-embed button[class*="Exit"]:hover,
+.ifc-viewer-embed .exit-floor-plan-btn:hover,
+.ifc-viewer-embed .reset-floors-btn:hover,
+.ifc-viewer-embed .top-view-btn:hover,
+.ifc-viewer-embed .fit-view-btn:hover {
     transform: translate(-1px, -1px);
+    box-shadow: var(--ifc-shadow-lg) !important;
+}
+
+/* --- Component-Specific Styles --------------------------------------------- */
+.ifc-viewer-embed .sidebar .relations-tree-container bim-table-row {
+    border: var(--ifc-border-thin);
+    background: var(--ifc-color-bg-subtle);
+}
+
+.ifc-viewer-embed .sidebar .relations-tree-container bim-table-row:hover {
+    background: var(--ifc-color-bg-surface);
+}
+
+.ifc-viewer-embed .sidebar .relations-tree-container bim-table-row.relations-tree__row--selected {
+    background: var(--ifc-color-primary-light);
+    color: var(--ifc-color-white);
+    box-shadow: inset 0 0 0 1px var(--ifc-color-primary-light);
+}
+
+.ifc-viewer-embed .minimap-container canvas {
+    border: var(--ifc-border-primary) !important;
+    box-shadow: var(--ifc-shadow-panel);
+    background: var(--ifc-color-white) !important;
+}
+
+.ifc-viewer-embed .property-editor,
+.ifc-viewer-embed .property-row,
+.ifc-viewer-embed .property-create-form,
+.ifc-viewer-embed .property-editor__button,
+.ifc-viewer-embed .export-modified-ifc__button {
+    border-radius: var(--ifc-radius-lg);
+    border: var(--ifc-border-lighter) !important;
+    background: var(--ifc-color-white) !important;
+    color: var(--ifc-color-primary) !important;
+    box-shadow: var(--ifc-shadow-light);
+    font-family: var(--ifc-font-sans) !important;
+}
+
+.ifc-viewer-embed .property-editor__button,
+.ifc-viewer-embed .export-modified-ifc__button {
+    text-transform: uppercase;
+    letter-spacing: var(--ifc-letter-spacing-wide);
+    font-weight: 700;
+}
+
+.ifc-viewer-embed .ai-visualizer-section,
+.ifc-viewer-embed .comparison-item,
+.ifc-viewer-embed .floor-plan-controls bim-button {
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.12);
 }
 
 .ifc-viewer-embed .render-presets label,
@@ -488,19 +627,19 @@ button.active * {
 .ifc-viewer-embed .property-editor__meta,
 .ifc-viewer-embed .property-name,
 .ifc-viewer-embed .property-value {
-    font-family: "IBM Plex Mono", "Space Mono", monospace;
-    letter-spacing: 0.04em;
+    font-family: var(--ifc-font-mono);
+    letter-spacing: var(--ifc-letter-spacing-normal);
     text-transform: uppercase;
-    color: #0a0a0a !important;
+    color: var(--ifc-color-primary) !important;
 }
 
 .ifc-viewer-embed .floor-plan-section .floor-plan-mode-indicator,
 .ifc-viewer-embed .active-floor-display,
 .ifc-viewer-embed .property-editor__info {
-    background: #f7f7f3 !important;
-    color: #0a0a0a !important;
-    border: 1.5px solid rgba(0, 0, 0, 0.16) !important;
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
+    background: var(--ifc-color-bg-light) !important;
+    color: var(--ifc-color-primary) !important;
+    border: var(--ifc-border-lighter) !important;
+    box-shadow: var(--ifc-shadow-light);
 }
 
 .ifc-viewer-embed .model-manager__item,
@@ -509,35 +648,35 @@ button.active * {
 .ifc-viewer-embed .property-row,
 .ifc-viewer-embed .property-create-form,
 .ifc-viewer-embed .ai-visualizer-section {
-    background: #ffffff !important;
+    background: var(--ifc-color-white) !important;
     border: 1.5px solid rgba(0, 0, 0, 0.14) !important;
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.08);
+    box-shadow: var(--ifc-shadow-subtle);
 }
 
 .ifc-viewer-embed .property-editor__badge {
-    background: #0a0a0a !important;
-    color: #ffffff !important;
-    border-radius: 4px;
-    letter-spacing: 0.08em;
+    background: var(--ifc-color-primary) !important;
+    color: var(--ifc-color-white) !important;
+    border-radius: var(--ifc-radius-sm);
+    letter-spacing: var(--ifc-letter-spacing-wide);
 }
 
 .ifc-viewer-embed .ai-visualizer-modal__content,
 .ifc-viewer-embed .compare-stage {
-    background: #ffffff !important;
-    color: #0a0a0a !important;
-    border: 1.5px solid rgba(0, 0, 0, 0.2) !important;
-    box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.15);
+    background: var(--ifc-color-white) !important;
+    color: var(--ifc-color-primary) !important;
+    border: var(--ifc-border-medium) !important;
+    box-shadow: var(--ifc-shadow-xl);
 }
 
 .ifc-viewer-embed .ai-visualizer-modal__close {
-    background: #ffffff !important;
-    color: #0a0a0a !important;
-    border: 1.5px solid #0a0a0a !important;
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.18);
+    background: var(--ifc-color-white) !important;
+    color: var(--ifc-color-primary) !important;
+    border: var(--ifc-border-primary) !important;
+    box-shadow: var(--ifc-shadow-md);
 }
 
 .ifc-viewer-embed .comparison-image {
-    border: 1.5px solid rgba(0, 0, 0, 0.18) !important;
+    border: var(--ifc-border-light) !important;
 }
 
 .ifc-viewer-embed .comparison-grid {
@@ -553,80 +692,18 @@ button.active * {
 .ifc-viewer-embed .measurement-tool-placeholder,
 .ifc-viewer-embed .property-input,
 .ifc-viewer-embed .property-value-wrapper {
-    border: 1.5px solid rgba(0, 0, 0, 0.16) !important;
-    background: #ffffff !important;
-    color: #0a0a0a !important;
-}
-
-.ifc-viewer-embed .export-modified-ifc__button:disabled {
-    background: #f3f3ef !important;
-    color: rgba(10, 10, 10, 0.65) !important;
-    box-shadow: none !important;
-}
-
-/* Force dark text on all status/info elements */
-.ifc-viewer-embed .status-text,
-.ifc-viewer-embed .info-message,
-.ifc-viewer-embed .hint-text,
-.ifc-viewer-embed .model-name,
-.ifc-viewer-embed .floor-name,
-.ifc-viewer-embed .element-name,
-.ifc-viewer-embed [class*="text"],
-.ifc-viewer-embed [class*="label"],
-.ifc-viewer-embed [class*="name"],
-.ifc-viewer-embed [class*="title"] {
-    color: #0a0a0a !important;
-}
-
-/* Ensure dropdown/select options are dark */
-.ifc-viewer-embed select option {
-    color: #0a0a0a !important;
-    background: #ffffff !important;
-}
-
-.ifc-viewer-embed .minimap-controls-container bim-number-input::part(input),
-.ifc-viewer-embed bim-number-input::part(input),
-.ifc-viewer-embed bim-text-input::part(input) {
-    border: 1.5px solid rgba(0, 0, 0, 0.18) !important;
-    border-radius: 6px;
-    background: #f7f7f3 !important;
-    color: #0a0a0a !important;
-    font-family: "IBM Plex Mono", "Space Mono", monospace;
-    letter-spacing: 0.04em;
-}
-
-.ifc-viewer-embed bim-checkbox,
-.ifc-viewer-embed bim-number-input,
-.ifc-viewer-embed bim-text-input {
-    --accent-color: #0a0a0a !important;
-    --bim-checkbox-primary: #0a0a0a !important;
-    --bim-checkbox-border: #0a0a0a !important;
-    --bim-ui_main-base: #0a0a0a !important;
-    --bim-ui_accent-base: #0a0a0a !important;
-    font-family: "IBM Plex Mono", "Space Mono", monospace;
-    letter-spacing: 0.04em;
-}
-
-.ifc-viewer-embed bim-checkbox input[type="checkbox"] {
-    accent-color: #0a0a0a !important;
-}
-
-.ifc-viewer-embed select {
-    appearance: none;
-    background: #ffffff url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%230a0a0a' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
-    padding-right: 32px;
-    font-family: "IBM Plex Mono", "Space Mono", monospace;
-    letter-spacing: 0.04em;
-    border: 1.5px solid rgba(0, 0, 0, 0.18) !important;
+    border: var(--ifc-border-lighter) !important;
+    background: var(--ifc-color-white) !important;
+    color: var(--ifc-color-primary) !important;
 }
 
 .ifc-viewer-embed .color-control button,
 .ifc-viewer-embed .element-color,
 .ifc-viewer-embed .color-swatch,
 .ifc-viewer-embed .color-picker button {
-    border: 1.5px solid rgba(0, 0, 0, 0.2) !important;
-    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.12);
-    border-radius: 6px;
+    border: var(--ifc-border-medium) !important;
+    box-shadow: var(--ifc-shadow-xs);
+    border-radius: var(--ifc-radius-md);
 }
 
 .ifc-viewer-embed .field-label,
@@ -640,54 +717,52 @@ button.active * {
     letter-spacing: 0.06em;
 }
 
-/* --- Render Mode Buttons (Match Model Tree Style) ---------------------------- */
-.ifc-viewer-embed .render-presets button,
-.ifc-viewer-embed .render-mode-btn,
-.ifc-viewer-embed .render-reset-btn,
-.ifc-viewer-embed button[class*="reset"] {
-    background: #ffffff !important;
-    color: #0a0a0a !important;
-    border: 1.5px solid #0a0a0a !important;
-    border-radius: 6px !important;
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.18) !important;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-family: "IBM Plex Mono", "Space Mono", monospace;
-    font-weight: 700;
-    padding: 0.5rem 1rem;
-    min-height: 38px;
-    transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+/* Floor options in dropdown */
+.ifc-viewer-library-container .camera-style-buttons .floor-option,
+.ifc-viewer-library-container .floor-option,
+.ifc-viewer-embed .sidebar .floor-option,
+.ifc-viewer-embed .floor-option,
+.floor-option {
+    color: var(--ifc-color-black) !important;
+    background: var(--ifc-color-white) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
+    padding: 10px 14px !important;
+    cursor: pointer !important;
+    font-size: 0.82rem !important;
+    font-family: var(--ifc-font-mono) !important;
+    font-weight: 600 !important;
+    letter-spacing: var(--ifc-letter-spacing-normal) !important;
+    text-transform: uppercase !important;
+    transition: var(--ifc-transition-color) !important;
 }
 
-.ifc-viewer-library-container .render-presets button.active,
-.ifc-viewer-embed .render-presets button.active,
-.ifc-viewer-embed .render-mode-btn.active,
-.ifc-viewer-embed .sidebar .render-presets button.active,
-.ifc-viewer-embed .sidebar button.active,
-button.active[class*="render"] {
-    background: #0a0a0a !important;
-    color: #ffffff !important;
-    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.2) !important;
-    transform: translate(-1px, -1px) !important;
+.ifc-viewer-library-container .camera-style-buttons .floor-option:hover,
+.ifc-viewer-library-container .floor-option:hover,
+.ifc-viewer-embed .sidebar .floor-option:hover,
+.ifc-viewer-embed .floor-option:hover,
+.floor-option:hover {
+    background: var(--ifc-color-bg-hover) !important;
+    color: var(--ifc-color-black) !important;
+    border-color: rgba(0, 0, 0, 0.2) !important;
 }
 
-.ifc-viewer-embed .render-presets button:hover,
-.ifc-viewer-embed .render-mode-btn:hover,
-.ifc-viewer-embed .render-reset-btn:hover,
-.ifc-viewer-embed button[class*="reset"]:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.2);
+.ifc-viewer-library-container .camera-style-buttons .floor-option.selected,
+.ifc-viewer-library-container .floor-option.selected,
+.ifc-viewer-embed .sidebar .floor-option.selected,
+.ifc-viewer-embed .floor-option.selected,
+.floor-option.selected,
+.ifc-viewer-library-container .camera-style-buttons .floor-option[aria-selected="true"],
+.ifc-viewer-library-container .floor-option[aria-selected="true"],
+.ifc-viewer-embed .sidebar .floor-option[aria-selected="true"],
+.ifc-viewer-embed .floor-option[aria-selected="true"],
+.floor-option[aria-selected="true"] {
+    background: var(--ifc-color-bg-surface) !important;
+    color: var(--ifc-color-black) !important;
+    font-weight: 700 !important;
+    border-color: rgba(0, 0, 0, 0.3) !important;
 }
 
-.ifc-viewer-embed .render-presets button:active,
-.ifc-viewer-embed .render-mode-btn:active,
-.ifc-viewer-embed .render-reset-btn:active,
-.ifc-viewer-embed button[class*="reset"]:active {
-    transform: translate(0, 0);
-    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
-}
-
-/* --- Viewer feature palette --------------------------------------------------- */
+/* --- Design System Page Styles (not IFC viewer) ---------------------------- */
 .viewer-feature-controls {
     display: flex;
     flex-wrap: wrap;
@@ -699,20 +774,20 @@ button.active[class*="render"] {
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
-    font-family: "IBM Plex Mono", "Space Mono", monospace;
+    font-family: var(--ifc-font-mono);
     font-size: 0.65rem;
-    letter-spacing: 0.08em;
+    letter-spacing: var(--ifc-letter-spacing-wide);
     text-transform: uppercase;
-    color: #6b7280;
+    color: var(--ifc-color-gray);
 }
 
 .viewer-feature-control input[type="color"] {
     width: 72px;
-    height: 38px;
-    border: 1.5px solid rgba(0, 0, 0, 0.2);
-    border-radius: 6px;
+    height: var(--ifc-control-height);
+    border: var(--ifc-border-medium);
+    border-radius: var(--ifc-radius-md);
     padding: 0;
-    background: #ffffff;
+    background: var(--ifc-color-white);
     cursor: pointer;
 }
 
@@ -729,24 +804,24 @@ button.active[class*="render"] {
 }
 
 .viewer-font-toggle__btn {
-    border: 1.5px solid #0a0a0a;
-    border-radius: 6px;
+    border: var(--ifc-border-primary);
+    border-radius: var(--ifc-radius-md);
     padding: 0.45rem 1.15rem;
-    font-family: "IBM Plex Mono", "Space Mono", monospace;
+    font-family: var(--ifc-font-mono);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: var(--ifc-letter-spacing-wide);
     font-size: 0.7rem;
-    background: #ffffff;
-    color: #0a0a0a;
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.18);
+    background: var(--ifc-color-white);
+    color: var(--ifc-color-primary);
+    box-shadow: var(--ifc-shadow-md);
     transition: color 120ms ease, background 120ms ease, transform 120ms ease, box-shadow 120ms ease;
 }
 
 .viewer-font-toggle__btn.is-active {
-    background: #0a0a0a;
-    color: #ffffff;
+    background: var(--ifc-color-primary);
+    color: var(--ifc-color-white);
     transform: translate(-1px, -1px);
-    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.2);
+    box-shadow: var(--ifc-shadow-lg);
 }
 
 .viewer-feature-grid {
@@ -756,11 +831,11 @@ button.active[class*="render"] {
 }
 
 .viewer-feature-card {
-    border: 1.5px solid rgba(0, 0, 0, 0.16);
-    border-radius: 12px;
+    border: var(--ifc-border-lighter);
+    border-radius: var(--ifc-radius-xl);
     padding: 1.25rem;
-    background: #ffffff;
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.08);
+    background: var(--ifc-color-white);
+    box-shadow: var(--ifc-shadow-subtle);
     min-height: 150px;
     display: flex;
     flex-direction: column;
@@ -770,7 +845,7 @@ button.active[class*="render"] {
 
 .viewer-feature-card:hover {
     transform: translate(-2px, -2px);
-    box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.12);
+    box-shadow: var(--ifc-shadow-panel-hover);
 }
 
 .viewer-feature-title {
@@ -785,11 +860,8 @@ button.active[class*="render"] {
     color: #4b5563;
     line-height: 1.45;
 }
-bim-label {
-    color: #000;
-}
 
-/* Scrollbar styling - black monochrome */
+/* --- Scrollbar Styling ----------------------------------------------------- */
 .ifc-viewer-embed ::-webkit-scrollbar {
     width: 12px;
     height: 12px;
@@ -801,7 +873,7 @@ bim-label {
 
 .ifc-viewer-embed ::-webkit-scrollbar-thumb {
     background: rgba(10, 10, 10, 0.3);
-    border-radius: 6px;
+    border-radius: var(--ifc-radius-md);
     border: 2px solid transparent;
     background-clip: padding-box;
 }
@@ -816,233 +888,19 @@ bim-label {
     background-clip: padding-box;
 }
 
-/* Firefox scrollbar */
-.ifc-viewer-embed * {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(10, 10, 10, 0.3) transparent;
-}
-
+.ifc-viewer-embed *,
 .ifc-viewer-embed .sidebar,
 .ifc-viewer-embed .sidebar * {
     scrollbar-width: thin;
     scrollbar-color: rgba(10, 10, 10, 0.3) transparent;
 }
 
-/* Floor Plan View buttons - match Model Tree style exactly */
-.ifc-viewer-library-container .floor-plan-controls bim-button,
-.ifc-viewer-library-container .floor-plan-controls bim-button::part(button),
-.ifc-viewer-embed .floor-plan-controls bim-button,
-.ifc-viewer-embed .floor-plan-controls bim-button::part(button),
-.ifc-viewer-embed .floor-buttons bim-button,
-.ifc-viewer-embed .floor-buttons bim-button::part(button),
-.ifc-viewer-embed [class*="floor"] button {
-    background: #ffffff !important;
-    color: #000000 !important;
-    border: 1.5px solid #0a0a0a !important;
-    border-radius: 6px !important;
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.18) !important;
-    font-family: "IBM Plex Mono", "Space Mono", monospace !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.08em !important;
-    min-height: 38px !important;
-    width: 100% !important;
-    padding: 0.5rem 1rem !important;
-    font-size: 0.75rem !important;
-    text-shadow: none !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease, border-color 120ms ease !important;
-}
-
-.ifc-viewer-library-container .floor-plan-controls bim-button:hover,
-.ifc-viewer-library-container .floor-plan-controls bim-button:hover::part(button),
-.ifc-viewer-embed .floor-plan-controls bim-button:hover,
-.ifc-viewer-embed .floor-plan-controls bim-button:hover::part(button),
-.ifc-viewer-embed .floor-buttons bim-button:hover,
-.ifc-viewer-embed .floor-buttons bim-button:hover::part(button) {
-    transform: translate(-1px, -1px) !important;
-    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.2) !important;
-    background: #ffffff !important;
-    border-color: #000000 !important;
-}
-
-.ifc-viewer-library-container .floor-plan-controls bim-button:active,
-.ifc-viewer-library-container .floor-plan-controls bim-button:active::part(button),
-.ifc-viewer-embed .floor-plan-controls bim-button:active,
-.ifc-viewer-embed .floor-plan-controls bim-button:active::part(button),
-.ifc-viewer-embed .floor-buttons bim-button:active,
-.ifc-viewer-embed .floor-buttons bim-button:active::part(button) {
-    transform: translate(0, 0) !important;
-    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2) !important;
-}
-
-.ifc-viewer-library-container .floor-plan-controls bim-button[aria-pressed="true"],
-.ifc-viewer-library-container .floor-plan-controls bim-button[aria-pressed="true"]::part(button),
-.ifc-viewer-library-container .floor-plan-controls bim-button.active,
-.ifc-viewer-library-container .floor-plan-controls bim-button.active::part(button),
-.ifc-viewer-embed .floor-buttons bim-button[aria-pressed="true"],
-.ifc-viewer-embed .floor-buttons bim-button[aria-pressed="true"]::part(button),
-.ifc-viewer-embed .floor-buttons bim-button.active,
-.ifc-viewer-embed .floor-buttons bim-button.active::part(button),
-.ifc-viewer-embed .floor-plan-controls bim-button[aria-pressed="true"],
-.ifc-viewer-embed .floor-plan-controls bim-button[aria-pressed="true"]::part(button),
-.ifc-viewer-embed .floor-plan-controls bim-button.active,
-.ifc-viewer-embed .floor-plan-controls bim-button.active::part(button) {
-    background: #0a0a0a !important;
-    color: #ffffff !important;
-    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.2) !important;
-    transform: translate(-1px, -1px) !important;
-    border-color: #0a0a0a !important;
-}
-
-/* Floor plan special buttons styling */
-.ifc-viewer-embed button[class*="exit"],
-.ifc-viewer-embed button[class*="Exit"],
-.ifc-viewer-embed .exit-floor-plan-btn,
-.ifc-viewer-embed .reset-floors-btn,
-.ifc-viewer-embed .top-view-btn,
-.ifc-viewer-embed .fit-view-btn {
-    background: #2c2c2c !important;
-    color: #ffffff !important;
-    border: 1.5px solid #0a0a0a !important;
-    border-radius: 6px !important;
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.18) !important;
-    font-family: "IBM Plex Mono", "Space Mono", monospace;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    min-height: 38px;
-    padding: 0.5rem 1rem;
-    width: 100%;
-    transition: transform 120ms ease, box-shadow 120ms ease;
-}
-
-.ifc-viewer-embed button[class*="exit"]:hover,
-.ifc-viewer-embed button[class*="Exit"]:hover,
-.ifc-viewer-embed .exit-floor-plan-btn:hover,
-.ifc-viewer-embed .reset-floors-btn:hover,
-.ifc-viewer-embed .top-view-btn:hover,
-.ifc-viewer-embed .fit-view-btn:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.2) !important;
-}
-
-/* Floors dropdown styling - white like other buttons */
-.ifc-viewer-embed [class*="floors"] select,
-.ifc-viewer-embed .floors-select,
-.ifc-viewer-embed summary[class*="floor"],
-.ifc-viewer-library-container summary[class*="floor"],
-.ifc-viewer-library-container .floors-dropdown,
-.ifc-viewer-library-container details[class*="floor"] > summary,
-.ifc-viewer-library-container .camera-style-buttons .floors-panel-header,
-.camera-style-buttons .floors-panel-header {
-    background: #ffffff !important;
-    color: #000000 !important;
-    border: 1.5px solid #0a0a0a !important;
-    border-radius: 6px !important;
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.18) !important;
-    font-family: "IBM Plex Mono", "Space Mono", monospace !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.08em !important;
-    padding: 0.5rem 1rem !important;
-    min-height: 38px !important;
-    cursor: pointer !important;
-    transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease, border-color 120ms ease !important;
-}
-
-.ifc-viewer-embed [class*="floors"] select:hover,
-.ifc-viewer-embed .floors-select:hover,
-.ifc-viewer-embed summary[class*="floor"]:hover,
-.ifc-viewer-library-container summary[class*="floor"]:hover,
-.ifc-viewer-library-container .floors-dropdown:hover,
-.ifc-viewer-library-container details[class*="floor"] > summary:hover,
-.ifc-viewer-library-container .camera-style-buttons .floors-panel-header:hover,
-.camera-style-buttons .floors-panel-header:hover {
-    transform: translate(-1px, -1px) !important;
-    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.2) !important;
-    background: #ffffff !important;
-    border-color: #000000 !important;
-}
-
-/* Camera style buttons override */
-.ifc-viewer-library-container .camera-style-buttons bim-button,
-.ifc-viewer-library-container .camera-style-buttons bim-button::part(button) {
-    background: #ffffff !important;
-    color: #000000 !important;
-    border: 1.5px solid #0a0a0a !important;
-    border-radius: 6px !important;
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.18) !important;
-    font-family: "IBM Plex Mono", "Space Mono", monospace !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.08em !important;
-    min-height: 38px !important;
-    width: 100% !important;
-    padding: 0 1rem !important;
-    font-size: 0.75rem !important;
-    text-shadow: none !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease !important;
-}
-
-/* Floor options in dropdown - white background like other buttons */
-.ifc-viewer-library-container .camera-style-buttons .floor-option,
-.ifc-viewer-library-container .floor-option,
-.ifc-viewer-embed .sidebar .floor-option,
-.ifc-viewer-embed .floor-option,
-.floor-option {
-    color: #000000 !important;
-    background: #ffffff !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
-    padding: 10px 14px !important;
-    cursor: pointer !important;
-    font-size: 0.82rem !important;
-    font-family: "IBM Plex Mono", "Space Mono", monospace !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.04em !important;
-    text-transform: uppercase !important;
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease !important;
-}
-
-.ifc-viewer-library-container .camera-style-buttons .floor-option:hover,
-.ifc-viewer-library-container .floor-option:hover,
-.ifc-viewer-embed .sidebar .floor-option:hover,
-.ifc-viewer-embed .floor-option:hover,
-.floor-option:hover {
-    background: #f9f9f7 !important;
-    color: #000000 !important;
-    border-color: rgba(0, 0, 0, 0.2) !important;
-}
-
-.ifc-viewer-library-container .camera-style-buttons .floor-option.selected,
-.ifc-viewer-library-container .floor-option.selected,
-.ifc-viewer-embed .sidebar .floor-option.selected,
-.ifc-viewer-embed .floor-option.selected,
-.floor-option.selected,
-.ifc-viewer-library-container .camera-style-buttons .floor-option[aria-selected="true"],
-.ifc-viewer-library-container .floor-option[aria-selected="true"],
-.ifc-viewer-embed .sidebar .floor-option[aria-selected="true"],
-.ifc-viewer-embed .floor-option[aria-selected="true"],
-.floor-option[aria-selected="true"] {
-    background: #f1f1ed !important;
-    color: #000000 !important;
-    font-weight: 700 !important;
-    border-color: rgba(0, 0, 0, 0.3) !important;
-}
-
-/* Hide all panels except Relations Tree and Visibility Controls */
-/* Hide panels by their index - Relations Tree (1st) and Visibility Controls (2nd) should remain */
+/* --- Panel Visibility (Hide specific panels) ------------------------------- */
 .ifc-viewer-embed .sidebar bim-panel-section:nth-child(n+3),
 .ifc-viewer-library-container .sidebar bim-panel-section:nth-child(n+3) {
     display: none !important;
 }
 
-/* If the above doesn't work, hide by checking if panel contains specific keywords */
 .ifc-viewer-embed bim-panel-section:has(*:contains("Element Colors")),
 .ifc-viewer-embed bim-panel-section:has(*:contains("Render Modes")),
 .ifc-viewer-embed bim-panel-section:has(*:contains("Camera")),
