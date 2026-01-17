@@ -1,15 +1,49 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Home, Calendar, Inbox, ArrowLeft, Bell } from 'lucide-react';
+import { Home, Calendar, Inbox, ArrowLeft, Bell, FileText, Clock, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../shared/context/AuthContext';
 import { Button } from '../../shared/ui/Button';
 import { AnimatedCircuitBackground } from '../landing/components/AnimatedCircuitBackground';
 import { BookingService, type BookingInviteRecord, type BookingNotificationRecord, type BookingRecord } from './services/BookingService';
+import { ContractService, type ContractLanguage } from './services/ContractService';
 import { supabase } from '../../shared/config/supabase';
 
 type TabOption = 'bookings' | 'invites' | 'notifications';
 
 const PRIVATE_INVITE_MIN = 3;
+
+// Zone metadata for contracts
+const ZONE_METADATA: Record<string, { name: string; type: string; capacity: number }> = {
+    'PZ-1': { name: 'Private Zone', type: 'private-zone', capacity: 6 },
+    'PZ-2': { name: 'Private Zone', type: 'private-zone', capacity: 5 },
+    'PZ-3': { name: 'Private Zone', type: 'private-zone', capacity: 4 },
+    'PZ-4': { name: 'Private Zone', type: 'private-zone', capacity: 6 },
+    'RD-1': { name: '3P Round Desk', type: 'desk-3p-round', capacity: 3 },
+    'RD-2': { name: '3P Round Desk', type: 'desk-3p-round', capacity: 3 },
+    'RD-3': { name: '3P Round Desk', type: 'desk-3p-round', capacity: 3 },
+    'RD-4': { name: '3P Round Desk', type: 'desk-3p-round', capacity: 3 },
+    'RD-5': { name: '3P Round Desk', type: 'desk-3p-round', capacity: 3 },
+    'WT-1': { name: '6P Work Table', type: 'table-6p-share', capacity: 6 },
+    'WT-2': { name: '6P Work Table', type: 'table-6p-share', capacity: 6 },
+    'WT-3': { name: '6P Work Table', type: 'table-6p-share', capacity: 6 },
+    'WT-4': { name: '6P Work Table', type: 'table-6p-share', capacity: 6 },
+    'DD-1': { name: 'Double Desk', type: 'desk-double', capacity: 2 },
+    'DD-2': { name: 'Double Desk', type: 'desk-double', capacity: 2 },
+    'DD-3': { name: 'Double Desk', type: 'desk-double', capacity: 2 },
+    'DD-4': { name: 'Double Desk', type: 'desk-double', capacity: 2 },
+    'DD-5': { name: 'Double Desk', type: 'desk-double', capacity: 2 },
+    'DD-6': { name: 'Double Desk', type: 'desk-double', capacity: 2 },
+    'DD-7': { name: 'Double Desk', type: 'desk-double', capacity: 2 },
+    'DD-8': { name: 'Double Desk', type: 'desk-double', capacity: 2 },
+    'DD-9': { name: 'Double Desk', type: 'desk-double', capacity: 2 },
+    'DD-10': { name: 'Double Desk', type: 'desk-double', capacity: 2 },
+    'DD-11': { name: 'Double Desk', type: 'desk-double', capacity: 2 },
+};
+
+// Single desks (SD-1 to SD-23)
+for (let i = 1; i <= 23; i++) {
+    ZONE_METADATA[`SD-${i}`] = { name: '1P Desk', type: 'desk-1p', capacity: 1 };
+}
 
 const TIME_SLOTS = [
     '08:00 - 10:00',
@@ -49,11 +83,26 @@ const statusBadge = (status: string) => {
         pending: 'bg-indigo-50 border-indigo-300 text-indigo-700',
         reserved: 'bg-amber-50 border-amber-300 text-amber-700',
         confirmed: 'bg-green-50 border-green-300 text-green-700',
+        ended: 'bg-gray-100 border-gray-300 text-gray-600',
         cancelled: 'bg-gray-50 border-gray-300 text-gray-500',
         accepted: 'bg-green-50 border-green-300 text-green-700',
         rejected: 'bg-red-50 border-red-300 text-red-700',
     };
     return styleMap[status] || 'bg-gray-50 border-gray-200 text-gray-500';
+};
+
+const getDisplayStatus = (booking: BookingRecord): string => {
+    if (booking.status === 'cancelled') return 'cancelled';
+    
+    // Check if slot has ended
+    const [, endLabel] = booking.slot_label.split(' - ');
+    const endTime = new Date(`${booking.booking_date}T${endLabel}:00`);
+    
+    if (endTime <= new Date()) {
+        return 'ended';
+    }
+    
+    return booking.status;
 };
 
 export const MyBookingsPage = () => {
@@ -72,6 +121,7 @@ export const MyBookingsPage = () => {
     const [previousBooking, setPreviousBooking] = useState<BookingRecord | null>(null);
     const [handoffLoading, setHandoffLoading] = useState(false);
     const [currentHolder, setCurrentHolder] = useState<string | null>(null);
+    const [showAllPast, setShowAllPast] = useState(false);
 
     const loadData = useCallback(async () => {
         if (!user) return;
@@ -215,9 +265,47 @@ export const MyBookingsPage = () => {
         }
     };
 
-    const upcomingBookings = useMemo(
-        () => bookings.filter((booking) => booking.status !== 'cancelled'),
-        [bookings],
+    const { upcomingBookings, pastBookings } = useMemo(() => {
+        const now = new Date();
+        const upcoming: BookingRecord[] = [];
+        const past: BookingRecord[] = [];
+
+        for (const booking of bookings) {
+            if (booking.status === 'cancelled') {
+                past.push(booking);
+                continue;
+            }
+
+            const [, endLabel] = booking.slot_label.split(' - ');
+            const endTime = new Date(`${booking.booking_date}T${endLabel}:00`);
+
+            if (endTime > now) {
+                upcoming.push(booking);
+            } else {
+                past.push(booking);
+            }
+        }
+
+        // Sort upcoming by date ascending (nearest first)
+        upcoming.sort((a, b) => {
+            const dateA = new Date(`${a.booking_date}T${a.slot_label.split(' - ')[0]}:00`);
+            const dateB = new Date(`${b.booking_date}T${b.slot_label.split(' - ')[0]}:00`);
+            return dateA.getTime() - dateB.getTime();
+        });
+
+        // Sort past by date descending (most recent first)
+        past.sort((a, b) => {
+            const dateA = new Date(`${a.booking_date}T${a.slot_label.split(' - ')[0]}:00`);
+            const dateB = new Date(`${b.booking_date}T${b.slot_label.split(' - ')[0]}:00`);
+            return dateB.getTime() - dateA.getTime();
+        });
+
+        return { upcomingBookings: upcoming, pastBookings: past };
+    }, [bookings]);
+
+    const visiblePastBookings = useMemo(
+        () => showAllPast ? pastBookings : pastBookings.slice(0, 5),
+        [pastBookings, showAllPast],
     );
 
     const pendingInvitesCount = useMemo(
@@ -353,6 +441,27 @@ export const MyBookingsPage = () => {
         };
     }, [selectedBooking]);
 
+    const handleDownloadContract = (language: ContractLanguage) => {
+        if (!selectedBooking || !user) return;
+
+        const zoneInfo = ZONE_METADATA[selectedBooking.zone_id] || {
+            name: selectedBooking.zone_id,
+            type: 'unknown',
+            capacity: 1,
+        };
+
+        ContractService.generatePDF(
+            selectedBooking,
+            {
+                id: user.id,
+                fullName: user.fullName || user.email.split('@')[0] || 'Unknown',
+                email: user.email,
+            },
+            zoneInfo,
+            language,
+        );
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
             <AnimatedCircuitBackground />
@@ -423,12 +532,20 @@ export const MyBookingsPage = () => {
                 </div>
 
                 {activeTab === 'bookings' && (
-                    <div className="bg-white border border-gray-200 shadow-sm">
-                        {upcomingBookings.length === 0 ? (
-                            <div className="p-6 text-sm text-gray-500">
-                                No bookings yet. Go book a seat or private zone.
+                    <div className="space-y-6">
+                        {/* Upcoming Bookings */}
+                        <div className="bg-white border border-gray-200 shadow-sm">
+                            <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
+                                <Calendar className="w-4 h-4 text-green-600" />
+                                <span className="text-xs font-mono uppercase tracking-wider text-gray-500">
+                                    Upcoming ({upcomingBookings.length})
+                                </span>
                             </div>
-                        ) : (
+                            {upcomingBookings.length === 0 ? (
+                                <div className="p-6 text-sm text-gray-500">
+                                    No upcoming bookings. Go book a seat or private zone.
+                                </div>
+                            ) : (
                             <>
                                 <div className="divide-y divide-gray-100">
                                     {upcomingBookings.map((booking) => {
@@ -450,8 +567,8 @@ export const MyBookingsPage = () => {
                                                     </p>
                                                 </div>
                                                 <div className="flex items-center gap-3">
-                                                    <span className={`inline-flex px-2 py-1 text-xs font-mono uppercase border rounded ${statusBadge(booking.status)}`}>
-                                                        {booking.status}
+                                                    <span className={`inline-flex px-2 py-1 text-xs font-mono uppercase border rounded ${statusBadge(getDisplayStatus(booking))}`}>
+                                                        {getDisplayStatus(booking)}
                                                     </span>
                                                     <Button
                                                         variant="outline"
@@ -460,7 +577,7 @@ export const MyBookingsPage = () => {
                                                     >
                                                         {isSelected ? 'Hide Details' : 'View Details'}
                                                     </Button>
-                                                    {booking.status !== 'cancelled' && (
+                                                    {getDisplayStatus(booking) !== 'cancelled' && getDisplayStatus(booking) !== 'ended' && (
                                                         <Button
                                                             variant="outline"
                                                             onClick={() => handleCancel(booking.id)}
@@ -600,6 +717,61 @@ export const MyBookingsPage = () => {
                                             )}
                                         </div>
 
+                                        {/* Contract Section */}
+                                        <div className="mt-4 border border-gray-200 rounded p-4 bg-white">
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <FileText className="w-4 h-4" />
+                                                <p className="font-mono text-xs uppercase tracking-wider text-gray-500">
+                                                    Rental Contract
+                                                </p>
+                                            </div>
+
+                                            {selectedBooking.arrival_confirmed_at ? (
+                                                <div className="space-y-3">
+                                                    <div className="flex items-center gap-2 text-xs">
+                                                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 border border-green-200 text-green-700 rounded">
+                                                            ✓ Contract signed at check-in
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-[10px] text-gray-500">
+                                                        Signed: {new Date(selectedBooking.arrival_confirmed_at).toLocaleString()}
+                                                    </p>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        <Button
+                                                            variant="outline"
+                                                            onClick={() => handleDownloadContract('en')}
+                                                            className="text-xs gap-2"
+                                                        >
+                                                            <FileText className="w-3 h-3" />
+                                                            Download EN
+                                                        </Button>
+                                                        <Button
+                                                            variant="outline"
+                                                            onClick={() => handleDownloadContract('de')}
+                                                            className="text-xs gap-2"
+                                                        >
+                                                            <FileText className="w-3 h-3" />
+                                                            Download DE
+                                                        </Button>
+                                                    </div>
+                                                    <p className="text-[10px] text-gray-400">
+                                                        Legal record of your responsibility period until next tenant handoff.
+                                                    </p>
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-2">
+                                                    <div className="flex items-center gap-2 text-xs">
+                                                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded">
+                                                            ⏳ Awaiting check-in
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-[10px] text-gray-500">
+                                                        Contract will be available after check-in. Check in to accept terms and generate your rental contract.
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+
                                         {selectedBooking.seat_id === null && (
                                             <div className="mt-4">
                                                 <p className="text-xs font-mono uppercase text-gray-500 mb-2">Invites</p>
@@ -624,6 +796,55 @@ export const MyBookingsPage = () => {
                                     </div>
                                 )}
                             </>
+                            )}
+                        </div>
+
+                        {/* Past Bookings */}
+                        {pastBookings.length > 0 && (
+                            <div className="bg-white border border-gray-200 shadow-sm">
+                                <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
+                                    <Clock className="w-4 h-4 text-gray-400" />
+                                    <span className="text-xs font-mono uppercase tracking-wider text-gray-500">
+                                        Past ({pastBookings.length})
+                                    </span>
+                                </div>
+                                <div className="divide-y divide-gray-100">
+                                    {visiblePastBookings.map((booking) => {
+                                        const seatLabel = booking.seat_id ? booking.seat_id.split('-').slice(-1)[0] : null;
+
+                                        return (
+                                            <div
+                                                key={booking.id}
+                                                className="p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4 opacity-60"
+                                            >
+                                                <div className="space-y-1">
+                                                    <p className="font-semibold text-gray-600">
+                                                        Zone {booking.zone_id}{seatLabel ? ` • Seat ${seatLabel}` : ''}
+                                                    </p>
+                                                    <p className="text-sm text-gray-500">
+                                                        {booking.booking_date} • {booking.slot_label}
+                                                    </p>
+                                                </div>
+                                                <span className={`inline-flex px-2 py-1 text-xs font-mono uppercase border rounded ${statusBadge(getDisplayStatus(booking))}`}>
+                                                    {getDisplayStatus(booking)}
+                                                </span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                                {pastBookings.length > 5 && !showAllPast && (
+                                    <div className="px-4 py-3 border-t border-gray-100">
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => setShowAllPast(true)}
+                                            className="w-full text-xs gap-2"
+                                        >
+                                            <ChevronDown className="w-3 h-3" />
+                                            Show {pastBookings.length - 5} more
+                                        </Button>
+                                    </div>
+                                )}
+                            </div>
                         )}
                     </div>
                 )}
