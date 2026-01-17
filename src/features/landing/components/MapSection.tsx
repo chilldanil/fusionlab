@@ -442,11 +442,11 @@ export const MapSection = () => {
                 'circle-color': [
                     'step',
                     ['get', 'point_count'],
-                    '#3b82f6', // Blue for small clusters
-                    10, '#8b5cf6', // Purple for medium
-                    50, '#ec4899', // Pink for large
-                    100, '#f59e0b', // Amber for very large
-                    200, '#ef4444', // Red for huge
+                    '#0b1220', // very dark navy for small clusters
+                    10, '#1f2937', // dark slate for medium
+                    50, '#374151', // muted slate for large
+                    100, '#4b2e83', // deep muted purple for very large
+                    200, '#58151a', // deep maroon for huge
                 ],
                 'circle-radius': [
                     'step',
