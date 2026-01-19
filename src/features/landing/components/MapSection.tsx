@@ -337,6 +337,7 @@ export const MapSection = () => {
     const [activeFilter, setActiveFilter] = useState<CategoryType | 'all'>('all');
     const [imageError, setImageError] = useState<Set<number>>(new Set());
     const [searchQuery, setSearchQuery] = useState('');
+    const [showFilters, setShowFilters] = useState(false);
 
     // Filter by category and search query
     const filteredLocations = (activeFilter === 'all' 
@@ -657,7 +658,7 @@ export const MapSection = () => {
                     <div className="absolute bottom-4 right-4 w-8 h-8 border-r-2 border-b-2 border-black z-20 pointer-events-none" />
 
             {/* Section Header */}
-            <div className="absolute top-6 left-1/2 -translate-x-1/2 z-30 text-center px-4 w-full">
+            <div className="absolute top-6 left-1/2 -translate-x-1/2 z-30 text-center px-4 w-full max-w-[calc(100%-2rem)]">
                 <motion.div
                     initial={{ opacity: 0, y: -12 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -665,8 +666,77 @@ export const MapSection = () => {
                     viewport={{ once: true }}
                     className="flex flex-col items-center"
                 >
-                    {/* Category Filters */}
-                    <div className="flex flex-wrap items-center justify-center gap-2 bg-white border-2 border-black p-2 max-w-full">
+                    {/* Mobile: Compact Filter Toggle */}
+                    <div className="md:hidden w-full">
+                        <button
+                            onClick={() => setShowFilters(!showFilters)}
+                            className="w-full px-4 py-3 bg-white border-2 border-black font-mono font-bold text-xs uppercase flex items-center justify-between"
+                        >
+                            <span className="flex items-center gap-2">
+                                {activeFilter === 'all' ? (
+                                    <>ALL ({locations.length})</>
+                                ) : (
+                                    <>
+                                        <span className="w-4 h-4">{CategoryIcons[activeFilter]}</span>
+                                        {categoryConfig[activeFilter].label} ({categoryCounts[activeFilter] || 0})
+                                    </>
+                                )}
+                            </span>
+                            <svg className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                        
+                        <AnimatePresence>
+                            {showFilters && (
+                                <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    className="overflow-hidden bg-white border-2 border-t-0 border-black"
+                                >
+                                    <div className="p-2 grid grid-cols-3 gap-2 max-h-[50vh] overflow-y-auto">
+                                        <button
+                                            onClick={() => {
+                                                setActiveFilter('all');
+                                                setShowFilters(false);
+                                            }}
+                                            className={`px-3 py-2 text-xs font-mono font-bold uppercase border-2 transition-all ${
+                                                activeFilter === 'all' 
+                                                    ? 'bg-black text-white border-black' 
+                                                    : 'bg-white text-black border-gray-300'
+                                            }`}
+                                        >
+                                            All<br/>({locations.length})
+                                        </button>
+                                        {(Object.keys(categoryConfig) as CategoryType[]).map(cat => (
+                                            <button
+                                                key={cat}
+                                                onClick={() => {
+                                                    setActiveFilter(cat);
+                                                    setShowFilters(false);
+                                                }}
+                                                className={`flex flex-col items-center gap-1 px-2 py-2 text-[10px] font-mono font-bold uppercase border-2 transition-all ${
+                                                    activeFilter === cat 
+                                                        ? 'text-white border-black' 
+                                                        : 'bg-white text-black border-gray-300'
+                                                }`}
+                                                style={{ 
+                                                    background: activeFilter === cat ? categoryConfig[cat].color : 'white'
+                                                }}
+                                            >
+                                                <span className="w-5 h-5">{CategoryIcons[cat]}</span>
+                                                <span className="text-center leading-tight">({categoryCounts[cat] || 0})</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+
+                    {/* Desktop: Full Filters */}
+                    <div className="hidden md:flex flex-wrap items-center justify-center gap-2 bg-white border-2 border-black p-2 max-w-full">
                         <button
                             onClick={() => setActiveFilter('all')}
                             className={`px-4 py-2 text-xs font-mono font-bold uppercase tracking-wider border-2 transition-all ${
@@ -691,7 +761,7 @@ export const MapSection = () => {
                                 }}
                             >
                                 <span className="w-3.5 h-3.5">{CategoryIcons[cat]}</span>
-                                <span className="hidden sm:inline">{categoryConfig[cat].label}</span>
+                                <span>{categoryConfig[cat].label}</span>
                                 <span className="text-[10px]">({categoryCounts[cat] || 0})</span>
                             </button>
                         ))}
@@ -720,7 +790,7 @@ export const MapSection = () => {
                         animate={{ x: 0, opacity: 1 }}
                         exit={{ x: '-100%', opacity: 0 }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        className="absolute top-0 left-0 w-full max-w-md h-full bg-white z-40 border-r-2 border-black flex flex-col"
+                        className="absolute top-0 left-0 w-full md:max-w-md h-full bg-white z-40 md:border-r-2 border-black flex flex-col"
                     >
                         {/* Image Area */}
                         <div 
@@ -1015,25 +1085,25 @@ export const MapSection = () => {
                 )}
             </AnimatePresence>
 
-            {/* Right Controls */}
-            <div className="absolute top-1/2 right-6 -translate-y-1/2 z-30 flex flex-col gap-0">
+            {/* Right Controls - positioned below filters, above map content */}
+            <div className="absolute top-20 md:top-24 right-4 md:right-6 z-30 flex flex-col gap-0">
                 {/* Zoom controls */}
                 <button
                     onClick={() => map.current?.zoomIn({ duration: 400 })}
-                    className="w-12 h-12 bg-white border-2 border-black flex items-center justify-center hover:bg-black transition-all group"
+                    className="w-10 h-10 md:w-12 md:h-12 bg-white border-2 border-black flex items-center justify-center hover:bg-black transition-all group"
                     title="Zoom in"
                 >
-                    <svg className="w-5 h-5 text-black group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <svg className="w-4 h-4 md:w-5 md:h-5 text-black group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                         <line x1="12" y1="5" x2="12" y2="19" />
                         <line x1="5" y1="12" x2="19" y2="12" />
                     </svg>
                 </button>
                 <button
                     onClick={() => map.current?.zoomOut({ duration: 400 })}
-                    className="w-12 h-12 bg-white border-2 border-black border-t-0 flex items-center justify-center hover:bg-black transition-all group"
+                    className="w-10 h-10 md:w-12 md:h-12 bg-white border-2 border-black border-t-0 flex items-center justify-center hover:bg-black transition-all group"
                     title="Zoom out"
                 >
-                    <svg className="w-5 h-5 text-black group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <svg className="w-4 h-4 md:w-5 md:h-5 text-black group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                         <line x1="5" y1="12" x2="19" y2="12" />
                     </svg>
                 </button>
@@ -1043,22 +1113,22 @@ export const MapSection = () => {
                 {/* Reset view */}
                 <button
                     onClick={resetView}
-                    className="w-12 h-12 bg-white border-2 border-black flex items-center justify-center hover:bg-black transition-all group"
+                    className="w-10 h-10 md:w-12 md:h-12 bg-white border-2 border-black flex items-center justify-center hover:bg-black transition-all group"
                     title="Reset view"
                 >
-                    <svg className="w-5 h-5 text-black group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <svg className="w-4 h-4 md:w-5 md:h-5 text-black group-hover:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                         <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                         <path d="M3 3v5h5" />
                     </svg>
                 </button>
             </div>
 
-            {/* Progress Indicator */}
-            <div className="absolute bottom-6 right-6 z-30 flex flex-col items-end gap-2">
-                <span className="font-mono text-xs text-black font-bold bg-white border-2 border-black px-2 py-1">
+            {/* Progress Indicator - positioned at bottom right */}
+            <div className="absolute bottom-4 md:bottom-6 right-4 md:right-6 z-30 flex flex-col items-end gap-2">
+                <span className="font-mono text-[10px] md:text-xs text-black font-bold bg-white border-2 border-black px-2 py-1">
                     {filteredLocations.length} / {locations.length}
                 </span>
-                <div className="w-32 h-2 bg-white border-2 border-black overflow-hidden">
+                <div className="w-24 md:w-32 h-2 bg-white border-2 border-black overflow-hidden">
                     <motion.div
                         className="h-full bg-black"
                         initial={{ width: '0%' }}

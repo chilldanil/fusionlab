@@ -210,7 +210,12 @@ const Clouds: React.FC<{ progress: MotionValue<number> }> = ({ progress }) => {
   const opacity = useTransform(progress, [0, CONFIG.clouds.fadeEnd], [1, 0]);
   const y1 = useTransform(progress, [0, 0.5], ['0%', '-50%']);
   const y2 = useTransform(progress, [0, 0.5], ['0%', '-70%']);
-  const y3 = useTransform(progress, [0, 0.5], ['0%', '-90%']);
+  
+  // Detect mobile for performance optimization
+  const isMobile = useRef(false);
+  useEffect(() => {
+    isMobile.current = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  }, []);
 
   const cloudGradient = `
     radial-gradient(ellipse 80% 50% at 20% 40%, rgba(220,220,220,0.95) 0%, transparent 50%),
@@ -220,19 +225,76 @@ const Clouds: React.FC<{ progress: MotionValue<number> }> = ({ progress }) => {
     radial-gradient(ellipse 50% 35% at 80% 65%, rgba(240,240,240,0.8) 0%, transparent 45%)
   `;
 
+  // On mobile: use simpler clouds with less blur
+  // On desktop: use full quality
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  useEffect(() => {
+    setIsMobileDevice(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
+  }, []);
+
+  if (isMobileDevice) {
+    // Mobile: simplified clouds, less blur, fewer layers
+    return (
+      <motion.div className="absolute inset-0 pointer-events-none z-10" style={{ opacity, willChange: 'opacity' }}>
+        <motion.div
+          className="absolute inset-[-20%] w-[140%] h-[140%]"
+          style={{ 
+            y: y1, 
+            background: cloudGradient, 
+            filter: 'blur(4px)',
+            willChange: 'transform',
+            transform: 'translateZ(0)',
+          }}
+        />
+        <motion.div
+          className="absolute inset-[-30%] w-[160%] h-[160%]"
+          style={{ 
+            y: y2, 
+            background: cloudGradient, 
+            filter: 'blur(10px)', 
+            opacity: 0.6,
+            willChange: 'transform',
+            transform: 'translateZ(0)',
+          }}
+        />
+      </motion.div>
+    );
+  }
+
+  // Desktop: full quality
   return (
-    <motion.div className="absolute inset-0 pointer-events-none z-10" style={{ opacity }}>
+    <motion.div className="absolute inset-0 pointer-events-none z-10" style={{ opacity, willChange: 'opacity' }}>
       <motion.div
         className="absolute inset-[-20%] w-[140%] h-[140%]"
-        style={{ y: y1, background: cloudGradient, filter: 'blur(8px)' }}
+        style={{ 
+          y: y1, 
+          background: cloudGradient, 
+          filter: 'blur(8px)',
+          willChange: 'transform',
+          transform: 'translateZ(0)',
+        }}
       />
       <motion.div
         className="absolute inset-[-30%] w-[160%] h-[160%]"
-        style={{ y: y2, background: cloudGradient, filter: 'blur(20px)', opacity: 0.8 }}
+        style={{ 
+          y: y2, 
+          background: cloudGradient, 
+          filter: 'blur(20px)', 
+          opacity: 0.8,
+          willChange: 'transform',
+          transform: 'translateZ(0)',
+        }}
       />
       <motion.div
         className="absolute inset-[-40%] w-[180%] h-[180%]"
-        style={{ y: y3, background: cloudGradient, filter: 'blur(35px)', opacity: 0.6 }}
+        style={{ 
+          y: y1, 
+          background: cloudGradient, 
+          filter: 'blur(35px)', 
+          opacity: 0.6,
+          willChange: 'transform',
+          transform: 'translateZ(0)',
+        }}
       />
     </motion.div>
   );
@@ -278,7 +340,15 @@ const FloatingLabel: React.FC<LabelProps> = ({ text, subtitle, coord, focusAt, p
   return (
     <motion.div
       className="absolute left-1/2 top-1/2 text-center pointer-events-none z-20"
-      style={{ opacity, y, scale, x: '-50%', marginLeft: xOffsets[index % xOffsets.length] }}
+      style={{ 
+        opacity, 
+        y, 
+        scale, 
+        x: '-50%', 
+        marginLeft: xOffsets[index % xOffsets.length],
+        willChange: 'transform, opacity',
+        transform: 'translateZ(0)',
+      }}
     >
       <div className="w-24 h-px bg-black/20 mx-auto mb-4" />
       <div className="font-mono text-3xl md:text-5xl font-semibold tracking-[0.15em] text-black/85 mb-2">
@@ -302,13 +372,25 @@ const CityMap: React.FC<{ progress: MotionValue<number>; mapUrl: string }> = ({ 
   const scale = useTransform(progress, [0, 1], [scaleStart, scaleEnd]);
 
   return (
-    <motion.div className="absolute inset-0 flex items-center justify-center" style={{ opacity }}>
+    <motion.div 
+      className="absolute inset-0 flex items-center justify-center" 
+      style={{ opacity, willChange: 'opacity' }}
+    >
       <motion.img
         src={mapUrl}
         alt="City Map"
-        className="w-full h-full object-cover select-none"
-        style={{ scale, filter: 'contrast(2) brightness(0.88)' }}
+        className="w-full h-full object-cover select-none pointer-events-none"
+        style={{ 
+          scale, 
+          filter: 'contrast(2) brightness(0.88)',
+          WebkitTouchCallout: 'none',
+          WebkitUserSelect: 'none',
+          userSelect: 'none',
+          willChange: 'transform',
+          transform: 'translateZ(0)', // Force GPU acceleration
+        }}
         draggable={false}
+        onContextMenu={(e) => e.preventDefault()}
       />
     </motion.div>
   );
@@ -392,7 +474,7 @@ export const CityOpener: React.FC<CityOpenerProps> = ({ onComplete, mapUrl }) =>
     });
   }, [progress, onComplete]);
 
-  // Pointer events
+  // Pointer events - hold behavior for all devices
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
       e.preventDefault();
@@ -431,7 +513,14 @@ export const CityOpener: React.FC<CityOpenerProps> = ({ onComplete, mapUrl }) =>
       onPointerUp={handlePointerUp}
       onPointerLeave={handlePointerLeave}
       onContextMenu={(e) => e.preventDefault()}
-      style={{ touchAction: 'none', cursor: 'pointer' }}
+      style={{ 
+        touchAction: 'none', 
+        cursor: 'pointer',
+        WebkitBackfaceVisibility: 'hidden',
+        backfaceVisibility: 'hidden',
+        WebkitPerspective: 1000,
+        perspective: 1000,
+      }}
     >
       <CityMap progress={progress} mapUrl={mapUrl} />
       <Clouds progress={progress} />
