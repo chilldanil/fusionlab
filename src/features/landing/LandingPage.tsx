@@ -9,6 +9,7 @@ import { MapSection } from './components/MapSection';
 import { CityOpener } from './components/CityOpener';
 import { Footer } from './components/Footer';
 import { HorizontalScrollSection } from './components/HorizontalScrollSection';
+import { ParallaxSection } from './components/ParallaxSection';
 import citySvg from './components/CitySvg03_01_NoColored.svg?url';
 
 export const LandingPage = () => {
@@ -116,17 +117,23 @@ export const LandingPage = () => {
                     </div>
 
                     {/* Horizontal Scroll Buildings Section - overlaps hero */}
-                    <HorizontalScrollSection
-                        svgUrl="/3buildings.svg"
-                        title="Infrastructure Blueprint"
-                        subtitle="ARCHITECTURAL VISION"
-                    />
+                    <ParallaxSection zIndex={20} className="bg-[#fafafa]">
+                        <HorizontalScrollSection
+                            svgUrl="/3buildings.svg"
+                            title="Infrastructure Blueprint"
+                            subtitle="ARCHITECTURAL VISION"
+                        />
+                    </ParallaxSection>
 
                     {/* Map Section */}
-                    <MapSection />
+                    <ParallaxSection zIndex={30} className="bg-white">
+                        <MapSection />
+                    </ParallaxSection>
 
                     {/* Footer */}
-                    <Footer />
+                    <ParallaxSection zIndex={40} className="bg-black">
+                        <Footer />
+                    </ParallaxSection>
                 </motion.div>
             )}
         </AnimatePresence>

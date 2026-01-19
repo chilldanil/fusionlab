@@ -84,7 +84,7 @@ export const HorizontalScrollSection = ({ svgUrl, title, subtitle }: HorizontalS
     const startPadding = typeof window !== 'undefined' ? window.innerWidth * (isDesktop ? 0.08 : 0.05) : 100;
 
     return (
-        <section ref={sectionRef} className="relative z-20">
+        <section ref={sectionRef} className="relative">
             {/* This div is what gets pinned */}
             <div ref={triggerRef} className="h-screen w-full overflow-hidden relative bg-[#fafafa]">
                 {/* Main background */}
