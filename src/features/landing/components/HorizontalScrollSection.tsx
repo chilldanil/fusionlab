@@ -1,0 +1,176 @@
+import { useEffect, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+// Register ScrollTrigger plugin
+gsap.registerPlugin(ScrollTrigger);
+
+interface HorizontalScrollSectionProps {
+    svgUrl: string;
+    title?: string;
+    subtitle?: string;
+}
+
+export const HorizontalScrollSection = ({ svgUrl, title, subtitle }: HorizontalScrollSectionProps) => {
+    const sectionRef = useRef<HTMLElement>(null);
+    const triggerRef = useRef<HTMLDivElement>(null);
+    const svgContainerRef = useRef<HTMLDivElement>(null);
+    const [progress, setProgress] = useState(0);
+    const [svgDimensions, setSvgDimensions] = useState({ width: 0, height: 0 });
+
+    // Load SVG to get dimensions
+    useEffect(() => {
+        const img = new Image();
+        img.onload = () => {
+            const viewportHeight = window.innerHeight;
+            const viewportWidth = window.innerWidth;
+            const aspectRatio = img.naturalWidth / img.naturalHeight;
+
+            // SVG should fill ~80% of viewport height
+            const targetHeight = viewportHeight * 0.8;
+            const targetWidth = targetHeight * aspectRatio;
+
+            // Ensure minimum width for scrolling effect
+            const minWidth = viewportWidth * 2.5;
+            const finalWidth = Math.max(targetWidth, minWidth);
+            const finalHeight = finalWidth / aspectRatio;
+
+            setSvgDimensions({ width: finalWidth, height: finalHeight });
+        };
+        img.src = svgUrl;
+    }, [svgUrl]);
+
+    // Setup GSAP ScrollTrigger
+    useEffect(() => {
+        if (!sectionRef.current || !svgContainerRef.current || svgDimensions.width === 0) return;
+
+        const viewportWidth = window.innerWidth;
+        const scrollDistance = svgDimensions.width - viewportWidth + viewportWidth * 0.16; // Add padding
+
+        // Create the horizontal scroll animation
+        const ctx = gsap.context(() => {
+            gsap.to(svgContainerRef.current, {
+                x: -scrollDistance,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: triggerRef.current,
+                    start: 'top top',
+                    end: () => `+=${scrollDistance}`,
+                    pin: true,
+                    scrub: 1,
+                    anticipatePin: 1,
+                    onUpdate: (self) => {
+                        setProgress(Math.round(self.progress * 100));
+                    },
+                },
+            });
+        }, sectionRef);
+
+        return () => ctx.revert();
+    }, [svgDimensions]);
+
+    // Handle resize
+    useEffect(() => {
+        const handleResize = () => {
+            ScrollTrigger.refresh();
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024;
+    const startPadding = typeof window !== 'undefined' ? window.innerWidth * (isDesktop ? 0.08 : 0.05) : 100;
+
+    return (
+        <section ref={sectionRef} className="relative z-20">
+            {/* This div is what gets pinned */}
+            <div ref={triggerRef} className="h-screen w-full overflow-hidden relative bg-[#fafafa]">
+                {/* Main background */}
+                <div className="absolute inset-0 bg-[#fafafa]" />
+
+                {/* Top/bottom gradients */}
+                <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-white via-white/80 to-transparent pointer-events-none z-10" />
+                <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none z-10" />
+
+                {/* Engineering grid pattern */}
+                <div
+                    className="absolute inset-0 opacity-[0.025]"
+                    style={{
+                        backgroundImage: `
+                            linear-gradient(to right, #000 1px, transparent 1px),
+                            linear-gradient(to bottom, #000 1px, transparent 1px)
+                        `,
+                        backgroundSize: '60px 60px',
+                    }}
+                />
+
+                {/* Top accent line */}
+                <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
+
+                {/* Title overlay */}
+                {(title || subtitle) && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                        viewport={{ once: true }}
+                        className="absolute top-12 left-6 md:left-16 z-20 max-w-xl"
+                    >
+                        {title && (
+                            <div className="inline-block mb-4 px-4 py-1.5 border border-gray-300 rounded-full text-[10px] font-mono text-gray-500 uppercase tracking-[0.2em] bg-white/90 backdrop-blur-sm">
+                                {title}
+                            </div>
+                        )}
+                        {subtitle && (
+                            <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-gray-900 leading-[0.95]">
+                                {subtitle}
+                            </h2>
+                        )}
+                    </motion.div>
+                )}
+
+                {/* Horizontally scrolling SVG container */}
+                <div
+                    ref={svgContainerRef}
+                    className="absolute inset-0 flex items-center"
+                    style={{
+                        paddingLeft: startPadding,
+                        willChange: 'transform',
+                    }}
+                >
+                    {svgDimensions.width > 0 && (
+                        <img
+                            src={svgUrl}
+                            alt="Architecture Blueprint"
+                            className="max-w-none select-none"
+                            style={{
+                                width: svgDimensions.width,
+                                height: svgDimensions.height,
+                                filter: 'drop-shadow(0 25px 50px rgba(0,0,0,0.1))',
+                            }}
+                            draggable={false}
+                        />
+                    )}
+                </div>
+
+                {/* Scroll progress indicator */}
+                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-white/95 backdrop-blur-md px-6 py-3 rounded-full border border-gray-200/80 shadow-lg z-20">
+                    <span className="text-[10px] font-mono text-gray-400 uppercase tracking-[0.15em]">
+                        Explore
+                    </span>
+                    <div className="w-32 md:w-48 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                            className="h-full bg-gray-900 rounded-full transition-transform duration-100 origin-left"
+                            style={{ transform: `scaleX(${progress / 100})` }}
+                        />
+                    </div>
+                    <span className="text-xs font-mono text-gray-600 w-8 text-right tabular-nums">
+                        {progress}%
+                    </span>
+                </div>
+            </div>
+        </section>
+    );
+};

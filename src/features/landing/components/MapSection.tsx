@@ -402,6 +402,21 @@ export const MapSection = () => {
         }
     }, [activeFilter, locations, isMapLoaded]);
 
+    // Select location handler
+    const selectLocation = useCallback((location: Location, index: number) => {
+        setSelectedLocation(location);
+        setSelectedIndex(index);
+        setShowList(false);
+        setSearchQuery('');
+
+        map.current?.flyTo({
+            center: location.coordinates,
+            zoom: 16,
+            duration: 800,
+            essential: true,
+        });
+    }, []);
+
     const addClusterLayers = useCallback(() => {
         if (!map.current || locations.length === 0) return;
 
@@ -423,6 +438,16 @@ export const MapSection = () => {
                 },
             })),
         };
+
+        // Check if source already exists, if so, remove layers and source first
+        if (map.current.getSource('locations')) {
+            // Remove layers that use this source
+            if (map.current.getLayer('clusters')) map.current.removeLayer('clusters');
+            if (map.current.getLayer('cluster-count')) map.current.removeLayer('cluster-count');
+            if (map.current.getLayer('unclustered-point')) map.current.removeLayer('unclustered-point');
+            // Remove the source
+            map.current.removeSource('locations');
+        }
 
         // Add source with clustering
         map.current.addSource('locations', {
@@ -546,7 +571,7 @@ export const MapSection = () => {
         map.current.on('mouseleave', 'unclustered-point', () => {
             if (map.current) map.current.getCanvas().style.cursor = '';
         });
-    }, [locations]);
+    }, [locations, selectLocation]);
 
     // Initialize map
     useEffect(() => {
@@ -592,23 +617,17 @@ export const MapSection = () => {
         initMap();
 
         return () => {
-            map.current?.remove();
+            if (map.current) {
+                // Clean up layers and source before removing map
+                if (map.current.getLayer('clusters')) map.current.removeLayer('clusters');
+                if (map.current.getLayer('cluster-count')) map.current.removeLayer('cluster-count');
+                if (map.current.getLayer('unclustered-point')) map.current.removeLayer('unclustered-point');
+                if (map.current.getSource('locations')) map.current.removeSource('locations');
+                map.current.remove();
+                map.current = null;
+            }
         };
     }, [locations, addClusterLayers]);
-
-    const selectLocation = (location: Location, index: number) => {
-        setSelectedLocation(location);
-        setSelectedIndex(index);
-        setShowList(false);
-        setSearchQuery('');
-
-        map.current?.flyTo({
-            center: location.coordinates,
-            zoom: 16,
-            duration: 800,
-            essential: true,
-        });
-    };
 
     const resetView = () => {
         setSelectedLocation(null);
