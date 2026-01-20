@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -16,50 +16,76 @@ export const HorizontalScrollSection = ({ svgUrl, title, subtitle }: HorizontalS
     const sectionRef = useRef<HTMLElement>(null);
     const triggerRef = useRef<HTMLDivElement>(null);
     const svgContainerRef = useRef<HTMLDivElement>(null);
+    const svgNaturalRef = useRef<{ width: number; height: number } | null>(null);
     const [progress, setProgress] = useState(0);
     const [svgDimensions, setSvgDimensions] = useState({ width: 0, height: 0 });
+
+    const computeSvgDimensions = useCallback((naturalWidth: number, naturalHeight: number) => {
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+        const isMobile = viewportWidth < 768;
+
+        const minHeight = viewportHeight * (isMobile ? 1.15 : 0.8);
+        const minWidth = viewportWidth * (isMobile ? 7.8 : 2.5);
+
+        const heightScale = minHeight / naturalHeight;
+        const widthScale = minWidth / naturalWidth;
+        const scale = Math.max(heightScale, widthScale);
+
+        return {
+            width: naturalWidth * scale,
+            height: naturalHeight * scale,
+        };
+    }, []);
 
     // Load SVG to get dimensions
     useEffect(() => {
         const img = new Image();
         img.onload = () => {
-            const viewportHeight = window.innerHeight;
-            const viewportWidth = window.innerWidth;
-            const aspectRatio = img.naturalWidth / img.naturalHeight;
-
-            // SVG should fill ~80% of viewport height
-            const targetHeight = viewportHeight * 0.8;
-            const targetWidth = targetHeight * aspectRatio;
-
-            // Ensure minimum width for scrolling effect
-            const minWidth = viewportWidth * 2.5;
-            const finalWidth = Math.max(targetWidth, minWidth);
-            const finalHeight = finalWidth / aspectRatio;
-
-            setSvgDimensions({ width: finalWidth, height: finalHeight });
+            svgNaturalRef.current = {
+                width: img.naturalWidth,
+                height: img.naturalHeight,
+            };
+            setSvgDimensions(computeSvgDimensions(img.naturalWidth, img.naturalHeight));
         };
         img.src = svgUrl;
-    }, [svgUrl]);
+    }, [computeSvgDimensions, svgUrl]);
 
     // Setup GSAP ScrollTrigger
     useEffect(() => {
         if (!sectionRef.current || !svgContainerRef.current || svgDimensions.width === 0) return;
 
-        const viewportWidth = window.innerWidth;
-        const scrollDistance = svgDimensions.width - viewportWidth + viewportWidth * 0.16; // Add padding
+        const getScrollDistance = () => {
+            const container = svgContainerRef.current;
+            if (!container) return 0;
+            const viewportWidth = window.innerWidth;
+            const isMobile = viewportWidth < 768;
+            const extraPadding = viewportWidth * (isMobile ? 0.24 : 0.16);
+            const scrollDistance = container.scrollWidth - viewportWidth + extraPadding;
+
+            return Math.max(scrollDistance, 0);
+        };
 
         // Create the horizontal scroll animation
         const ctx = gsap.context(() => {
             gsap.to(svgContainerRef.current, {
-                x: -scrollDistance,
+                x: () => -getScrollDistance(),
                 ease: 'none',
                 scrollTrigger: {
                     trigger: triggerRef.current,
                     start: 'top top',
-                    end: () => `+=${scrollDistance}`,
+                    end: () => {
+                        const viewportWidth = window.innerWidth;
+                        const isMobile = viewportWidth < 768;
+                        const scrollDistance = getScrollDistance();
+                        const scrollLength = scrollDistance * (isMobile ? 2.8 : 1);
+
+                        return `+=${scrollLength}`;
+                    },
                     pin: true,
                     scrub: 1,
                     anticipatePin: 1,
+                    invalidateOnRefresh: true,
                     onUpdate: (self) => {
                         setProgress(Math.round(self.progress * 100));
                     },
@@ -73,12 +99,21 @@ export const HorizontalScrollSection = ({ svgUrl, title, subtitle }: HorizontalS
     // Handle resize
     useEffect(() => {
         const handleResize = () => {
+            if (svgNaturalRef.current) {
+                setSvgDimensions(
+                    computeSvgDimensions(svgNaturalRef.current.width, svgNaturalRef.current.height),
+                );
+            }
             ScrollTrigger.refresh();
         };
 
         window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
+        window.visualViewport?.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            window.visualViewport?.removeEventListener('resize', handleResize);
+        };
+    }, [computeSvgDimensions]);
 
     const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024;
     const startPadding = typeof window !== 'undefined' ? window.innerWidth * (isDesktop ? 0.08 : 0.05) : 100;

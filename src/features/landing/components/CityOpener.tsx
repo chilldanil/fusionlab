@@ -14,7 +14,7 @@ import type { MotionValue } from 'framer-motion';
 const CONFIG = {
   flight: {
     /** Speed when holding (progress per second, 0.15 = ~7 sec total) */
-    speed: 0.14,
+    speed: 0.2,
     /** Seconds to reach full speed */
     accelerationTime: 0.6,
     /** Seconds to stop */
