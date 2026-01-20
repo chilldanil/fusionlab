@@ -7,7 +7,7 @@ interface MapControlsProps {
 
 export const MapControls = ({ map, onReset }: MapControlsProps) => {
   return (
-    <div className="absolute top-20 md:top-24 right-4 md:right-6 z-30 flex flex-col gap-0">
+    <div className="flex flex-col gap-0">
       <button
         onClick={() => map?.zoomIn({ duration: 400 })}
         className="w-10 h-10 md:w-12 md:h-12 bg-white border-2 border-black flex items-center justify-center hover:bg-black transition-all group"
