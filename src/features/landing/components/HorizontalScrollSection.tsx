@@ -84,29 +84,33 @@ export const HorizontalScrollSection = ({ svgUrl, title, subtitle }: HorizontalS
       };
 
       contextRef.current = gsap.context(() => {
-        gsap.to(svgContainerRef.current, {
-          x: () => -getScrollDistance(),
-          ease: 'none',
-          scrollTrigger: {
-            trigger: triggerRef.current,
-            start: 'top top',
-            end: () => {
-              const viewportWidth = window.innerWidth;
-              const isMobile = viewportWidth < 768;
-              const scrollDistance = getScrollDistance();
-              const scrollLength = scrollDistance * (isMobile ? 2.8 : 1);
+        gsap.fromTo(
+          svgContainerRef.current,
+          { x: () => -getScrollDistance() }, // Start from right (shifted left)
+          {
+            x: 0, // Animate to left (original position)
+            ease: 'none',
+            scrollTrigger: {
+              trigger: triggerRef.current,
+              start: 'top top',
+              end: () => {
+                const viewportWidth = window.innerWidth;
+                const isMobile = viewportWidth < 768;
+                const scrollDistance = getScrollDistance();
+                const scrollLength = scrollDistance * (isMobile ? 2.8 : 1);
 
-              return `+=${scrollLength}`;
-            },
-            pin: true,
-            scrub: 1,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-            onUpdate: (self) => {
-              setProgress(Math.round(self.progress * 100));
+                return `+=${scrollLength}`;
+              },
+              pin: true,
+              scrub: 1,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+              onUpdate: (self) => {
+                setProgress(Math.round(self.progress * 100));
+              },
             },
           },
-        });
+        );
       }, sectionRef);
     };
 
