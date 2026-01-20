@@ -17,12 +17,13 @@ export const EventsService = {
         // We need to sort by vote count manually since we can't easily order by related count in Supabase JS client without RPC or complex queries
         // But for now, let's just fetch and sort in JS as the dataset is likely small for this demo
         // A better approach for scale would be a view or a computed column
-        const events = (data || []).map((e: any) => ({
-            ...e,
-            votes: e.votes || [{ count: 0 }],
-        })) as Event[];
+        const events = (data || []) as Event[];
+        const normalized = events.map((event) => ({
+            ...event,
+            votes: event.votes && event.votes.length > 0 ? event.votes : [{ count: 0 }],
+        }));
 
-        return events.sort((a, b) => {
+        return normalized.sort((a, b) => {
             const votesA = a.votes?.[0]?.count || 0;
             const votesB = b.votes?.[0]?.count || 0;
             return votesB - votesA;

@@ -100,7 +100,7 @@ const IfcViewerPreview = () => {
 
         // Set the base path for web-ifc WASM files
         if (typeof window !== 'undefined') {
-            (window as any).WEB_IFC_BASE_PATH = window.location.origin + '/';
+            window.WEB_IFC_BASE_PATH = window.location.origin + '/';
         }
 
         try {
@@ -135,10 +135,10 @@ const IfcViewerPreview = () => {
             // Manually load the model after viewer is fully ready
             setTimeout(async () => {
                 try {
-                    const viewer = viewerRef.current as any;
+                    const viewer = viewerRef.current;
                     console.log('Loading model, viewer:', viewer);
                     
-                    if (viewer?.loadModelFromUrl) {
+                    if (viewer && 'loadModelFromUrl' in viewer && typeof viewer.loadModelFromUrl === 'function') {
                         await viewer.loadModelFromUrl('/small-modified.ifc');
                         console.log('Model loaded');
                     } else {
@@ -148,7 +148,7 @@ const IfcViewerPreview = () => {
                     console.error('Load error:', err);
                 }
             }, 1500);
-        } catch (error) {
+        } catch {
             // Silently handle initialization errors
         }
 

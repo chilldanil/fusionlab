@@ -56,7 +56,7 @@ const IfcViewerPreview = ({ onElementSelect, onScreenshot }: IfcViewerPreviewPro
         if (viewerRef.current) return;
 
         if (typeof window !== 'undefined') {
-            (window as any).WEB_IFC_BASE_PATH = window.location.origin + '/';
+            window.WEB_IFC_BASE_PATH = window.location.origin + '/';
         }
 
         try {
@@ -98,9 +98,8 @@ const IfcViewerPreview = ({ onElementSelect, onScreenshot }: IfcViewerPreviewPro
                     aiVisualizer: false,
                 },
                 // v0.2.5: Callback fires twice - first immediately, then with details
-                onObjectSelected: async (selection) => {
-                    // Access detailed element information from the new API
-                    const elementDetails = (selection as any)._primaryElement as ElementSelectionDetails;
+                onObjectSelected: async (selection: { _primaryElement?: ElementSelectionDetails } | null) => {
+                    const elementDetails = selection?._primaryElement;
 
                     if (elementDetails) {
                         // Second call: Enhanced data available

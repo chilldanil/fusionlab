@@ -31,6 +31,12 @@ export interface BookingInviteRecord {
     invitee?: { full_name: string | null } | null;
 }
 
+type BookingInviteRow = Omit<BookingInviteRecord, 'booking' | 'inviter' | 'invitee'> & {
+    booking?: BookingRecord | BookingRecord[] | null;
+    inviter?: { full_name: string | null } | { full_name: string | null }[] | null;
+    invitee?: { full_name: string | null } | { full_name: string | null }[] | null;
+};
+
 interface PropertyKeyRecord {
     id: string;
     key_id: string;
@@ -164,7 +170,8 @@ export const BookingService = {
             .order('created_at', { ascending: false });
 
         if (error) throw error;
-        return (data || []).map((row: any) => ({
+        const rows = (data || []) as BookingInviteRow[];
+        return rows.map((row) => ({
             ...row,
             booking: Array.isArray(row.booking) ? row.booking[0] : row.booking,
             inviter: Array.isArray(row.inviter) ? row.inviter[0] : row.inviter,
@@ -187,7 +194,8 @@ export const BookingService = {
             .order('created_at', { ascending: true });
 
         if (error) throw error;
-        return (data || []).map((row: any) => ({
+        const rows = (data || []) as BookingInviteRow[];
+        return rows.map((row) => ({
             ...row,
             invitee: Array.isArray(row.invitee) ? row.invitee[0] : row.invitee,
         })) as BookingInviteRecord[];

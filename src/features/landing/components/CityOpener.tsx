@@ -3,9 +3,11 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // Press and hold to descend through clouds to the city
 
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState, useCallback, memo, type CSSProperties } from 'react';
 import { motion, useTransform, useMotionValue } from 'framer-motion';
 import type { MotionValue } from 'framer-motion';
+
+import { ANIMATION_CONFIG } from '../constants/animation';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CONFIGURATION
@@ -14,11 +16,11 @@ import type { MotionValue } from 'framer-motion';
 const CONFIG = {
   flight: {
     /** Speed when holding (progress per second, 0.15 = ~7 sec total) */
-    speed: 0.2,
+    speed: ANIMATION_CONFIG.cityOpener.flightSpeed,
     /** Seconds to reach full speed */
-    accelerationTime: 0.6,
+    accelerationTime: ANIMATION_CONFIG.cityOpener.accelerationTime,
     /** Seconds to stop */
-    decelerationTime: 0.4,
+    decelerationTime: ANIMATION_CONFIG.cityOpener.decelerationTime,
   },
 
   labels: [
@@ -29,18 +31,18 @@ const CONFIG = {
   ],
 
   clouds: {
-    fadeEnd: 0.35,
+    fadeEnd: ANIMATION_CONFIG.cityOpener.cloudFadeEnd,
   },
 
   map: {
-    revealStart: 0.1,
-    scaleStart: 0.85,
-    scaleEnd: 3,
+    revealStart: ANIMATION_CONFIG.cityOpener.mapRevealStart,
+    scaleStart: ANIMATION_CONFIG.cityOpener.mapScaleStart,
+    scaleEnd: ANIMATION_CONFIG.cityOpener.mapScaleEnd,
   },
 
   transition: {
-    fadeStart: 0.88,
-    complete: 0.98,
+    fadeStart: ANIMATION_CONFIG.cityOpener.transitionFadeStart,
+    complete: ANIMATION_CONFIG.cityOpener.transitionComplete,
   },
 } as const;
 
@@ -70,6 +72,17 @@ function useHoldToFly() {
     const deceleration = maxVelocity / decelerationTime;
 
     const tick = (time: number) => {
+      const currentProgress = progress.get();
+      const currentVelocity = velocity.get();
+
+      if (currentProgress >= 1 && currentVelocity === 0) {
+        if (animationRef.current) {
+          cancelAnimationFrame(animationRef.current);
+          animationRef.current = null;
+        }
+        return;
+      }
+
       if (lastTimeRef.current === 0) {
         lastTimeRef.current = time;
       }
@@ -77,26 +90,27 @@ function useHoldToFly() {
       const deltaTime = Math.min((time - lastTimeRef.current) / 1000, 0.1);
       lastTimeRef.current = time;
 
-      let currentVelocity = velocity.get();
-      const currentProgress = progress.get();
+      let nextVelocity = currentVelocity;
 
       if (isHolding.current && currentProgress < 1) {
-        currentVelocity = Math.min(maxVelocity, currentVelocity + acceleration * deltaTime);
+        nextVelocity = Math.min(maxVelocity, currentVelocity + acceleration * deltaTime);
       } else {
-        currentVelocity = Math.max(0, currentVelocity - deceleration * deltaTime);
+        nextVelocity = Math.max(0, currentVelocity - deceleration * deltaTime);
       }
 
-      velocity.set(currentVelocity);
+      velocity.set(nextVelocity);
 
-      if (currentVelocity > 0) {
-        const newProgress = Math.min(1, currentProgress + currentVelocity * deltaTime);
+      if (nextVelocity > 0) {
+        const newProgress = Math.min(1, currentProgress + nextVelocity * deltaTime);
         progress.set(newProgress);
       }
 
       animationRef.current = requestAnimationFrame(tick);
     };
 
-    animationRef.current = requestAnimationFrame(tick);
+    if (progress.get() < 1) {
+      animationRef.current = requestAnimationFrame(tick);
+    }
 
     return () => {
       if (animationRef.current) {
@@ -210,12 +224,22 @@ const Clouds: React.FC<{ progress: MotionValue<number> }> = ({ progress }) => {
   const opacity = useTransform(progress, [0, CONFIG.clouds.fadeEnd], [1, 0]);
   const y1 = useTransform(progress, [0, 0.5], ['0%', '-50%']);
   const y2 = useTransform(progress, [0, 0.5], ['0%', '-70%']);
-  
-  // Detect mobile for performance optimization
-  const isMobile = useRef(false);
-  useEffect(() => {
-    isMobile.current = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  }, []);
+  const [isMobile] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth < 768 : false,
+  );
+  const blurPrimary = isMobile ? 'blur(4px)' : 'blur(8px)';
+  const blurSecondary = isMobile ? 'blur(10px)' : 'blur(20px)';
+  const blurTertiary = 'blur(35px)';
+  type CloudBlurVars = {
+    ['--cloud-blur-primary']: string;
+    ['--cloud-blur-secondary']: string;
+    ['--cloud-blur-tertiary']: string;
+  };
+  const blurVars: CSSProperties & CloudBlurVars = {
+    '--cloud-blur-primary': blurPrimary,
+    '--cloud-blur-secondary': blurSecondary,
+    '--cloud-blur-tertiary': blurTertiary,
+  };
 
   const cloudGradient = `
     radial-gradient(ellipse 80% 50% at 20% 40%, rgba(220,220,220,0.95) 0%, transparent 50%),
@@ -225,23 +249,18 @@ const Clouds: React.FC<{ progress: MotionValue<number> }> = ({ progress }) => {
     radial-gradient(ellipse 50% 35% at 80% 65%, rgba(240,240,240,0.8) 0%, transparent 45%)
   `;
 
-  // On mobile: use simpler clouds with less blur
-  // On desktop: use full quality
-  const [isMobileDevice, setIsMobileDevice] = useState(false);
-  useEffect(() => {
-    setIsMobileDevice(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
-  }, []);
-
-  if (isMobileDevice) {
-    // Mobile: simplified clouds, less blur, fewer layers
+  if (isMobile) {
     return (
-      <motion.div className="absolute inset-0 pointer-events-none z-10" style={{ opacity, willChange: 'opacity' }}>
+      <motion.div
+        className="absolute inset-0 pointer-events-none z-10"
+        style={{ opacity, willChange: 'opacity', ...blurVars }}
+      >
         <motion.div
           className="absolute inset-[-20%] w-[140%] h-[140%]"
           style={{ 
             y: y1, 
             background: cloudGradient, 
-            filter: 'blur(4px)',
+            filter: 'var(--cloud-blur-primary)',
             willChange: 'transform',
             transform: 'translateZ(0)',
           }}
@@ -251,7 +270,7 @@ const Clouds: React.FC<{ progress: MotionValue<number> }> = ({ progress }) => {
           style={{ 
             y: y2, 
             background: cloudGradient, 
-            filter: 'blur(10px)', 
+            filter: 'var(--cloud-blur-secondary)', 
             opacity: 0.6,
             willChange: 'transform',
             transform: 'translateZ(0)',
@@ -263,13 +282,16 @@ const Clouds: React.FC<{ progress: MotionValue<number> }> = ({ progress }) => {
 
   // Desktop: full quality
   return (
-    <motion.div className="absolute inset-0 pointer-events-none z-10" style={{ opacity, willChange: 'opacity' }}>
+    <motion.div
+      className="absolute inset-0 pointer-events-none z-10"
+      style={{ opacity, willChange: 'opacity', ...blurVars }}
+    >
       <motion.div
         className="absolute inset-[-20%] w-[140%] h-[140%]"
         style={{ 
           y: y1, 
           background: cloudGradient, 
-          filter: 'blur(8px)',
+          filter: 'var(--cloud-blur-primary)',
           willChange: 'transform',
           transform: 'translateZ(0)',
         }}
@@ -279,7 +301,7 @@ const Clouds: React.FC<{ progress: MotionValue<number> }> = ({ progress }) => {
         style={{ 
           y: y2, 
           background: cloudGradient, 
-          filter: 'blur(20px)', 
+          filter: 'var(--cloud-blur-secondary)', 
           opacity: 0.8,
           willChange: 'transform',
           transform: 'translateZ(0)',
@@ -290,7 +312,7 @@ const Clouds: React.FC<{ progress: MotionValue<number> }> = ({ progress }) => {
         style={{ 
           y: y1, 
           background: cloudGradient, 
-          filter: 'blur(35px)', 
+          filter: 'var(--cloud-blur-tertiary)', 
           opacity: 0.6,
           willChange: 'transform',
           transform: 'translateZ(0)',
@@ -313,7 +335,7 @@ interface LabelProps {
   index: number;
 }
 
-const FloatingLabel: React.FC<LabelProps> = ({ text, subtitle, coord, focusAt, progress, index }) => {
+const FloatingLabel = memo(({ text, subtitle, coord, focusAt, progress, index }: LabelProps) => {
   const windowStart = focusAt - 0.12;
   const windowEnd = focusAt + 0.15;
 
@@ -360,7 +382,9 @@ const FloatingLabel: React.FC<LabelProps> = ({ text, subtitle, coord, focusAt, p
       <div className="font-mono text-[10px] md:text-xs tracking-wider text-black/30">{coord}</div>
     </motion.div>
   );
-};
+});
+
+FloatingLabel.displayName = 'FloatingLabel';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CITY MAP
@@ -463,6 +487,18 @@ interface CityOpenerProps {
 export const CityOpener: React.FC<CityOpenerProps> = ({ onComplete, mapUrl }) => {
   const completedRef = useRef(false);
   const { progress, velocity, startHold, endHold } = useHoldToFly();
+  const [prefersReducedMotion] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  });
+
+  useEffect(() => {
+    if (!prefersReducedMotion) return;
+    completedRef.current = true;
+    progress.set(1);
+    velocity.set(0);
+    onComplete();
+  }, [onComplete, prefersReducedMotion, progress, velocity]);
 
   // Trigger completion
   useEffect(() => {
@@ -506,6 +542,10 @@ export const CityOpener: React.FC<CityOpenerProps> = ({ onComplete, mapUrl }) =>
     };
   }, [startHold, endHold]);
 
+  if (prefersReducedMotion) {
+    return null;
+  }
+
   return (
     <div
       className="relative w-full h-screen overflow-hidden bg-white select-none"
@@ -538,6 +578,9 @@ export const CityOpener: React.FC<CityOpenerProps> = ({ onComplete, mapUrl }) =>
       ))}
 
       <LocationIndicator progress={progress} />
+      <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-30">
+        <p className="font-mono text-xs text-black/60">Hold SPACE or press and hold to descend</p>
+      </div>
       <HoldIndicator progress={progress} velocity={velocity} />
       <TransitionOverlay progress={progress} />
     </div>

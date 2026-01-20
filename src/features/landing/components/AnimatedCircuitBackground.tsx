@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import { ANIMATION_CONFIG } from '../constants/animation';
+
 interface EnergyPulse {
     id: number;
     x: number;
@@ -9,6 +11,8 @@ interface EnergyPulse {
     length: number;
     speed: number;
     width: number;
+    originX: 0 | 1;
+    originY: 0 | 1;
 }
 
 interface Collision {
@@ -16,6 +20,7 @@ interface Collision {
     x: number;
     y: number;
     type: 'spark';
+    createdAt: number;
 }
 
 interface TechMarker {
@@ -25,14 +30,27 @@ interface TechMarker {
     type: 'cross' | 'bracket' | 'corner';
 }
 
+interface DecorativeNumber {
+    id: number;
+    top: string;
+    left: string;
+    label: string;
+}
+
 export const AnimatedCircuitBackground: React.FC = () => {
     const [pulses, setPulses] = useState<EnergyPulse[]>([]);
     const [collisions, setCollisions] = useState<Collision[]>([]);
     const [markers, setMarkers] = useState<TechMarker[]>([]);
+    const [decorativeNumbers, setDecorativeNumbers] = useState<DecorativeNumber[]>([]);
     const containerRef = useRef<HTMLDivElement>(null);
+    const [prefersReducedMotion] = useState(() => {
+        if (typeof window === 'undefined') return false;
+        return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    });
 
     // Generate static/passive tech markers
     useEffect(() => {
+        if (prefersReducedMotion) return;
         const gridSize = 40;
         const cols = Math.ceil(window.innerWidth / gridSize);
         const rows = Math.ceil(window.innerHeight / gridSize);
@@ -59,7 +77,18 @@ export const AnimatedCircuitBackground: React.FC = () => {
         }
 
         setMarkers(newMarkers);
-    }, []);
+    }, [prefersReducedMotion]);
+
+    useEffect(() => {
+        if (prefersReducedMotion || decorativeNumbers.length > 0) return;
+        const numbers = Array.from({ length: 5 }, (_, index) => ({
+            id: index,
+            top: `${Math.random() * 90 + 5}%`,
+            left: `${Math.random() * 90 + 5}%`,
+            label: `SYS.0${index + 1}_RC${Math.floor(Math.random() * 99)}`,
+        }));
+        setDecorativeNumbers(numbers);
+    }, [decorativeNumbers.length, prefersReducedMotion]);
 
     // Generate a new energy pulse
     const createPulse = (): EnergyPulse => {
@@ -78,10 +107,13 @@ export const AnimatedCircuitBackground: React.FC = () => {
             length: Math.random() * 400 + 100, // Longer lines
             speed: Math.random() * 0.8 + 0.4, // Faster speed (lower duration)
             width: Math.random() > 0.8 ? 2 : 1, // Occasional thicker lines
+            originX: Math.random() > 0.5 ? 0 : 1,
+            originY: Math.random() > 0.5 ? 0 : 1,
         };
     };
 
     useEffect(() => {
+        if (prefersReducedMotion) return;
         // Main spawner loop
         const interval = setInterval(() => {
             // Spawn multiple pulses in a burst
@@ -91,42 +123,49 @@ export const AnimatedCircuitBackground: React.FC = () => {
             setPulses(prev => {
                 // Keep a reasonable number of active pulses
                 const updated = [...prev, ...newPulses];
-                if (updated.length > 130) return updated.slice(updated.length - 130);
-                return updated;
+                return updated.slice(-ANIMATION_CONFIG.circuitBackground.maxPulses);
             });
-        }, 600); // More frequent bursts
+        }, ANIMATION_CONFIG.circuitBackground.pulseInterval);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [prefersReducedMotion]);
 
     // Collision/Spark generator
     useEffect(() => {
+        if (prefersReducedMotion) return;
+
         const collisionInterval = setInterval(() => {
             if (pulses.length > 0 && Math.random() > 0.5) {
-                // Pick a random pulse to "spark" from
                 const target = pulses[Math.floor(Math.random() * pulses.length)];
-                
-                // Calculate a point along the pulse
                 const offset = Math.random() * target.length;
-                
+                const now = Date.now();
+
                 const collision: Collision = {
-                    id: Date.now() + Math.random(),
+                    id: now,
                     x: target.direction === 'horizontal' ? target.x + offset : target.x,
                     y: target.direction === 'vertical' ? target.y + offset : target.y,
-                    type: 'spark'
+                    type: 'spark',
+                    createdAt: now,
                 };
-                
-                setCollisions(prev => [...prev, collision]);
-                
-                // Cleanup collision
-                setTimeout(() => {
-                    setCollisions(prev => prev.filter(c => c.id !== collision.id));
-                }, 800);
-            }
-        }, 200); // Frequent sparks
 
-        return () => clearInterval(collisionInterval);
-    }, [pulses]);
+                setCollisions(prev => [...prev, collision]);
+            }
+        }, ANIMATION_CONFIG.circuitBackground.collisionInterval);
+
+        const cleanupInterval = setInterval(() => {
+            const now = Date.now();
+            setCollisions(prev => prev.filter(c => now - c.createdAt < ANIMATION_CONFIG.circuitBackground.collisionTtl));
+        }, ANIMATION_CONFIG.circuitBackground.collisionCleanupInterval);
+
+        return () => {
+            clearInterval(collisionInterval);
+            clearInterval(cleanupInterval);
+        };
+    }, [prefersReducedMotion, pulses]);
+
+    if (prefersReducedMotion) {
+        return null;
+    }
 
     return (
         <div ref={containerRef} className="absolute inset-0 overflow-hidden pointer-events-none select-none">
@@ -153,19 +192,19 @@ export const AnimatedCircuitBackground: React.FC = () => {
             ))}
 
             {/* Random decorative numbers - Layer 3 */}
-             <div className="absolute inset-0">
-                {Array.from({ length: 5 }).map((_, i) => (
+            <div className="absolute inset-0">
+                {decorativeNumbers.map((decorative) => (
                     <div
-                        key={i}
+                        key={decorative.id}
                         className="absolute font-mono text-[9px] text-gray-200 tracking-widest"
                         style={{
-                            top: `${Math.random() * 90 + 5}%`,
-                            left: `${Math.random() * 90 + 5}%`,
+                            top: decorative.top,
+                            left: decorative.left,
                             transform: 'rotate(-90deg)',
                             opacity: 0.3
                         }}
                     >
-                        SYS.0{i + 1}_RC{Math.floor(Math.random() * 99)}
+                        {decorative.label}
                     </div>
                 ))}
             </div>
@@ -187,8 +226,8 @@ export const AnimatedCircuitBackground: React.FC = () => {
                             scaleX: pulse.direction === 'horizontal' ? 0 : 1,
                             scaleY: pulse.direction === 'vertical' ? 0 : 1,
                             opacity: 0,
-                            originX: Math.random() > 0.5 ? 0 : 1, 
-                            originY: Math.random() > 0.5 ? 0 : 1,
+                            originX: pulse.originX, 
+                            originY: pulse.originY,
                         }}
                         animate={{ 
                             scaleX: 1,

@@ -1,19 +1,31 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Button } from '../../shared/ui/Button';
 import { Navbar } from './components/Navbar';
 import { AnimatedCircuitBackground } from './components/AnimatedCircuitBackground';
-import { BuildingModel } from './components/BuildingModel';
-import { MapSection } from './components/MapSection';
-import { CityOpener } from './components/CityOpener';
 import { Footer } from './components/Footer';
 import { HorizontalScrollSection } from './components/HorizontalScrollSection';
 import citySvg from './components/CitySvg03_01_NoColored.svg?url';
+import { ErrorBoundary } from '../../shared/components/ErrorBoundary';
+
+const MapSection = lazy(() =>
+    import('./components/MapSection').then((module) => ({ default: module.MapSection })),
+);
+const CityOpener = lazy(() =>
+    import('./components/CityOpener').then((module) => ({ default: module.CityOpener })),
+);
+const BuildingModel = lazy(() =>
+    import('./components/BuildingModel').then((module) => ({ default: module.BuildingModel })),
+);
 
 export const LandingPage = () => {
     const navigate = useNavigate();
     const [showOpener, setShowOpener] = useState(true);
+    const [prefersReducedMotion] = useState(() => {
+        if (typeof window === 'undefined') return false;
+        return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    });
 
     const handleLogin = () => {
         navigate('/login');
@@ -43,6 +55,12 @@ export const LandingPage = () => {
         });
     };
 
+    const loadingFallback = (
+        <div className="h-screen flex items-center justify-center">
+            <div className="animate-spin w-12 h-12 border-4 border-black border-t-transparent" />
+        </div>
+    );
+
     return (
         <AnimatePresence mode="wait">
             {showOpener ? (
@@ -51,7 +69,11 @@ export const LandingPage = () => {
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0 }}
                 >
-                    <CityOpener onComplete={handleOpenerComplete} mapUrl={citySvg} />
+                    <ErrorBoundary>
+                        <Suspense fallback={loadingFallback}>
+                            <CityOpener onComplete={handleOpenerComplete} mapUrl={citySvg} />
+                        </Suspense>
+                    </ErrorBoundary>
                 </motion.div>
             ) : (
                 <motion.div
@@ -64,7 +86,7 @@ export const LandingPage = () => {
                     {/* Hero Section - Sticky for parallax effect */}
                     <div className="sticky top-0 h-screen z-10">
                         <div className="relative h-full">
-                            <AnimatedCircuitBackground />
+                            {!prefersReducedMotion && <AnimatedCircuitBackground />}
 
                             <Navbar />
 
@@ -109,7 +131,11 @@ export const LandingPage = () => {
                                     transition={{ delay: 0.3, duration: 1 }}
                                     className="absolute right-0 top-1/2 -translate-y-1/2 w-1/2 h-[80vh] hidden lg:block"
                                 >
-                                    <BuildingModel />
+                                    <ErrorBoundary>
+                                        <Suspense fallback={loadingFallback}>
+                                            <BuildingModel />
+                                        </Suspense>
+                                    </ErrorBoundary>
                                 </motion.div>
                             </main>
                         </div>
@@ -123,7 +149,11 @@ export const LandingPage = () => {
                     />
 
                     {/* Map Section */}
-                    <MapSection />
+                    <ErrorBoundary>
+                        <Suspense fallback={loadingFallback}>
+                            <MapSection />
+                        </Suspense>
+                    </ErrorBoundary>
 
                     {/* Footer */}
                     <Footer />

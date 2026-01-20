@@ -45,9 +45,10 @@ export const CreateEventDialog: React.FC<CreateEventDialogProps> = ({
             reset();
             setSelectedFile(null);
             onClose();
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Failed to create event';
             setError('root', {
-                message: error.message || 'Failed to create event',
+                message,
             });
         }
     };
