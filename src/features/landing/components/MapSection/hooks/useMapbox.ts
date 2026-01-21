@@ -36,16 +36,17 @@ export const useMapbox = ({ containerRef, onEmptyClick }: UseMapboxOptions) => {
           style: MAP_CONFIG.mapbox.style,
           center: MAP_CONFIG.mapbox.center,
           zoom: MAP_CONFIG.mapbox.zoom,
-          pitch: 0,
-          bearing: 0,
-          antialias: false,
+          pitch: 45,
+          bearing: -17.6,
+          antialias: true,
           accessToken: MAP_CONFIG.mapbox.token,
           fadeDuration: 0,
           trackResize: true,
         });
 
-        mapInstance.dragRotate.disable();
-        mapInstance.touchZoomRotate.disableRotation();
+        // Enable rotation for 3D building view
+        mapInstance.dragRotate.enable();
+        mapInstance.touchZoomRotate.enableRotation();
 
         if (mapInstance.isStyleLoaded()) {
           setIsLoaded(true);

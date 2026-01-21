@@ -6,6 +6,7 @@ import { categoryConfig } from './constants';
 import { useMapbox } from './hooks/useMapbox';
 import { useLocations } from './hooks/useLocations';
 import { useMapClusters } from './hooks/useMapClusters';
+import { useBuildingHighlight } from './hooks/useBuildingHighlight';
 import type { CategoryType, Location } from './types';
 import { MAP_CONFIG } from '../../constants/map';
 import { useDebouncedResize } from '../../../../shared/hooks/useDebouncedResize';
@@ -100,6 +101,7 @@ export const MapSection = () => {
     [locations, selectLocation],
   );
   useMapClusters({ map, isLoaded, geojson, onSelectIndex: selectLocationByIndex });
+  useBuildingHighlight({ map, isLoaded });
 
   const resetView = useCallback(() => {
     setSelectedLocation(null);
