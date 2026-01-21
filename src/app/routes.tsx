@@ -36,6 +36,7 @@ const PublicRoute = ({ children }: { children: React.ReactElement }) => {
 };
 
 import { DesignSystemPage } from '../features/dev/DesignSystemPage';
+import { ModelShowcasePage } from '../features/model/ModelShowcasePage';
 
 export const AppRoutes = () => {
     return (
@@ -74,6 +75,7 @@ export const AppRoutes = () => {
                 }
             />
             <Route path="/design" element={<DesignSystemPage />} />
+            <Route path="/model" element={<ModelShowcasePage />} />
         </Routes>
     );
 };
