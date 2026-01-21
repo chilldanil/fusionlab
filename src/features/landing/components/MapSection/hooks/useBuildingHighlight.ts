@@ -353,7 +353,7 @@ function add3DModelLayer(map: Map) {
       camera.projectionMatrix = m.multiply(l);
       renderer.resetState();
       renderer.render(scene, camera);
-      map.triggerRepaint();
+      // Removed triggerRepaint() - model is static, no need for continuous repainting
     },
   };
 
