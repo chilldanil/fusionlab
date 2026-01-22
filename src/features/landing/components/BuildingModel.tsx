@@ -50,7 +50,9 @@ export const BuildingModel = () => {
         <div className="w-full h-full">
             <Canvas
                 camera={{ position: [200, 142, 244], fov: 35 }}
-                dpr={[1, 2]} // Handle high pixel density screens
+                dpr={[1, 2]}
+                gl={{ alpha: true }}
+                style={{ background: 'transparent' }}
             >
                 <ambientLight intensity={2.5} />
                 <directionalLight position={[10, 10, 5]} intensity={1.5} />

@@ -140,7 +140,8 @@ bim-viewport,
 .ifc-viewer-embed .viewer-container,
 .ifc-viewer-library-container .viewer-container,
 .viewer-container,
-canvas {
+.ifc-viewer-embed canvas,
+.ifc-viewer-library-container canvas {
     background: var(--ifc-color-white) !important;
     background-color: var(--ifc-color-white) !important;
     background-image:

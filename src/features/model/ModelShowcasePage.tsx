@@ -6,20 +6,16 @@
 
 import { useRef, useState, useEffect, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { 
-  useGLTF, 
-  OrbitControls, 
+import {
+  useGLTF,
+  OrbitControls,
   Environment,
   ContactShadows,
   PerspectiveCamera,
   Html,
   useProgress,
   Center,
-  Grid,
-  AccumulativeShadows,
-  RandomizedLight,
-  Backdrop,
-  Stage
+  Grid
 } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import * as THREE from 'three';
