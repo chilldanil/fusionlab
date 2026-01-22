@@ -263,19 +263,28 @@ function add3DModelLayer(map: Map) {
     type: 'custom' as const,
     renderingMode: '3d' as const,
     onAdd: function (_map: Map, gl: WebGLRenderingContext) {
-      // Soft ambient lighting
-      const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+      // Strong ambient for base illumination
+      const ambientLight = new THREE.AmbientLight(0xffffff, 2.0);
       scene.add(ambientLight);
 
-      // Subtle directional light from above (like soft sunlight)
-      const directionalLight = new THREE.DirectionalLight(0xfff5e6, 0.4);
-      directionalLight.position.set(50, 100, 50);
-      scene.add(directionalLight);
+      // Main sun light - strong from top-front
+      const sunLight = new THREE.DirectionalLight(0xffffff, 1.5);
+      sunLight.position.set(100, 200, 100);
+      scene.add(sunLight);
 
-      // Fill light from opposite side
-      const fillLight = new THREE.DirectionalLight(0xe6f0ff, 0.2);
-      fillLight.position.set(-50, 50, -50);
+      // Fill light from front-left for face visibility
+      const fillLight = new THREE.DirectionalLight(0xffffff, 1.0);
+      fillLight.position.set(-100, 100, 100);
       scene.add(fillLight);
+
+      // Back light for edge definition
+      const backLight = new THREE.DirectionalLight(0xffffff, 0.5);
+      backLight.position.set(0, 50, -100);
+      scene.add(backLight);
+
+      // Hemisphere light for natural outdoor feel
+      const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.0);
+      scene.add(hemiLight);
 
       // Load the GLB model
       const loader = new GLTFLoader();
@@ -291,8 +300,8 @@ function add3DModelLayer(map: Map) {
               if (mesh.material) {
                 const material = mesh.material as THREE.MeshStandardMaterial;
                 material.color = new THREE.Color(WINE_COLOR);
-                material.metalness = 0;
-                material.roughness = 1;
+                material.metalness = 0.1;
+                material.roughness = 0.7;
               }
             }
           });
