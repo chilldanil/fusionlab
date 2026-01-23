@@ -68,6 +68,29 @@ All games follow the engineering blueprint aesthetic:
 - Control the cable, collect nodes, avoid collisions
 - **Controls**: Arrow keys or WASD
 
+### 02. Block Demolition (Breakout)
+- Destroy all blocks with the ball
+- Different block types with varying durability (1-3 hits)
+- Indestructible blocks appear on higher levels
+- Mouse or keyboard control for paddle
+- **Controls**: Mouse movement or ←→ arrows, SPACE to launch ball
+
+### 03. Vector Defense (Space Invaders)
+- Defend against waves of invaders
+- Three enemy types: Drones (10pts), Cruisers (20pts), Commanders (30pts)
+- Destructible shelters provide cover
+- Bonus ships appear periodically
+- Progressive difficulty with each wave
+- **Controls**: ←→ to move, SPACE/↑/W to fire
+
+### 05. Dual Axis (Pong)
+- Classic two-player competition
+- Single player vs AI or two-player mode
+- First to 11 wins (with 2-point advantage)
+- Ball speed increases with each hit
+- Paddle hit position affects ball angle
+- **Controls**: Player 1: W/S, Player 2: ↑/↓, Press 1 for AI or 2 for human
+
 ## Adding New Games
 
 1. Create a new game class in `src/features/arcade/games/`
@@ -138,17 +161,19 @@ The arcade is integrated into the Footer component:
 />
 ```
 
-## Future Games
+## Game Progress
 
 The system is designed to support 10 classic arcade games:
 
 1. ✅ Cable Router (Snake)
-2. ⬜ Block Demolition (Breakout)
-3. ⬜ Vector Defense (Space Invaders)
+2. ✅ Block Demolition (Breakout)
+3. ✅ Vector Defense (Space Invaders)
 4. ⬜ Void Drift (Asteroids)
-5. ⬜ Dual Axis (Pong)
+5. ✅ Dual Axis (Pong)
 6. ⬜ Shaft Climber (Doodle Jump)
 7. ⬜ Scaffold Run (Donkey Kong)
 8. ⬜ Grid Maze (Pac-Man)
 9. ⬜ Crossing Protocol (Frogger)
 10. ⬜ Soft Landing (Lunar Lander)
+
+**Current Status**: 4 out of 10 games completed (40%)

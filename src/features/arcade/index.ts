@@ -12,6 +12,9 @@ export { DrawHelpers } from './utils/drawHelpers';
 
 // Games
 import { CableRouterGame } from './games/CableRouter';
+import { BlockDemolitionGame } from './games/BlockDemolition';
+import { VectorDefenseGame } from './games/VectorDefense';
+import { DualAxisGame } from './games/DualAxis';
 import type { GameMetadata, GameRegistry } from './types';
 
 // Game metadata registry
@@ -26,11 +29,44 @@ export const GAME_METADATA: GameMetadata[] = [
     genre: 'Arcade / Puzzle',
     description: 'Route the cable through the grid',
   },
+  {
+    id: 'block-demolition',
+    name: 'Block Demolition',
+    number: '02',
+    originalGame: 'Breakout / Arkanoid (1976)',
+    difficulty: 'simple',
+    estimatedTime: '3-4 hours',
+    genre: 'Arcade',
+    description: 'Break all the blocks',
+  },
+  {
+    id: 'vector-defense',
+    name: 'Vector Defense',
+    number: '03',
+    originalGame: 'Space Invaders (1978)',
+    difficulty: 'medium',
+    estimatedTime: '4-5 hours',
+    genre: 'Shooter',
+    description: 'Defend the perimeter',
+  },
+  {
+    id: 'dual-axis',
+    name: 'Dual Axis',
+    number: '05',
+    originalGame: 'Pong (1972)',
+    difficulty: 'simple',
+    estimatedTime: '2-3 hours',
+    genre: 'Sports Arcade',
+    description: 'Classic two-player competition',
+  },
   // More games will be added here
 ];
 
 // Game factory registry
 export const GAME_REGISTRY: GameRegistry = {
   'cable-router': () => new CableRouterGame(),
+  'block-demolition': () => new BlockDemolitionGame(),
+  'vector-defense': () => new VectorDefenseGame(),
+  'dual-axis': () => new DualAxisGame(),
   // More games will be registered here
 };
