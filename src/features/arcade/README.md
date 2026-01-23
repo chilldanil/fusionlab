@@ -83,6 +83,15 @@ All games follow the engineering blueprint aesthetic:
 - Progressive difficulty with each wave
 - **Controls**: ←→ to move, SPACE/↑/W to fire
 
+### 04. Void Drift (Asteroids)
+- Navigate through asteroid fields with inertial physics
+- Rotate and thrust ship with realistic momentum
+- Three asteroid sizes that split when destroyed (Large→Medium→Small)
+- UFO enemies with different behaviors (Large: random, Small: tracking)
+- Hyperspace jump with 20% chance of instant death
+- Torus topology (wrap-around edges)
+- **Controls**: ←→ to rotate, ↑/W for thrust, SPACE to fire, SHIFT for hyperspace
+
 ### 05. Dual Axis (Pong)
 - Classic two-player competition
 - Single player vs AI or two-player mode
@@ -90,6 +99,24 @@ All games follow the engineering blueprint aesthetic:
 - Ball speed increases with each hit
 - Paddle hit position affects ball angle
 - **Controls**: Player 1: W/S, Player 2: ↑/↓, Press 1 for AI or 2 for human
+
+### 06. Shaft Climber (Doodle Jump)
+- Vertical endless climber with procedural generation
+- Five platform types: Normal, Moving, Breaking, Spring (2× jump), Disappearing
+- Automatic jump on platform landing
+- Horizontal wrap-around movement
+- Progressive difficulty with height
+- Height-based scoring system
+- **Controls**: ←→ to move, auto-jump on landing
+
+### 07. Scaffold Run (Donkey Kong)
+- Classic platform climber with obstacles
+- Multi-level scaffolding structure with ladders
+- Rolling barrels that follow platforms and descend ladders
+- Climb ladders and jump over obstacles
+- Collectible bonus items
+- Reach the exit at the top to progress
+- **Controls**: ←→ to move, ↑ to climb/jump, ↓ to descend, SPACE to jump
 
 ## Adding New Games
 
@@ -168,12 +195,12 @@ The system is designed to support 10 classic arcade games:
 1. ✅ Cable Router (Snake)
 2. ✅ Block Demolition (Breakout)
 3. ✅ Vector Defense (Space Invaders)
-4. ⬜ Void Drift (Asteroids)
+4. ✅ Void Drift (Asteroids)
 5. ✅ Dual Axis (Pong)
-6. ⬜ Shaft Climber (Doodle Jump)
-7. ⬜ Scaffold Run (Donkey Kong)
+6. ✅ Shaft Climber (Doodle Jump)
+7. ✅ Scaffold Run (Donkey Kong)
 8. ⬜ Grid Maze (Pac-Man)
 9. ⬜ Crossing Protocol (Frogger)
 10. ⬜ Soft Landing (Lunar Lander)
 
-**Current Status**: 4 out of 10 games completed (40%)
+**Current Status**: 7 out of 10 games completed (70%)

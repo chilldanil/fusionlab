@@ -15,6 +15,9 @@ import { CableRouterGame } from './games/CableRouter';
 import { BlockDemolitionGame } from './games/BlockDemolition';
 import { VectorDefenseGame } from './games/VectorDefense';
 import { DualAxisGame } from './games/DualAxis';
+import { VoidDriftGame } from './games/VoidDrift';
+import { ShaftClimberGame } from './games/ShaftClimber';
+import { ScaffoldRunGame } from './games/ScaffoldRun';
 import type { GameMetadata, GameRegistry } from './types';
 
 // Game metadata registry
@@ -59,6 +62,36 @@ export const GAME_METADATA: GameMetadata[] = [
     genre: 'Sports Arcade',
     description: 'Classic two-player competition',
   },
+  {
+    id: 'void-drift',
+    name: 'Void Drift',
+    number: '04',
+    originalGame: 'Asteroids (1979)',
+    difficulty: 'medium',
+    estimatedTime: '5-6 hours',
+    genre: 'Arcade Shooter',
+    description: 'Clear the debris field',
+  },
+  {
+    id: 'shaft-climber',
+    name: 'Shaft Climber',
+    number: '06',
+    originalGame: 'Doodle Jump (2009) / Icy Tower (2001)',
+    difficulty: 'medium',
+    estimatedTime: '4-5 hours',
+    genre: 'Vertical Platformer',
+    description: 'Ascend the elevator shaft',
+  },
+  {
+    id: 'scaffold-run',
+    name: 'Scaffold Run',
+    number: '07',
+    originalGame: 'Donkey Kong (1981)',
+    difficulty: 'complex',
+    estimatedTime: '6-8 hours',
+    genre: 'Platformer',
+    description: 'Reach the exit at the top',
+  },
   // More games will be added here
 ];
 
@@ -68,5 +101,8 @@ export const GAME_REGISTRY: GameRegistry = {
   'block-demolition': () => new BlockDemolitionGame(),
   'vector-defense': () => new VectorDefenseGame(),
   'dual-axis': () => new DualAxisGame(),
+  'void-drift': () => new VoidDriftGame(),
+  'shaft-climber': () => new ShaftClimberGame(),
+  'scaffold-run': () => new ScaffoldRunGame(),
   // More games will be registered here
 };
