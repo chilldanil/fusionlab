@@ -18,6 +18,9 @@ import { DualAxisGame } from './games/DualAxis';
 import { VoidDriftGame } from './games/VoidDrift';
 import { ShaftClimberGame } from './games/ShaftClimber';
 import { ScaffoldRunGame } from './games/ScaffoldRun';
+import { GridMazeGame } from './games/GridMaze';
+import { CrossingProtocolGame } from './games/CrossingProtocol';
+import { SoftLandingGame } from './games/SoftLanding';
 import type { GameMetadata, GameRegistry } from './types';
 
 // Game metadata registry
@@ -92,7 +95,36 @@ export const GAME_METADATA: GameMetadata[] = [
     genre: 'Platformer',
     description: 'Reach the exit at the top',
   },
-  // More games will be added here
+  {
+    id: 'grid-maze',
+    name: 'Grid Maze',
+    number: '08',
+    originalGame: 'Pac-Man (1980)',
+    difficulty: 'complex',
+    estimatedTime: '6-8 hours',
+    genre: 'Maze / Chase',
+    description: 'Clear all data points',
+  },
+  {
+    id: 'crossing-protocol',
+    name: 'Crossing Protocol',
+    number: '09',
+    originalGame: 'Frogger (1981)',
+    difficulty: 'medium',
+    estimatedTime: '4-5 hours',
+    genre: 'Arcade / Puzzle',
+    description: 'Cross the active construction zone',
+  },
+  {
+    id: 'soft-landing',
+    name: 'Soft Landing',
+    number: '10',
+    originalGame: 'Lunar Lander (1979)',
+    difficulty: 'medium',
+    estimatedTime: '5-6 hours',
+    genre: 'Simulator / Arcade',
+    description: 'Land the module safely',
+  },
 ];
 
 // Game factory registry
@@ -104,5 +136,7 @@ export const GAME_REGISTRY: GameRegistry = {
   'void-drift': () => new VoidDriftGame(),
   'shaft-climber': () => new ShaftClimberGame(),
   'scaffold-run': () => new ScaffoldRunGame(),
-  // More games will be registered here
+  'grid-maze': () => new GridMazeGame(),
+  'crossing-protocol': () => new CrossingProtocolGame(),
+  'soft-landing': () => new SoftLandingGame(),
 };

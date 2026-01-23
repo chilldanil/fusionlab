@@ -118,6 +118,44 @@ All games follow the engineering blueprint aesthetic:
 - Reach the exit at the top to progress
 - **Controls**: ←→ to move, ↑ to climb/jump, ↓ to descend, SPACE to jump
 
+### 08. Grid Maze (Pac-Man)
+- Navigate maze and collect all dots
+- Four ghosts with unique AI behaviors:
+  - Shadow: Direct pursuit
+  - Speedy: Ambush ahead of player
+  - Bashful: Complex flanking
+  - Pokey: Contextual chase/retreat
+- Power pellets enable eating ghosts (200-1600 pts combo)
+- Three ghost modes: Chase, Scatter, Frightened
+- Wrap-around tunnel passages
+- Level progression with increasing difficulty
+- **Controls**: ←→↑↓ to navigate, SPACE to start/pause
+
+### 09. Crossing Protocol (Frogger)
+- Multi-zone crossing challenge
+- 5 vehicle lanes with varying speeds and types
+- 5 river lanes with platforms and diving obstacles
+- 5 goal slots to fill
+- 60-second time limit per round
+- Hop animation system
+- Platform riding mechanics
+- Time bonus scoring
+- **Controls**: ←→↑↓ to hop, SPACE to start
+
+### 10. Soft Landing (Lunar Lander)
+- Physics-based lunar lander simulation
+- Realistic inertial dynamics with rotation and thrust
+- Procedural terrain generation
+- Multiple landing pads with score multipliers (×1, ×2, ×3)
+- Fuel management system
+- Instrument panel with real-time telemetry:
+  - Altitude, vertical/horizontal velocity
+  - Angle, fuel percentage
+  - Status warnings
+- Landing criteria: Speed < 2 m/s, Angle < 15°
+- Fuel bonus and accuracy scoring
+- **Controls**: ←→ to rotate, ↑/SPACE for thrust
+
 ## Adding New Games
 
 1. Create a new game class in `src/features/arcade/games/`
@@ -190,7 +228,7 @@ The arcade is integrated into the Footer component:
 
 ## Game Progress
 
-The system is designed to support 10 classic arcade games:
+The complete arcade collection of 10 classic games:
 
 1. ✅ Cable Router (Snake)
 2. ✅ Block Demolition (Breakout)
@@ -199,8 +237,17 @@ The system is designed to support 10 classic arcade games:
 5. ✅ Dual Axis (Pong)
 6. ✅ Shaft Climber (Doodle Jump)
 7. ✅ Scaffold Run (Donkey Kong)
-8. ⬜ Grid Maze (Pac-Man)
-9. ⬜ Crossing Protocol (Frogger)
-10. ⬜ Soft Landing (Lunar Lander)
+8. ✅ Grid Maze (Pac-Man)
+9. ✅ Crossing Protocol (Frogger)
+10. ✅ Soft Landing (Lunar Lander)
 
-**Current Status**: 7 out of 10 games completed (70%)
+**Status**: ✅ **100% COMPLETE** - All 10 games implemented!
+
+**Total Lines of Code**: ~6,500 lines
+**Total Features**:
+- 10 fully playable games
+- Unified game engine architecture
+- Blueprint/wireframe visual style
+- High score persistence
+- Comprehensive controls
+- Professional game mechanics
