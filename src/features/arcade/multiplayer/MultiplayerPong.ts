@@ -291,8 +291,11 @@ export class MultiplayerPongGame implements BaseGameEngine {
     });
 
     // Start polling as fallback (in case Realtime doesn't work)
+    console.log('[MP] setupSession - isHost:', this.isHost, 'multiState:', this.multiState);
     if (this.isHost && this.multiState === 'waiting') {
       this.startPolling();
+    } else {
+      console.log('[MP] NOT starting polling');
     }
 
     // If session already has opponent, start immediately
@@ -303,22 +306,29 @@ export class MultiplayerPongGame implements BaseGameEngine {
   }
 
   private startPolling(): void {
+    console.log('[MP] Starting polling, isHost:', this.isHost, 'multiState:', this.multiState);
+
     // Poll every 2 seconds as fallback for Realtime
     this.pollingInterval = setInterval(async () => {
       if (!this.session || this.multiState !== 'waiting') {
+        console.log('[MP] Stopping poll - session:', !!this.session, 'state:', this.multiState);
         this.stopPolling();
         return;
       }
 
       try {
+        console.log('[MP] Polling session:', this.session.id);
         const updated = await gameSessionService.getSession(this.session.id);
+        console.log('[MP] Poll result - guestId:', updated.guestId, 'status:', updated.status);
+
         if (updated.guestId && updated.status === 'playing') {
+          console.log('[MP] Guest joined! Starting game...');
           this.session = updated;
           this.stopPolling();
           this.startGame();
         }
       } catch (err) {
-        console.error('Polling error:', err);
+        console.error('[MP] Polling error:', err);
       }
     }, 2000);
   }
