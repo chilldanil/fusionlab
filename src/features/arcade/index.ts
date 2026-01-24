@@ -10,6 +10,12 @@ export * from './types';
 export { storage } from './utils/storage';
 export { DrawHelpers } from './utils/drawHelpers';
 
+// Multiplayer exports
+export { GameLobby } from './multiplayer/components/GameLobby';
+export { gameSessionService } from './multiplayer/GameSessionService';
+export { MultiplayerPongGame } from './multiplayer/MultiplayerPong';
+export * from './multiplayer/types';
+
 // Games
 import { CableRouterGame } from './games/CableRouter';
 import { BlockDemolitionGame } from './games/BlockDemolition';
@@ -21,6 +27,7 @@ import { ScaffoldRunGame } from './games/ScaffoldRun';
 import { GridMazeGame } from './games/GridMaze';
 import { CrossingProtocolGame } from './games/CrossingProtocol';
 import { SoftLandingGame } from './games/SoftLanding';
+import { MultiplayerPongGame } from './multiplayer/MultiplayerPong';
 import type { GameMetadata, GameRegistry } from './types';
 
 // Game metadata registry
@@ -125,6 +132,16 @@ export const GAME_METADATA: GameMetadata[] = [
     genre: 'Simulator / Arcade',
     description: 'Land the module safely',
   },
+  {
+    id: 'multiplayer-pong',
+    name: 'Dual Axis Online',
+    number: '05+',
+    originalGame: 'Pong (1972)',
+    difficulty: 'medium',
+    estimatedTime: '5-10 min',
+    genre: 'Online Multiplayer',
+    description: 'Real-time 2-player competition',
+  },
 ];
 
 // Game factory registry
@@ -139,4 +156,5 @@ export const GAME_REGISTRY: GameRegistry = {
   'grid-maze': () => new GridMazeGame(),
   'crossing-protocol': () => new CrossingProtocolGame(),
   'soft-landing': () => new SoftLandingGame(),
+  'multiplayer-pong': () => new MultiplayerPongGame(),
 };
