@@ -3,7 +3,7 @@
  * Handles real-time multiplayer game sessions via Supabase
  */
 
-import { supabase } from '@/shared/config/supabase';
+import { supabase } from '../../../shared/config/supabase';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import type {
   GameSession,
