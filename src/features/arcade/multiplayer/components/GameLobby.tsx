@@ -23,7 +23,6 @@ export function GameLobby({ gameId, gameName, onJoinSession, onClose }: GameLobb
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [inviteCode, setInviteCode] = useState('');
-  const [createdSession, setCreatedSession] = useState<GameSession | null>(null);
 
   // Load available sessions
   useEffect(() => {
@@ -78,7 +77,6 @@ export function GameLobby({ gameId, gameName, onJoinSession, onClose }: GameLobb
         gameId,
         isPrivate: true,
       });
-      setCreatedSession(session);
       onJoinSession(session, true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create game');

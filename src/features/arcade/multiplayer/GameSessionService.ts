@@ -7,7 +7,6 @@ import { supabase } from '../../../shared/config/supabase';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import type {
   GameSession,
-  GameMove,
   CreateSessionOptions,
   SessionCallback,
   MoveCallback,
@@ -87,7 +86,7 @@ class GameSessionService {
    * Join a session by ID
    */
   async joinSession(sessionId: string): Promise<GameSession> {
-    const { data, error } = await supabase.rpc('join_game_session', {
+    const { error } = await supabase.rpc('join_game_session', {
       p_session_id: sessionId,
     });
 
@@ -247,7 +246,7 @@ class GameSessionService {
   async finishGame(hostScore: number, guestScore: number): Promise<GameSession> {
     if (!this.currentSessionId) throw new Error('Not in a session');
 
-    const { data, error } = await supabase.rpc('finish_game_session', {
+    const { error } = await supabase.rpc('finish_game_session', {
       p_session_id: this.currentSessionId,
       p_host_score: hostScore,
       p_guest_score: guestScore,

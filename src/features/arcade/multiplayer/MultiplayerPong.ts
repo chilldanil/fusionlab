@@ -6,7 +6,7 @@
 import type { BaseGameEngine, GameContext, GameMetadata, GameControls, GameState, GameScore } from '../types';
 import { DrawHelpers } from '../utils/drawHelpers';
 import { gameSessionService } from './GameSessionService';
-import type { GameSession, GameMove, PongMove, BallState } from './types';
+import type { GameSession, GameMove, PongMove } from './types';
 
 interface Paddle {
   y: number;
@@ -48,7 +48,7 @@ export class MultiplayerPongGame implements BaseGameEngine {
   };
 
   private ctx!: CanvasRenderingContext2D;
-  private canvas!: HTMLCanvasElement;
+  private _canvas!: HTMLCanvasElement;
   private width!: number;
   private height!: number;
   private state: GameState = 'idle';
@@ -95,7 +95,7 @@ export class MultiplayerPongGame implements BaseGameEngine {
 
   async init(context: GameContext): Promise<void> {
     this.ctx = context.ctx;
-    this.canvas = context.canvas;
+    this._canvas = context.canvas;
     this.width = context.width;
     this.height = context.height;
     this.draw = new DrawHelpers(this.ctx);
@@ -107,9 +107,6 @@ export class MultiplayerPongGame implements BaseGameEngine {
   }
 
   private resetGame(): void {
-    const paddleX = this.isHost ? this.PADDLE_OFFSET : this.width - this.PADDLE_OFFSET - this.PADDLE_WIDTH;
-    const opponentX = this.isHost ? this.width - this.PADDLE_OFFSET - this.PADDLE_WIDTH : this.PADDLE_OFFSET;
-
     this.myPaddle = {
       y: this.height / 2 - this.PADDLE_HEIGHT / 2,
       width: this.PADDLE_WIDTH,
@@ -306,7 +303,7 @@ export class MultiplayerPongGame implements BaseGameEngine {
   }
 
   private handleOpponentMove(move: GameMove): void {
-    const data = move.moveData as PongMove;
+    const data = move.moveData as unknown as PongMove;
 
     switch (data.type) {
       case 'paddle_move':
@@ -480,8 +477,6 @@ export class MultiplayerPongGame implements BaseGameEngine {
   }
 
   private async checkScoring(): Promise<void> {
-    const WIN_SCORE = this.session?.maxScore ?? 11;
-
     // Ball out left (right player scores)
     if (this.ball.x < -this.ball.size) {
       // Guest scores
