@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { ArcadeContainer, GAME_METADATA, GAME_REGISTRY } from '../../arcade';
 
 export const Footer = () => {
     const buildingsSvg = '/3buildings.svg';
     const currentYear = new Date().getFullYear();
+    const [arcadeOpen, setArcadeOpen] = useState(false);
 
     const footerLinks = {
         product: [
@@ -206,9 +209,35 @@ export const Footer = () => {
                     </motion.div>
                 </div>
 
+                {/* Arcade Button */}
+                <div className="relative pb-8 pt-4 flex justify-center">
+                    <motion.button
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: 0.5 }}
+                        onClick={() => setArcadeOpen(true)}
+                        className="group px-6 py-3 border border-white/20 hover:border-white/60 font-mono text-sm text-gray-400 hover:text-white transition-all hover:bg-white/5"
+                    >
+                        <span className="flex items-center gap-2">
+                            <span className="text-green-500">▶</span>
+                            ARCADE
+                            <span className="text-xs opacity-60">[Press to Play]</span>
+                        </span>
+                    </motion.button>
+                </div>
+
                 {/* Bottom padding so buildings show through */}
                 <div className="h-48 md:h-64" />
             </div>
+
+            {/* Arcade Container */}
+            <ArcadeContainer
+                isOpen={arcadeOpen}
+                onClose={() => setArcadeOpen(false)}
+                games={GAME_METADATA}
+                gameRegistry={GAME_REGISTRY}
+            />
         </footer>
     );
 };
