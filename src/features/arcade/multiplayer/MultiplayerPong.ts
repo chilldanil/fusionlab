@@ -82,6 +82,7 @@ export class MultiplayerPongGame implements BaseGameEngine {
   private serveDelay = 0;
   private lastSyncTime = 0;
   private ballTrail: Array<{ x: number; y: number; alpha: number }> = [];
+  private isProcessingScore = false; // Prevent double-scoring
 
   // Input state for invite code
   private inviteCodeInput = '';
@@ -129,6 +130,7 @@ export class MultiplayerPongGame implements BaseGameEngine {
     this.opponentScore = 0;
     this.servingPlayer = 'me';
     this.serveDelay = 0;
+    this.isProcessingScore = false;
   }
 
   private resetBall(): void {
@@ -291,11 +293,8 @@ export class MultiplayerPongGame implements BaseGameEngine {
     });
 
     // Start polling as fallback (in case Realtime doesn't work)
-    console.log('[MP] setupSession - isHost:', this.isHost, 'multiState:', this.multiState);
     if (this.isHost && this.multiState === 'waiting') {
       this.startPolling();
-    } else {
-      console.log('[MP] NOT starting polling');
     }
 
     // If session already has opponent, start immediately
@@ -306,29 +305,22 @@ export class MultiplayerPongGame implements BaseGameEngine {
   }
 
   private startPolling(): void {
-    console.log('[MP] Starting polling, isHost:', this.isHost, 'multiState:', this.multiState);
-
     // Poll every 2 seconds as fallback for Realtime
     this.pollingInterval = setInterval(async () => {
       if (!this.session || this.multiState !== 'waiting') {
-        console.log('[MP] Stopping poll - session:', !!this.session, 'state:', this.multiState);
         this.stopPolling();
         return;
       }
 
       try {
-        console.log('[MP] Polling session:', this.session.id);
         const updated = await gameSessionService.getSession(this.session.id);
-        console.log('[MP] Poll result - guestId:', updated.guestId, 'status:', updated.status);
-
         if (updated.guestId && updated.status === 'playing') {
-          console.log('[MP] Guest joined! Starting game...');
           this.session = updated;
           this.stopPolling();
           this.startGame();
         }
       } catch (err) {
-        console.error('[MP] Polling error:', err);
+        // Polling error - continue
       }
     }, 2000);
   }
@@ -531,8 +523,12 @@ export class MultiplayerPongGame implements BaseGameEngine {
   }
 
   private async checkScoring(): Promise<void> {
+    // Prevent double-scoring while processing
+    if (this.isProcessingScore) return;
+
     // Ball out left (right player scores)
     if (this.ball.x < -this.ball.size) {
+      this.isProcessingScore = true;
       // Guest scores
       if (this.isHost) {
         this.opponentScore++;
@@ -540,9 +536,11 @@ export class MultiplayerPongGame implements BaseGameEngine {
         this.myScore++;
       }
       await this.handleScore('guest');
+      this.isProcessingScore = false;
     }
     // Ball out right (left player scores)
     else if (this.ball.x > this.width + this.ball.size) {
+      this.isProcessingScore = true;
       // Host scores
       if (this.isHost) {
         this.myScore++;
@@ -550,6 +548,7 @@ export class MultiplayerPongGame implements BaseGameEngine {
         this.opponentScore++;
       }
       await this.handleScore('host');
+      this.isProcessingScore = false;
     }
   }
 
