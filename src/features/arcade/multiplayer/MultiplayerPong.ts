@@ -91,6 +91,9 @@ export class MultiplayerPongGame implements BaseGameEngine {
   private statusMessage = '';
   private errorMessage = '';
 
+  // Polling fallback for when Realtime doesn't work
+  private pollingInterval: ReturnType<typeof setInterval> | null = null;
+
   private draw!: DrawHelpers;
 
   async init(context: GameContext): Promise<void> {
@@ -176,6 +179,7 @@ export class MultiplayerPongGame implements BaseGameEngine {
   }
 
   cleanup(): void {
+    this.stopPolling();
     gameSessionService.unsubscribe();
   }
 
@@ -256,15 +260,20 @@ export class MultiplayerPongGame implements BaseGameEngine {
   private async setupSession(): Promise<void> {
     if (!this.session) return;
 
+    // Clear any existing polling
+    this.stopPolling();
+
     gameSessionService.subscribeToSession(this.session.id, {
       onSessionUpdate: (session) => {
         this.session = session;
 
         if (session.status === 'playing' && this.multiState !== 'playing') {
+          this.stopPolling();
           this.startGame();
         }
 
         if (session.status === 'finished' || session.status === 'abandoned') {
+          this.stopPolling();
           this.endGame();
         }
       },
@@ -272,6 +281,7 @@ export class MultiplayerPongGame implements BaseGameEngine {
         this.handleOpponentMove(move);
       },
       onOpponentJoined: () => {
+        this.stopPolling();
         this.startGame();
       },
       onOpponentLeft: () => {
@@ -280,9 +290,43 @@ export class MultiplayerPongGame implements BaseGameEngine {
       },
     });
 
+    // Start polling as fallback (in case Realtime doesn't work)
+    if (this.isHost && this.multiState === 'waiting') {
+      this.startPolling();
+    }
+
     // If session already has opponent, start immediately
     if (this.session.guestId && this.session.status === 'playing') {
+      this.stopPolling();
       this.startGame();
+    }
+  }
+
+  private startPolling(): void {
+    // Poll every 2 seconds as fallback for Realtime
+    this.pollingInterval = setInterval(async () => {
+      if (!this.session || this.multiState !== 'waiting') {
+        this.stopPolling();
+        return;
+      }
+
+      try {
+        const updated = await gameSessionService.getSession(this.session.id);
+        if (updated.guestId && updated.status === 'playing') {
+          this.session = updated;
+          this.stopPolling();
+          this.startGame();
+        }
+      } catch (err) {
+        console.error('Polling error:', err);
+      }
+    }, 2000);
+  }
+
+  private stopPolling(): void {
+    if (this.pollingInterval) {
+      clearInterval(this.pollingInterval);
+      this.pollingInterval = null;
     }
   }
 
