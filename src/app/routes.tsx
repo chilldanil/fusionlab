@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { LandingPage } from '../features/landing/LandingPage';
+import { AwwwardsLandingPage } from '../features/landing/AwwwardsLandingPage';
+import { LandingPage as LegacyLandingPage } from '../features/landing/LandingPage';
 import { LoginPage } from '../features/auth/LoginPage';
 import { ProfilePage } from '../features/user/ProfilePage';
 import { BookingPage } from '../features/booking/BookingPage';
@@ -41,7 +42,8 @@ import { ModelShowcasePage } from '../features/model/ModelShowcasePage';
 export const AppRoutes = () => {
     return (
         <Routes>
-            <Route path="/" element={<LandingPage />} />
+            <Route path="/" element={<AwwwardsLandingPage />} />
+            <Route path="/legacy" element={<LegacyLandingPage />} />
             <Route
                 path="/login"
                 element={
