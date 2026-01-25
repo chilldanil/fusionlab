@@ -1,0 +1,305 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   FUSIONLAB AWWWARDS DESIGN SYSTEM - LIGHT THEME
+   Matching the original design with premium animations
+═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ──────────────────────────────────────────────────────────────────────────────
+   COLOR TOKENS - LIGHT THEME
+────────────────────────────────────────────────────────────────────────────── */
+:root {
+  /* Primary palette - Light theme */
+  --color-black: #000000;
+  --color-white: #ffffff;
+  --color-bg: #ffffff;
+  --color-bg-secondary: #fafafa;
+  --color-text: #000000;
+  --color-text-muted: #6b7280;
+  --color-text-light: #9ca3af;
+
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+
+  /* Accent */
+  --color-accent: #000000;
+  --color-accent-light: #374151;
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     FLUID TYPOGRAPHY
+  ────────────────────────────────────────────────────────────────────────── */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+
+  /* Fluid type scale */
+  --text-xs: clamp(0.7rem, 0.65rem + 0.25vw, 0.75rem);
+  --text-sm: clamp(0.8rem, 0.75rem + 0.25vw, 0.875rem);
+  --text-base: clamp(0.95rem, 0.9rem + 0.25vw, 1rem);
+  --text-lg: clamp(1.1rem, 1rem + 0.5vw, 1.25rem);
+  --text-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  --text-2xl: clamp(1.5rem, 1.25rem + 1.25vw, 2rem);
+  --text-3xl: clamp(1.875rem, 1.5rem + 1.875vw, 2.5rem);
+  --text-4xl: clamp(2.25rem, 1.75rem + 2.5vw, 3rem);
+  --text-5xl: clamp(3rem, 2rem + 5vw, 4.5rem);
+  --text-6xl: clamp(3.5rem, 2.5rem + 5vw, 6rem);
+  --text-7xl: clamp(4.5rem, 3rem + 7.5vw, 8rem);
+  --text-8xl: clamp(6rem, 4rem + 10vw, 12rem);
+
+  /* Line heights */
+  --leading-none: 1;
+  --leading-tight: 0.9;
+  --leading-snug: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+
+  /* Letter spacing */
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     MOTION / EASING
+  ────────────────────────────────────────────────────────────────────────── */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  /* Duration scale */
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --duration-slower: 800ms;
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     Z-INDEX SCALE
+  ────────────────────────────────────────────────────────────────────────── */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-cursor: 9999;
+
+  /* Noise for grain */
+  --noise-opacity: 0.015;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   GLOBAL RESETS & BASE STYLES
+═══════════════════════════════════════════════════════════════════════════════ */
+
+html {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  overflow-x: hidden;
+}
+
+/* Selection - black/white for light theme */
+::selection {
+  background-color: var(--color-black);
+  color: var(--color-white);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CUSTOM CURSOR STYLES - LIGHT THEME
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.cursor-none {
+  cursor: none;
+}
+
+.cursor-dot-light {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-black);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: var(--z-cursor);
+  mix-blend-mode: difference;
+  transform: translate(-50%, -50%);
+}
+
+.cursor-ring-light {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-black);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: var(--z-cursor);
+  mix-blend-mode: difference;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s var(--ease-out-expo),
+              height 0.3s var(--ease-out-expo);
+}
+
+.cursor-ring-light.hovering {
+  width: 60px;
+  height: 60px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   FILM GRAIN OVERLAY - VERY SUBTLE FOR LIGHT THEME
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.grain-light {
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: var(--noise-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 180px;
+  animation: grain 8s steps(10) infinite;
+}
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-5%, -10%); }
+  20% { transform: translate(-15%, 5%); }
+  30% { transform: translate(7%, -25%); }
+  40% { transform: translate(-5%, 25%); }
+  50% { transform: translate(-15%, 10%); }
+  60% { transform: translate(15%, 0%); }
+  70% { transform: translate(0%, 15%); }
+  80% { transform: translate(3%, 35%); }
+  90% { transform: translate(-10%, 10%); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   TEXT REVEAL ANIMATIONS
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.text-reveal {
+  overflow: hidden;
+}
+
+.text-reveal .char,
+.text-reveal .word,
+.text-reveal .line {
+  display: inline-block;
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+.text-reveal.revealed .char,
+.text-reveal.revealed .word,
+.text-reveal.revealed .line {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   MAGNETIC BUTTON EFFECTS
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.magnetic-wrap {
+  display: inline-block;
+  position: relative;
+}
+
+.magnetic-content {
+  position: relative;
+  z-index: 2;
+  transition: transform 0.3s var(--ease-out-expo);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   RESPONSIVE UTILITIES
+═══════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .cursor-dot-light,
+  .cursor-ring-light {
+    display: none;
+  }
+
+  body {
+    cursor: auto;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .grain-light {
+    display: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   UTILITY CLASSES
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.gpu {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Container */
+.container-wide {
+  width: 100%;
+  max-width: 1920px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(1rem, 5vw, 4rem);
+  padding-right: clamp(1rem, 5vw, 4rem);
+}
